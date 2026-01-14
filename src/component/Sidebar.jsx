@@ -212,9 +212,10 @@ export default function Sidebar({ isOpen }) {
   };
 
   const linkClass =
-    "flex items-center gap-3 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors text-white";
+    "flex items-center gap-3 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors text-white font-bold"
+
   const sectionClass =
-    "flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-500 cursor-pointer text-white";
+    "flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-500 cursor-pointer text-white text-sm";
 
   return (
     <aside className={`bg-blue-600 h-full ${isOpen ? "w-64" : "w-16"} transition-all`}>
@@ -241,15 +242,14 @@ export default function Sidebar({ isOpen }) {
           return (
             <div key={menu.key}>
               <div onClick={() => toggleMenu(menu.key)} className={sectionClass}>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 font-bold text-base">
                   <Icon className="w-5 h-5" />
                   {isOpen && menu.label}
                 </div>
                 {isOpen && (
                   <ChevronRight
-                    className={`w-4 h-4 transition-transform ${
-                      openMenu === menu.key ? "rotate-90" : ""
-                    }`}
+                    className={`w-4 h-4 transition-transform ${openMenu === menu.key ? "rotate-90" : ""
+                      }`}
                   />
                 )}
               </div>
@@ -263,15 +263,16 @@ export default function Sidebar({ isOpen }) {
                       <NavLink
                         key={child.path}
                         to={child.path}
-                        className="flex items-center gap-2 py-1 px-2 rounded hover:bg-blue-500"
+                        className="flex items-center gap-2 py-1 px-2 rounded text-gray-100 hover:bg-blue-500 hover:text-white"
                       >
-                        <ChildIcon className="w-4 h-4" />
+                        <ChildIcon className="w-4 h-4 text-white" /> {/* icon color white */}
                         {child.label}
                       </NavLink>
                     );
                   })}
                 </div>
               )}
+
             </div>
           );
         })}
