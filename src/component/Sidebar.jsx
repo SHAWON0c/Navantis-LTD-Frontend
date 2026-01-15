@@ -203,6 +203,7 @@ import { NavLink } from "react-router-dom";
 import { ChevronRight, Activity } from "lucide-react";
 import sidebarConfig from "../config/sidebar.config.json";
 import { iconMap } from "../config/iconMap";
+import { img } from "framer-motion/client";
 
 export default function Sidebar({ isOpen }) {
   const [openMenu, setOpenMenu] = useState(null);
@@ -218,13 +219,22 @@ export default function Sidebar({ isOpen }) {
     "flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-500 cursor-pointer text-white text-sm";
 
   return (
-    <aside className={`bg-blue-600 h-full ${isOpen ? "w-64" : "w-16"} transition-all`}>
+    <aside className={`bg-[#0F213D] h-full ${isOpen ? "w-64" : "w-16"} transition-all`}>
       {/* Logo */}
-      <div className="h-16 flex items-center justify-center border-b border-blue-500">
-        {isOpen ? <span className="font-bold text-xl">Navantis</span> : <Activity />}
+      <div className="h-16 flex items-center justify-center border-b border-white bg-black dark:bg-gray-800">
+        {isOpen ? (
+          <img
+            src="/images/NPL-Logo2.png"
+            alt="Logo"
+            className="h-auto w-auto"
+          />
+        ) : (
+          <Activity />
+        )}
       </div>
 
-      <nav className="p-2 space-y-1">
+
+      <nav className="p-2 space-y-1 text-white">
         {sidebarConfig.map((menu) => {
           const Icon = iconMap[menu.icon];
 

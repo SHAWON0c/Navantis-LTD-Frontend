@@ -1,43 +1,88 @@
-import { useUserProfile } from "../hooks/useUserProfile";
+import { useGetWarehouseReceiveRequestQuery } from "../redux/features/wareHouse/warehouseReceiveApi";
+import WarehouseRequestProductCard from "./WarehouseRequestProductCard";
 
 const WarehouseRequest = () => {
-  const { data, isLoading, error } = useUserProfile();
+  const { data: whReceiveRequests, isLoading, refetch } = useGetWarehouseReceiveRequestQuery();
 
-  if (isLoading) return <p>Loading profile...</p>;
-  if (error) return <p>Error loading profile</p>;
 
-  const user = data?.data?.user;
-  const org = data?.data?.organizationProfile;
+
+  // ✅ Use the array inside `data`
+  const filteredProducts = whReceiveRequests?.data || [];
+
+  // Calculate totals based on available fields
+  const totalOrderQuantity = filteredProducts.reduce((acc, item) => acc + (item.orderQuantity || 0), 0);
+  const totalStockQuantity = filteredProducts.reduce((acc, item) => acc + (item.stockQuantity || 0), 0);
+  const totalMissingQuantity = filteredProducts.reduce((acc, item) => acc + (item.missingQuantity || 0), 0);
 
   return (
-    <div>
-      <h1>Warehouse Request</h1>
+    <div className="mx-auto p-2">
 
-      <h2>User Info</h2>
-      <p>Email: {user?.email || "N/A"}</p>
-      <p>Role: {user?.role || "N/A"}</p>
-      <p>Verified: {user?.isVerified ? "Yes" : "No"}</p>
+      {/* Top Bar */}
+      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
+        <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
+      </div>
 
-      <h2>Organization Profile</h2>
-      <p>Name: {org?.name || "N/A"}</p>
-      <p>Designation: {org?.designation || "N/A"}</p>
-      <p>Workplace: {org?.workplace || "N/A"}</p>
-      <p>Area: {org?.area || "N/A"}</p>
-      <p>Area Manager: {org?.areaManager || "N/A"}</p>
-      <p>Zonal Manager: {org?.zonalManager || "N/A"}</p>
-      <img src={org?.profilePic} alt="Profile Pic" width={80} />
+      {/* Main Content */}
+      <div className="space-y-6 mt-4 "> {/* Adds spacing between sections and moves content slightly down */}
+        <div className="bg-white pb-1 rounded-lg">
+          {/* Product Info */}
+          <div className="m-0 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md ">
+            <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Request Summary</p>
 
-      <h3>History</h3>
-      <ul>
-        {org?.history?.map((h) => (
-          <li key={h._id}>
-            {h.action} on {new Date(h.date).toLocaleString()}
-          </li>
-        )) || <li>No history available</li>}
-      </ul>
+            <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
+              <p className="text-sm">
+                Total Products: <span className="font-medium text-blue-700">{filteredProducts.length}</span>
+              </p>
+              <p className="text-sm">
+                Total Order Quantity: <span className="font-medium text-blue-700">{totalOrderQuantity}</span>
+              </p>
+              <p className="text-sm">
+                Total Stock Quantity: <span className="font-medium text-blue-700">{totalStockQuantity}</span>
+              </p>
+              <p className="text-sm">
+                Total Missing Quantity: <span className="font-medium text-blue-700">{totalMissingQuantity}</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="p-6">
+            <div className="overflow-x-auto mb-3">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th className="text-center">Sl. No.</th>
+                    <th>Name</th>
+                    <th className="text-center">Batch</th>
+                    <th className="text-center">Exp.</th>
+                    <th className="text-center">Order Quantity</th>
+                    <th className="text-center">Stock Quantity</th>
+                    <th className="text-center">Missing Quantity</th>
+                    <th className="text-center">Details</th>
+                    <th className="text-center">Approve</th>
+                    <th className="text-center">Deny</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product, idx) => (
+                    <WarehouseRequestProductCard
+                      idx={idx + 1}
+                      key={product.purchaseOrderId} // safer unique key
+                      product={product}
+                      refetch={refetch}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
     </div>
+
   );
 };
-
 
 export default WarehouseRequest;

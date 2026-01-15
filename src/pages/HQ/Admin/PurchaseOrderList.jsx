@@ -6,7 +6,6 @@ import { MdPrint } from "react-icons/md";
 import { useGetPurchaseOrdersQuery } from "../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
 import AdminPurchaseInvoice from "../../../component/reports/AdminPrintPurchaseProductList";
 
-
 const PurchaseOrderList = () => {
   const { data, isLoading, isError } = useGetPurchaseOrdersQuery();
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,7 +61,7 @@ const PurchaseOrderList = () => {
   };
 
   return (
-    <div className="mx-auto p-6">
+    <div className="mx-auto p-2">
       {/* Top Page Header */}
       <div className="bg-white text-gray-500 h-12 flex items-center px-6">
         <h2 className="text-base font-bold">
@@ -142,11 +141,27 @@ const PurchaseOrderList = () => {
               />
             </div>
 
+            {/* Today Button */}
+            <div>
+               <label className="block font-semibold mb-1">Today</label>
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date().toISOString().split("T")[0];
+                  setFromDate(today);
+                  setToDate(today);
+                }}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              >
+                Today
+              </button>
+            </div>
+
             {/* Clear Filters */}
             <div className="md:col-span-3">
               <button
                 onClick={clearFilters}
-                className="w-full bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"
+                className="w-full bg-[#0F213D] text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"
               >
                 Clear Filters
               </button>
@@ -195,15 +210,13 @@ const PurchaseOrderList = () => {
               totalAP,
               fromDate,
               toDate
-            })()}  // <-- notice the extra () to call it
-
-            className="w-full bg-blue-500 text-white rounded-lg px-4 py-2 mt-4 hover:bg-blue-600 flex items-center justify-center"
+            })()}
+            className="w-full bg-[#0F213D] text-white rounded-lg px-4 py-2 mt-4 hover:bg-[#214277] flex items-center justify-center"
           >
             <MdPrint className="mr-2" /> Print Invoice
           </button>
         </div>
       </div>
-
 
       {/* Purchase Order Table */}
       <div className="overflow-x-auto mt-10">

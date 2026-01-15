@@ -140,7 +140,7 @@ const PurchaseOrder = () => {
   };
 
   return (
-    <div className="mx-auto p-6">
+    <div className="mx-auto p-2">
       {/* Top Bar */}
       <div className="bg-white text-gray-500 h-12 flex items-center px-6">
         <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
@@ -293,7 +293,7 @@ const PurchaseOrder = () => {
         <button
           onClick={handleSubmit}
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded"
+        className="w-1/2 mx-auto justify-center items-center flex bg-[#0F213D] hover:bg-[#183461] text-blue-400 font-semibold p-3 rounded"
         >
           {isLoading ? "Submitting..." : "Submit Purchase Order"}
         </button>

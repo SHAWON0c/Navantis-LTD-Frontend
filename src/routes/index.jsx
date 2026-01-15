@@ -6,7 +6,6 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Dashboard from "../pages/Dashboard";
 import Login from "../pages/auth/login";
 
-import WarehouseRequest from "../pages/WarehouseRequest";
 import Register from "../pages/auth/Register";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import UserDashboard from "../pages/dashboard/UserDashboard";
@@ -15,6 +14,8 @@ import ProtectedRoute from "../provider/PrivateRoute";
 import PurchaseOrder from "../pages/HQ/Admin/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/PurchaseOrderList";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
+import ProfilePage from "../pages/profile/ProfilePage";
+import WarehouseRequest from "../pages/WarehouseRequest";
 
 
 // ✅ FIXED PATHS
@@ -51,10 +52,12 @@ export default function AppRoutes() {
 
         {/* Warehouse */}
 
-        <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
+        <Route path="/admin/warehouse-request" element={<WarehouseRequest/>} />
 
 
          <Route path="/warehouse/receive" element={<WarehouseAddProduct />} />
+
+        <Route path="/profile" element={<ProfilePage />} /> 
 
       </Route>
 

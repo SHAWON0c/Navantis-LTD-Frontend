@@ -64,5 +64,142 @@
       { "label": "Invoice & Payment", "path": "/depot/invoice-payment", "icon": "FileText" },
       { "label": "Delivery Report", "path": "/depot/delivery-report", "icon": "FileBarChart" }
     ]
-  }
+  },
+
+  
+  {
+    "key": "institute",
+    "label": "Institute",
+    "icon": "Building2",
+    "children": [
+      { "label": "Add New Institute", "path": "/institute/add", "icon": "FileText" },
+      { "label": "Institute List", "path": "/institute/list", "icon": "ClipboardList" },
+      { "label": "Place Order", "path": "/institute/place-order", "icon": "ShoppingCart" }
+    ]
+  },
+
+  {
+    "key": "doctorRequisition",
+    "label": "Doctor Requisition",
+    "icon": "Stethoscope",
+    "children": [
+      { "label": "Add New Doctor", "path": "/doctor-requisition/add-doctor", "icon": "UserCheck" },
+      { "label": "Place Doctor Order", "path": "/doctor-requisition/place-order", "icon": "ShoppingCart" }
+    ]
+  },
+
+  {
+    "key": "reports",
+    "label": "Reports",
+    "icon": "FileBarChart",
+    "children": [
+      { "label": "Net Sales", "path": "/reports/net-sales", "icon": "FileText" },
+      { "label": "Products Summary", "path": "/reports/products-summary", "icon": "ClipboardList" },
+      { "label": "Product Summary (All)", "path": "/reports/product-summary-all", "icon": "ClipboardList" },
+      { "label": "Product Summary (Customer)", "path": "/reports/product-summary-customer", "icon": "ClipboardList" },
+      { "label": "Sales Returns", "path": "/reports/sales-returns", "icon": "FileText" },
+      { "label": "Product Sales Returns", "path": "/reports/product-sales-returns", "icon": "FileText" },
+      { "label": "Expired Products", "path": "/reports/expired", "icon": "FileText" },
+      { "label": "Customer Invoice & Sales", "path": "/reports/customer-invoice-sales", "icon": "FileText" }
+    ]
+  },
+
+  {
+    "key": "achievement",
+    "label": "Achievement",
+    "icon": "Trophy",
+    "children": [
+      { "label": "Target vs Sales Achievement", "path": "/achievement/target-sales", "icon": "FileBarChart" },
+      { "label": "Achievement & Growth", "path": "/achievement/growth", "icon": "FileBarChart" },
+      { "label": "Product Wise Target vs Sales", "path": "/achievement/product-wise", "icon": "FileBarChart" },
+      { "label": "All Products Target vs Sales", "path": "/achievement/all-products", "icon": "FileBarChart" }
+    ]
+  },
+
+  {
+    "key": "doctor",
+    "label": "Doctor",
+    "icon": "Stethoscope",
+    "children": [
+      { "label": "Add New Doctor", "path": "/doctor/add", "icon": "UserCheck" },
+      { "label": "Doctor List", "path": "/doctor/list", "icon": "ClipboardList" }
+    ]
+  },
+
+  {
+    "key": "orders",
+    "label": "Orders",
+    "icon": "ShoppingCart",
+    "children": [
+      { "label": "Place Order", "path": "/orders/place", "icon": "FileText" },
+      { "label": "My Orders", "path": "/orders/my-orders", "icon": "ClipboardList" }
+    ]
+  },
+
+  {
+    "key": "customer",
+    "label": "Customer",
+    "icon": "UserCheck",
+    "children": [
+      { "label": "Add New Customer", "path": "/customer/add", "icon": "FileText" },
+      { "label": "Customer List", "path": "/customer/list", "icon": "ClipboardList" }
+    ]
+  },
+
+  {
+    "key": "salesReport",
+    "label": "Sales Report",
+    "icon": "FileBarChart",
+    "children": [
+      { "label": "Product Summary", "path": "/sales-report/product-summary", "icon": "ClipboardList" },
+      { "label": "Due Payment", "path": "/sales-report/due-payment", "icon": "FileText" },
+      { "label": "Target vs Sales", "path": "/sales-report/target-sales", "icon": "FileBarChart" },
+      { "label": "Achievement & Growth", "path": "/sales-report/achievement-growth", "icon": "FileBarChart" },
+      { "label": "Product Wise Target vs Sales", "path": "/sales-report/product-wise-target", "icon": "FileBarChart" }
+    ]
+  },
+{
+  "key": "hr",
+  "label": "HR",
+  "icon": "Users",
+  "children": [
+    { "label": "Daily Attendance", "path": "/hr/daily-attendance", "icon": "CalendarCheck" },
+    { "label": "Leave Balance", "path": "/hr/leave-balance", "icon": "ClipboardCheck" },
+    { "label": "Leave Application & Approval", "path": "/hr/leave-application", "icon": "ClipboardList" },
+    { "label": "Salary Structure", "path": "/hr/salary-structure", "icon": "FileText" },
+    { "label": "TA/DA Management", "path": "/hr/ta-da", "icon": "Truck" },
+    { "label": "Festival Bonus Management", "path": "/hr/festival-bonus", "icon": "Gift" },
+    { "label": "PF Management", "path": "/hr/pf-management", "icon": "DollarSign" },
+    { "label": "Monthly Payslip Generation", "path": "/hr/monthly-payslip", "icon": "FileText" },
+    { "label": "Final Settlement & Payment", "path": "/hr/final-settlement", "icon": "FileText" },
+    { "label": "Yearly Assessment", "path": "/hr/yearly-assessment", "icon": "Trophy" },
+    { "label": "User Asset Management", "path": "/hr/user-assets", "icon": "Laptop" },
+    { "label": "Office Gate Pass System", "path": "/hr/gate-pass", "icon": "Lock" },
+    { "label": "Vendor & Service Provider Database", "path": "/hr/vendor-database", "icon": "List" },
+    { "label": "Assets List (HQ & Depot)", "path": "/hr/assets-list", "icon": "Package" },
+    { "label": "Personal Information Update", "path": "/hr/personal-info", "icon": "UserPlus" },
+    { "label": "Leave & Attendance View", "path": "/hr/leave-attendance-view", "icon": "ClipboardList" },
+    { "label": "Payslip & Tax Certificate", "path": "/hr/payslip-tax", "icon": "Receipt" },
+    { "label": "HR Notice Board", "path": "/hr/notice-board", "icon": "AlertTriangle" },
+    { "label": "Letters & Employment Docs", "path": "/hr/employment-docs", "icon": "FileText" }
+  ]
+},
+{
+  "key": "accountant",
+  "label": "Accountant",
+  "icon": "Landmark",
+  "children": [
+    { "label": "Daily Collections", "path": "/accountant/daily-collections", "icon": "FileText" },
+    { "label": "Due Payments", "path": "/accountant/due-payments", "icon": "FileText" },
+    { "label": "MPO Statement", "path": "/accountant/mpo-statement", "icon": "FileText" },
+    { "label": "Invoice Sales Summary", "path": "/accountant/invoice-sales-summary", "icon": "FileText" },
+    { "label": "Expense Tracking", "path": "/accountant/expense-tracking", "icon": "DollarSign" },
+    { "label": "Payment Approval", "path": "/accountant/payment-approval", "icon": "ClipboardCheck" },
+    { "label": "Reports & Analysis", "path": "/accountant/reports", "icon": "BarChart3" }
+  ]
+}
+
+
+
+
 ]
