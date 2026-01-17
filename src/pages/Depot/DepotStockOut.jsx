@@ -69,7 +69,9 @@ const DepotStockOut = () => {
     <div className="mx-auto p-2">
 
       {/* Page Title */}
-
+<div>
+  <h1> stock out </h1>
+</div>
       {/* Filters + Summary */}
     <FiltersAndSummaryPanel
         filters={filters}

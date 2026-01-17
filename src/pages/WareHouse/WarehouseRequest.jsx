@@ -1,5 +1,5 @@
 import { useGetWarehouseReceiveRequestQuery } from "../../redux/features/wareHouse/warehouseReceiveApi";
-import WarehouseRequestProductCard from "../WareHouse/WarehouseRequestProductCard";
+import WarehouseRequestProductCard from "./WarehouseRequestProductCard";
 
 
 const WarehouseRequest = () => {

@@ -1,7 +1,9 @@
-import { useGetWarehouseReceiveRequestQuery } from "../redux/features/wareHouse/warehouseReceiveApi";
-import WarehouseRequestProductCard from "./WarehouseRequestProductCard";
+import { useGetWarehouseReceiveRequestQuery } from "../../../redux/features/wareHouse/warehouseReceiveApi";
+import WarehouseRequestProductCard from "../../WareHouse/WarehouseRequestProductCard";
 
-const WarehouseRequest = () => {
+
+
+const DepotProductRequest = () => {
   const { data: whReceiveRequests, isLoading, refetch } = useGetWarehouseReceiveRequestQuery();
 
 
@@ -85,4 +87,4 @@ const WarehouseRequest = () => {
   );
 };
 
-export default WarehouseRequest;
+export default DepotProductRequest;

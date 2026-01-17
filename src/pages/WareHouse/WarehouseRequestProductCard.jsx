@@ -1,5 +1,5 @@
 import React from "react";
-import { useUpdateReceiveMutation } from "../redux/features/wareHouse/warehouseReceiveApi";
+import { useUpdateReceiveMutation } from "../../redux/features/wareHouse/warehouseReceiveApi";
 
 const WarehouseRequestProductCard = ({ idx, product, refetch }) => {
   const [updateReceive, { isLoading }] = useUpdateReceiveMutation();

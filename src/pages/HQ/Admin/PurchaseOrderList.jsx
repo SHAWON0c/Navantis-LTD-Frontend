@@ -389,42 +389,44 @@ const PurchaseOrderList = () => {
       />
 
       {/* Purchase Order Table */}
-      <div className="overflow-x-auto mt-10">
-        <table className="table-auto w-full border border-gray-300 text-left">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">Sl. No.</th>
-              <th className="px-4 py-2 border">Product Name</th>
-              <th className="px-4 py-2 border">Net Weight</th>
-              <th className="px-4 py-2 border">Category</th>
-              <th className="px-4 py-2 border">Quantity</th>
-              <th className="px-4 py-2 border">Batch</th>
-              <th className="px-4 py-2 border">Expire Date</th>
-              <th className="px-4 py-2 border">AP</th>
-              <th className="px-4 py-2 border">TP</th>
-              <th className="px-4 py-2 border">Added By</th>
-              <th className="px-4 py-2 border">Purchase Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentProducts.map((order, idx) => (
-              <tr key={order._id} className="border-b">
-                <td className="px-4 py-2 border text-center">{startIndex + idx + 1}</td>
-                <td className="px-4 py-2 border">{order.productName}</td>
-                <td className="px-4 py-2 border">{`${order.netWeight.value}${order.netWeight.unit}`}</td>
-                <td className="px-4 py-2 border">{order.category}</td>
-                <td className="px-4 py-2 border text-center">{order.productQuantity}</td>
-                <td className="px-4 py-2 border text-center">{order.batch}</td>
-                <td className="px-4 py-2 border text-center">{new Date(order.expireDate).toLocaleDateString()}</td>
-                <td className="px-4 py-2 border text-right">{order.actualPrice.toLocaleString('en-IN')}/-</td>
-                <td className="px-4 py-2 border text-right">{order.tradePrice.toLocaleString('en-IN')}/-</td>
-                <td className="px-4 py-2 border">{order.addedBy.name}</td>
-                <td className="px-4 py-2 border">{new Date(order.purchaseDate).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+<div className="overflow-x-auto mt-10">
+  <table className="table-auto w-full text-left border-collapse">
+    <thead>
+      <tr className="bg-gray-100">
+        <th className="px-4 py-2 text-center">Sl. No.</th>
+        <th className="px-4 py-2">Product Name</th>
+        <th className="px-4 py-2">Net Weight</th>
+        <th className="px-4 py-2">Category</th>
+        <th className="px-4 py-2 text-center">Quantity</th>
+        <th className="px-4 py-2 text-center">Batch</th>
+        <th className="px-4 py-2 text-center">Expire Date</th>
+        <th className="px-4 py-2 text-right">AP</th>
+        <th className="px-4 py-2 text-right">TP</th>
+        <th className="px-4 py-2">Added By</th>
+        <th className="px-4 py-2">Purchase Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentProducts.map((order, idx) => (
+        <tr key={order._id} className="border-b border-gray-200 hover:bg-gray-50">
+          <td className="px-4 py-2 text-center">{startIndex + idx + 1}</td>
+          <td className="px-4 py-2">{order.productName}</td>
+          <td className="px-4 py-2">{`${order.netWeight.value}${order.netWeight.unit}`}</td>
+          <td className="px-4 py-2">{order.category}</td>
+          <td className="px-4 py-2 text-center">{order.productQuantity}</td>
+          <td className="px-4 py-2 text-center">{order.batch}</td>
+          <td className="px-4 py-2 text-center">{new Date(order.expireDate).toLocaleDateString()}</td>
+          <td className="px-4 py-2 text-right">{order.actualPrice.toLocaleString('en-IN')}/-</td>
+          <td className="px-4 py-2 text-right">{order.tradePrice.toLocaleString('en-IN')}/-</td>
+          <td className="px-4 py-2">{order.addedBy.name}</td>
+          <td className="px-4 py-2">{new Date(order.purchaseDate).toLocaleDateString()}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+
 
       {/* Pagination */}
       {totalPages > 1 && (

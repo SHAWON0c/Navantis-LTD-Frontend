@@ -15,7 +15,7 @@ import PurchaseOrder from "../pages/HQ/Admin/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/PurchaseOrderList";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
 import ProfilePage from "../pages/profile/ProfilePage";
-import WarehouseRequest from "../pages/WarehouseRequest";
+import WarehouseRequest from "../pages/WareHouse/WarehouseRequest";
 import StockIn from "../pages/WareHouse/warehouseStockin";
 import WarehouseProductsList from "../pages/WareHouse/warehouseProductsList";
 import DepotProductsList from "../pages/Depot/DepotProductList";
@@ -23,6 +23,10 @@ import DepotReceiveRequest from "../pages/Depot/DepotReceiveRequest";
 import DepotStockIn from "../pages/Depot/DepotStockIn";
 import WarehouseStockOut from "../pages/WareHouse/warehouseStockOut";
 import DepotStockOut from "../pages/Depot/DepotStockOut";
+import WarehouseDamageRequest from "../pages/HQ/Admin/WarehouseDamageRequest";
+import DepotProductRequest from "../pages/HQ/Admin/DepotProductRequest";
+import DepotExpriedRequest from "../pages/HQ/Admin/DepotExpriedRequest";
+
 // ✅ FIXED PATHS
 
 
@@ -58,6 +62,9 @@ export default function AppRoutes() {
         {/* Warehouse */}
 
         <Route path="/admin/warehouse-request" element={<WarehouseRequest/>} />
+        <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
+        <Route path="/admin/depot-request" element={<DepotProductRequest />} />
+        <Route path="/admin/expired-request" element={<DepotExpriedRequest />} />
 
 
          <Route path="/warehouse/receive" element={<WarehouseAddProduct />} />
