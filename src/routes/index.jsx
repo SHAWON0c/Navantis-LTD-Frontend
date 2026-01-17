@@ -22,6 +22,7 @@ import DepotProductsList from "../pages/Depot/DepotProductList";
 import DepotReceiveRequest from "../pages/Depot/DepotReceiveRequest";
 import DepotStockIn from "../pages/Depot/DepotStockIn";
 import WarehouseStockOut from "../pages/WareHouse/warehouseStockOut";
+import DepotStockOut from "../pages/Depot/DepotStockOut";
 // ✅ FIXED PATHS
 
 
@@ -66,6 +67,7 @@ export default function AppRoutes() {
          <Route path="/depot/products" element={<DepotProductsList />} />  
          <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
          <Route path="/depot/stock-in" element={<DepotStockIn />} />
+         <Route path="/depot/stock-out" element={<DepotStockOut />} />
 
         <Route path="/profile" element={<ProfilePage />} /> 
 
