@@ -16,8 +16,12 @@ import PurchaseOrderList from "../pages/HQ/Admin/PurchaseOrderList";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
 import ProfilePage from "../pages/profile/ProfilePage";
 import WarehouseRequest from "../pages/WarehouseRequest";
-
-
+import StockIn from "../pages/WareHouse/warehouseStockin";
+import WarehouseProductsList from "../pages/WareHouse/warehouseProductsList";
+import DepotProductsList from "../pages/Depot/DepotProductList";
+import DepotReceiveRequest from "../pages/Depot/DepotReceiveRequest";
+import DepotStockIn from "../pages/Depot/DepotStockIn";
+import WarehouseStockOut from "../pages/WareHouse/warehouseStockOut";
 // ✅ FIXED PATHS
 
 
@@ -56,6 +60,12 @@ export default function AppRoutes() {
 
 
          <Route path="/warehouse/receive" element={<WarehouseAddProduct />} />
+         <Route path="/warehouse/stock-in" element={<StockIn />} />
+         <Route path="/warehouse/stock-out" element={<WarehouseStockOut />} />
+         <Route path="/warehouse/products" element={<WarehouseProductsList />} />
+         <Route path="/depot/products" element={<DepotProductsList />} />  
+         <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
+         <Route path="/depot/stock-in" element={<DepotStockIn />} />
 
         <Route path="/profile" element={<ProfilePage />} /> 
 

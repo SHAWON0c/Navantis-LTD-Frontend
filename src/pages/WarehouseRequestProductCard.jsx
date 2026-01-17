@@ -1,6 +1,31 @@
 import React from "react";
+import { useUpdateReceiveMutation } from "../redux/features/wareHouse/warehouseReceiveApi";
 
-const WarehouseRequestProductCard = ({ idx, product }) => {
+const WarehouseRequestProductCard = ({ idx, product, refetch }) => {
+  const [updateReceive, { isLoading }] = useUpdateReceiveMutation();
+
+  const handleUpdateStatus = async (status) => {
+    try {
+      const payload = {
+        purchaseOrderId: product.purchaseOrderId,
+        data: {
+          status,
+          remarks: status === "approved" ? "Verified and updated" : "Denied by user"
+        }
+      };
+
+      await updateReceive(payload).unwrap();
+
+      alert(`${product.productName} ${status} successfully!`);
+      
+      // Refetch parent list if needed
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert(`Failed to update status for ${product.productName}`);
+    }
+  };
+
   return (
     <tr className="text-gray-700">
       <td className="text-center">{idx}</td>
@@ -21,7 +46,8 @@ const WarehouseRequestProductCard = ({ idx, product }) => {
       <td className="text-center">
         <button
           className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-          onClick={() => alert("Approve clicked for " + product.productName)}
+          onClick={() => handleUpdateStatus("approved")}
+          disabled={isLoading}
         >
           Approve
         </button>
@@ -29,7 +55,8 @@ const WarehouseRequestProductCard = ({ idx, product }) => {
       <td className="text-center">
         <button
           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-          onClick={() => alert("Deny clicked for " + product.productName)}
+          onClick={() => handleUpdateStatus("denied")}
+          disabled={isLoading}
         >
           Deny
         </button>
