@@ -73,17 +73,33 @@ const PurchaseOrder = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+
   // Handle product select
+  // const handleProductSelect = (prod) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     productId: prod._id,
+  //     productName: prod.productName,
+  //     productShortCode: prod.productShortCode,
+  //     packSize: prod.packSize,
+  //     category: prod.category, // ✅ Add category here
+  //   }));
+  //   setProductOpen(false);
+  // };
+
   const handleProductSelect = (prod) => {
-    setFormData((prev) => ({
-      ...prev,
-      productId: prod._id,
-      productName: prod.productName,
-      productShortCode: prod.productShortCode,
-      packSize: prod.packSize,
-    }));
-    setProductOpen(false);
-  };
+  setFormData((prev) => ({
+    ...prev,
+    productId: prod._id || "",
+    productName: prod.productName || "",
+    productShortCode: prod.productShortCode || "",
+    packSize: prod.packSize || "",
+    category: prod.category || "", // ✅ if no category, set empty string
+  }));
+  setProductOpen(false);
+};
+
+
 
   // Parse packSize into numeric value + unit
   const parsePackSize = (packSize) => {
@@ -215,8 +231,8 @@ const PurchaseOrder = () => {
                 onClick={() => selectedBrand && setProductOpen((p) => !p)}
                 disabled={!selectedBrand}
                 className={`w-full border rounded p-2 pr-8 ${selectedBrand
-                    ? "border-gray-300 cursor-pointer"
-                    : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
+                  ? "border-gray-300 cursor-pointer"
+                  : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
                   }`}
               />
               {/* Down Arrow */}
@@ -261,7 +277,14 @@ const PurchaseOrder = () => {
 
         {/* Purchase Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Category" name="category" value={formData.category} onChange={handleFormChange} />
+          <Input
+            label="Category"
+            name="category"
+            value={formData.category}
+            readOnly
+            className="bg-gray-100 cursor-not-allowed"
+          />
+
           <Input label="Quantity" name="productQuantity" value={formData.productQuantity} onChange={handleFormChange} />
           <Input label="Batch Number" name="batchNumber" value={formData.batchNumber} onChange={handleFormChange} />
           <Input label="Expire Date" type="date" name="expireDate" value={formData.expireDate} onChange={handleFormChange} />
@@ -293,7 +316,7 @@ const PurchaseOrder = () => {
         <button
           onClick={handleSubmit}
           disabled={isLoading}
-        className="w-1/2 mx-auto justify-center items-center flex bg-[#0F213D] hover:bg-[#183461] text-blue-400 font-semibold p-3 rounded"
+          className="w-1/2 mx-auto justify-center items-center flex bg-[#0F213D] hover:bg-[#183461] text-blue-400 font-semibold p-3 rounded"
         >
           {isLoading ? "Submitting..." : "Submit Purchase Order"}
         </button>
