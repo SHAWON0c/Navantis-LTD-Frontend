@@ -185,121 +185,143 @@ const WarehouseAddProduct = () => {
 
       <div className="mx-auto bg-white rounded-lg shadow-md p-10 space-y-4 mt-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Date Dropdown */}
-          <div ref={dateRef} className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
-            <div
-              onClick={() => setDateOpen((p) => !p)}
-              className="w-full border border-gray-300 rounded p-2 flex justify-between items-center cursor-pointer"
-            >
-              <span>{selectedDate || "-- Select a date --"}</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${dateOpen ? "rotate-180" : ""}`} />
-            </div>
-            {dateOpen && (
-              <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-40 overflow-y-auto mt-1">
-                {uniqueDates.map((date) => (
-                  <li
-                    key={date}
-                    className="flex justify-between p-2 hover:bg-blue-100 cursor-pointer"
-                    onClick={() => {
-                      setSelectedDate(date);
-                      setDateOpen(false);
-                      setProductOpen(false);
-                    }}
-                  >
-                    <span>{date}</span>
-                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{dateCounts[date]}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
 
-          {/* Product Dropdown */}
-          {selectedDate && productsForDate.length > 0 && (
-            <div ref={productRef} className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Select Product</label>
+          {/* First row: Date + Product Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Select Date */}
+            <div ref={dateRef} className="relative">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
               <div
-                onClick={() => setProductOpen((p) => !p)}
+                onClick={() => setDateOpen((p) => !p)}
                 className="w-full border border-gray-300 rounded p-2 flex justify-between items-center cursor-pointer"
               >
-                <span>{selectedProduct?.productName || "-- Select Product --"}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${productOpen ? "rotate-180" : ""}`} />
+                <span>{selectedDate || "-- Select a date --"}</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${dateOpen ? "rotate-180" : ""}`} />
               </div>
-              {productOpen && (
+              {dateOpen && (
                 <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-40 overflow-y-auto mt-1">
-                  {productsForDate.map((prod) => (
+                  {uniqueDates.map((date) => (
                     <li
-                      key={prod._id}
+                      key={date}
                       className="flex justify-between p-2 hover:bg-blue-100 cursor-pointer"
-                      onClick={() => handleProductSelect(prod)}
+                      onClick={() => {
+                        setSelectedDate(date);
+                        setDateOpen(false);
+                        setProductOpen(false);
+                      }}
                     >
-                      <span>{prod.productName}</span>
+                      <span>{date}</span>
+                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{dateCounts[date]}</span>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-          )}
 
-          {/* Form Fields */}
-          <Input label="Product Name" name="productName" value={formData.productName} onChange={handleChange} required />
-          <Input label="Product Short Code" name="productShortCode" value={formData.productShortCode} readOnly className="bg-gray-100 cursor-not-allowed" required />
-          <Input label="Batch Number" name="batchNumber" value={formData.batchNumber} onChange={handleChange} required />
-          <Input label="Expire Date" name="expireDate" value={formData.expireDate} onChange={handleChange} required />
-
-          {/* Number inputs without spinner and scroll */}
-          <Input
-            label="Box Quantity"
-            type="number"
-            name="boxQuantity"
-            value={formData.boxQuantity}
-            onChange={handleChange}
-            onWheel={preventScrollAndArrow}
-            onKeyDown={preventScrollAndArrow}
-            required
-          />
-          <Input
-            label="Quantity (with box)"
-            type="number"
-            name="quantityWithBox"
-            value={formData.quantityWithBox}
-            onChange={handleChange}
-            onWheel={preventScrollAndArrow}
-            onKeyDown={preventScrollAndArrow}
-            required
-          />
-          <Input
-            label="Quantity (without box)"
-            type="number"
-            name="quantityWithoutBox"
-            value={formData.quantityWithoutBox}
-            onChange={handleChange}
-            onWheel={preventScrollAndArrow}
-            onKeyDown={preventScrollAndArrow}
-            required
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
-            <textarea
-              name="remarks"
-              value={formData.remarks}
+            {/* Product Name */}
+            <Input
+              label="Product Name"
+              name="productName"
+              value={formData.productName}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded p-2"
               required
             />
           </div>
 
+          {/* Remaining fields in 2 columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Added By Name" name="addedByName" value={formData.addedByName} readOnly className="bg-gray-100 cursor-not-allowed" />
-            <Input label="Added By Email" name="addedByEmail" value={formData.addedByEmail} readOnly className="bg-gray-100 cursor-not-allowed" />
+            <Input
+              label="Product Short Code"
+              name="productShortCode"
+              value={formData.productShortCode}
+              readOnly
+              className="bg-gray-100 cursor-not-allowed"
+              required
+            />
+            <Input
+              label="Batch Number"
+              name="batchNumber"
+              value={formData.batchNumber}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              label="Expire Date"
+              name="expireDate"
+              value={formData.expireDate}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              label="Box Quantity"
+              type="number"
+              name="boxQuantity"
+              value={formData.boxQuantity}
+              onChange={handleChange}
+              onWheel={preventScrollAndArrow}
+              onKeyDown={preventScrollAndArrow}
+              required
+            />
+            <Input
+              label="Quantity (with box)"
+              type="number"
+              name="quantityWithBox"
+              value={formData.quantityWithBox}
+              onChange={handleChange}
+              onWheel={preventScrollAndArrow}
+              onKeyDown={preventScrollAndArrow}
+              required
+            />
+            <Input
+              label="Quantity (without box)"
+              type="number"
+              name="quantityWithoutBox"
+              value={formData.quantityWithoutBox}
+              onChange={handleChange}
+              onWheel={preventScrollAndArrow}
+              onKeyDown={preventScrollAndArrow}
+              required
+            />
+
+            {/* Remarks full width */}
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+              <textarea
+                name="remarks"
+                value={formData.remarks}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded p-2"
+                required
+              />
+            </div>
+
+            {/* Added By fields */}
+            <Input
+              label="Added By Name"
+              name="addedByName"
+              value={formData.addedByName}
+              readOnly
+              className="bg-gray-100 cursor-not-allowed"
+            />
+            <Input
+              label="Added By Email"
+              name="addedByEmail"
+              value={formData.addedByEmail}
+              readOnly
+              className="bg-gray-100 cursor-not-allowed"
+            />
           </div>
 
-          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded"
+          >
             Submit Warehouse Product
           </button>
         </form>
+
+
+
       </div>
     </div>
   );

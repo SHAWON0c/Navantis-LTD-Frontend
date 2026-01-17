@@ -271,9 +271,10 @@ const StockIn = () => {
         {/* Right side: Notification ticker (70% width) */}
         <div className="overflow-hidden w-[80%] h-full relative flex items-center">
           <div className="absolute whitespace-nowrap animate-slide text-red-600 font-semibold">
-            🚨 New Notification: Stock for Product XYZ has reached critical level! Please take action immediately. ⚠️
-            🚨 New Notification: server maintaince update will be at 5 .
+            🚨 নতুন নোটিফিকেশন: প্রোডাক্ট XYZ-এর স্টক সংকটের পর্যায়ে পৌঁছেছে! অনুগ্রহ করে দ্রুত ব্যবস্থা নিন। ⚠️
+            🚨 নতুন নোটিফিকেশন: সার্ভার রক্ষণাবেক্ষণ আপডেট ৫ টায় শুরু হবে।
           </div>
+
         </div>
       </div>
 
