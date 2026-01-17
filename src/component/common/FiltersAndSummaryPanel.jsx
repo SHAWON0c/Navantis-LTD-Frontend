@@ -19,7 +19,7 @@ const FiltersAndSummaryPanel = ({
   return (
     <div
       id={id}
-      className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-4"
+      className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-4 mb-10"
     >
       {/* ================= FILTERS ================= */}
       <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
