@@ -74,7 +74,7 @@ export const depotStockAPI = baseAPI.injectEndpoints({
     // 📑 Sent Product Requests by Status
     getSentProductRequestsByStatus: builder.query({
       query: (status) => ({
-        url: `/depot/send-product-request/${status}`,
+        url: `/depotRequests/${status}`,
         method: "GET",
       }),
     }),
@@ -91,7 +91,7 @@ export const depotStockAPI = baseAPI.injectEndpoints({
     // ✅ Update Send Product Request Status
     updateSendProductRequestStatus: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/depot/send-product-request/${id}`,
+        url: `/depotRequests/${id}/status`,
         method: "PATCH",
         body: payload, // { status, approvedQty? }
       }),
