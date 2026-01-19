@@ -5,12 +5,12 @@ import { baseAPI } from "../../services/baseApi";
 export const depotStockAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
 
-    // 📦 Depot Stock LIST
-    getDepotStockList: builder.query({
+    // 📦 Depot Stock IN LIST
+    getDepotStockInList: builder.query({
       query: (params) => ({
-        url: "/depot/stock",
+        url: "/depot/stock-in",
         method: "GET",
-        params, // optional: pagination, search, filters
+        params,
       }),
     }),
 
@@ -19,34 +19,81 @@ export const depotStockAPI = baseAPI.injectEndpoints({
       query: (params) => ({
         url: "/depot/products",
         method: "GET",
-        params, // optional: search, category, stock filter
+        params,
       }),
     }),
 
-    // ⬇️ Depot Stock OUT (Request / Return / Expire)
+    // 📤 Depot Stock OUT LIST
+    getDepotStockOutList: builder.query({
+      query: (params) => ({
+        url: "/depot/stockout",
+        method: "GET",
+        params,
+      }),
+    }),
+
+    // ⬇️ Depot Stock OUT (Create)
     depotStockOut: builder.mutation({
       query: (payload) => ({
-        url: "/depot/stock-out",
+        url: "/depot/stockout",
         method: "POST",
         body: payload,
       }),
     }),
 
-    // 🔄 Optional: Depot Stock Return
-    depotStockReturn: builder.mutation({
+    // 📑 Depot Requests by Status
+    getDepotRequestsByStatus: builder.query({
+      query: (status) => ({
+        url: `/depot/requests/${status}`,
+        method: "GET",
+      }),
+    }),
+
+    // ✅ Update Depot Request Status
+    updateDepotRequestStatus: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/depot/requests/${id}`,
+        method: "PATCH",
+        body: payload,
+      }),
+    }),
+
+    // =====================================================
+    // 📦 SEND PRODUCT REQUEST APIs (DEPOT → WAREHOUSE)
+    // =====================================================
+
+    // 📤 Send Product Request (Create)
+    sendProductRequest: builder.mutation({
       query: (payload) => ({
-        url: "/depot/stock-return",
+        url: "/depotRequests",
         method: "POST",
         body: payload,
       }),
     }),
 
-    // ⏰ Optional: Expire Return
-    depotExpireReturn: builder.mutation({
-      query: (payload) => ({
-        url: "/depot/expire-return",
-        method: "POST",
-        body: payload,
+    // 📑 Sent Product Requests by Status
+    getSentProductRequestsByStatus: builder.query({
+      query: (status) => ({
+        url: `/depot/send-product-request/${status}`,
+        method: "GET",
+      }),
+    }),
+
+    // 📑 All Sent Product Requests (filterable)
+    getSentProductRequestList: builder.query({
+      query: (params) => ({
+        url: "/depot/send-product-request",
+        method: "GET",
+        params, // status, pagination, date range
+      }),
+    }),
+
+    // ✅ Update Send Product Request Status
+    updateSendProductRequestStatus: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `/depot/send-product-request/${id}`,
+        method: "PATCH",
+        body: payload, // { status, approvedQty? }
       }),
     }),
 
@@ -54,10 +101,22 @@ export const depotStockAPI = baseAPI.injectEndpoints({
   overrideExisting: false,
 });
 
+
+
 export const {
-  useGetDepotStockListQuery,
+  // 📦 Depot stock
+  useGetDepotStockInListQuery,
   useGetDepotProductListQuery,
+  useGetDepotStockOutListQuery,
   useDepotStockOutMutation,
-  useDepotStockReturnMutation,
-  useDepotExpireReturnMutation,
+
+  // 📑 Depot request
+  useGetDepotRequestsByStatusQuery,
+  useUpdateDepotRequestStatusMutation,
+
+  // 📦 Send product request (Depot → Warehouse)
+  useSendProductRequestMutation,
+  useGetSentProductRequestsByStatusQuery,
+  useGetSentProductRequestListQuery,
+  useUpdateSendProductRequestStatusMutation,
 } = depotStockAPI;

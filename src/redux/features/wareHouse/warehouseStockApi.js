@@ -5,12 +5,12 @@ import { baseAPI } from "../../services/baseApi";
 export const warehouseStockAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
 
-    // 📦 Warehouse Stock LIST
+    // 📦 Warehouse Stock IN LIST
     getWarehouseStockList: builder.query({
       query: (params) => ({
         url: "/warehouse/stock-in",
         method: "GET",
-        params, // optional: pagination, search, filters
+        params, // pagination, search, filters
       }),
     }),
 
@@ -19,14 +19,23 @@ export const warehouseStockAPI = baseAPI.injectEndpoints({
       query: (params) => ({
         url: "/warehouse/products",
         method: "GET",
-        params, // optional: search, category, stock filter
+        params, // search, category, stock filter
       }),
     }),
 
-    // ⬇️ Warehouse Stock OUT
+    // 📤 Warehouse Stock OUT LIST ✅
+    getWarehouseStockOutList: builder.query({
+      query: (params) => ({
+        url: "/warehouse/stockout",
+        method: "GET",
+        params, // pagination, date range, search
+      }),
+    }),
+
+    // ⬇️ Warehouse Stock OUT (Create)
     warehouseStockOut: builder.mutation({
       query: (payload) => ({
-        url: "/warehouse/stock-out",
+        url: "/warehouse/stockout",
         method: "POST",
         body: payload,
       }),
@@ -37,8 +46,8 @@ export const warehouseStockAPI = baseAPI.injectEndpoints({
 });
 
 export const {
-  useWarehouseStockInMutation,
   useGetWarehouseStockListQuery,
-  useGetWarehouseProductListQuery, // ✅ new hook
+  useGetWarehouseProductListQuery,
+  useGetWarehouseStockOutListQuery, // ✅ export hook
   useWarehouseStockOutMutation,
 } = warehouseStockAPI;

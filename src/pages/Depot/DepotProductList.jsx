@@ -1,203 +1,413 @@
+// import { useState } from "react";
+// import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
+// import { ImSearch } from 'react-icons/im';
+// import { useGetWarehouseProductListQuery } from "../../redux/features/wareHouse/warehouseStockApi";
+// import SummaryPanel from "../../component/common/SummaryPanel";
+// import WarehouseProductCard from "../../component/common/WarehouseProductCard";
+// import DepotProductSummaryPanel from "../../component/common/DepotProductSummaryPanel";
+
+// const DepotProductsList = () => {
+//     // --- API Data ---
+//     const { data, isLoading, isError } = useGetWarehouseProductListQuery();
+//     const whProducts = data?.data || [];
+
+//     // --- Pagination & Filters ---
+//     const [currentPage, setCurrentPage] = useState(1);
+//     const [productsPerPage, setProductsPerPage] = useState(5);
+//     const [searchTerm, setSearchTerm] = useState('');
+
+//     // --- Filtering & Sorting ---
+//     const filteredProducts = whProducts
+//         .filter(product =>
+//             product.productName?.toLowerCase().includes(searchTerm.toLowerCase())
+//         )
+//         .sort((a, b) => a.productName.localeCompare(b.productName));
+
+//     const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+//     const startIndex = (currentPage - 1) * productsPerPage;
+//     const endIndex = Math.min(startIndex + productsPerPage, filteredProducts.length);
+//     const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+//     // --- Totals for Summary ---
+//     const totalUnit = filteredProducts.reduce((sum, p) => sum + Number(p.totalQuantity), 0);
+//     const totalTradePrice = filteredProducts.reduce((sum, p) => sum + (p.tradePrice || 0) * p.totalQuantity, 0);
+
+//     // --- Pagination Handlers ---
+//     const changePage = (page) => setCurrentPage(page);
+//     const handleProductsPerPageChange = (e) => {
+//         setProductsPerPage(Number(e.target.value));
+//         setCurrentPage(1);
+//     };
+//     const handleSearch = (e) => {
+//         setSearchTerm(e.target.value);
+//         setCurrentPage(1);
+//     };
+
+//     // --- Print Handler ---
+//     const handlePrint = () => {
+//         CurrentWarehouseStockInvoice({
+//             invoiceWithAP: 0,
+//             totalUnit,
+//             totalActualPrice: 0,
+//             totalTradePrice,
+//             filteredProducts
+//         });
+//     };
+
+//     return (
+//         <>
+//             <div className="bg-white pb-1">
+//                 <div>
+//                     <h1 className="px-6 py-3 font-bold">Warehouse products list</h1>
+//                     <hr className='text-center border border-gray-500 mb-5' />
+//                 </div>
+
+//                 {/* Summary */}
+//                 <div className="m-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
+//                     <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Summary</p>
+
+//                     <DepotProductSummaryPanel
+//                         totals={{
+//                             totalUniqueProducts: filteredProducts.length,
+//                             totalUnit,
+//                             totalTP: totalTradePrice
+//                         }}
+//                         onPrint={handlePrint}
+//                     />
+//                 </div>
+
+//                 {/* Controls */}
+//                 <div className="px-6 pb-6">
+//                     <div className="mb-5 flex flex-col-reverse md:flex-row justify-center md:justify-between items-center">
+//                         <div className="mt-5 md:mt-0">
+//                             <label htmlFor="productsPerPage">Show</label>
+//                             <select
+//                                 id="productsPerPage"
+//                                 value={productsPerPage}
+//                                 onChange={handleProductsPerPageChange}
+//                                 className="border border-gray-500 rounded p-1 pointer-cursor mx-2"
+//                             >
+//                                 <option value={5}>5</option>
+//                                 <option value={10}>10</option>
+//                                 <option value={15}>15</option>
+//                                 <option value={20}>20</option>
+//                                 <option value={50}>50</option>
+//                             </select>
+//                             <label htmlFor="productsPerPage">products per page</label>
+//                         </div>
+
+//                         {/* Search Input */}
+//                         <div className="flex justify-center rounded-l-lg group">
+//                             <div className='flex justify-center items-center border border-gray-500 border-r-0 p-3 rounded-l-full text-black font-extrabold'>
+//                                 <ImSearch />
+//                             </div>
+//                             <input
+//                                 type="text"
+//                                 placeholder="Search products"
+//                                 value={searchTerm}
+//                                 onChange={handleSearch}
+//                                 className="border border-gray-500 border-l-0 px-3 py-1 rounded-r-full focus:outline-none"
+//                             />
+//                         </div>
+//                     </div>
+
+//                     {/* Product Table */}
+//                     <div className="overflow-x-auto mb-3">
+//                         <table className="table">
+//                             <thead>
+//                                 <tr>
+//                                     <th className="text-center">Sl. No.</th>
+//                                     <th>Name</th>
+//                                     <th>Pack Size</th>
+//                                     <th className='text-center'>Batch</th>
+//                                     <th className='text-center'>Exp.</th>
+//                                     <th className='text-center'>Quantity</th>
+//                                     <th className='text-right'>Price/Unit</th>
+//                                     <th className='text-right'>Total Price</th>
+//                                     <th className="text-center">Action</th>
+//                                 </tr>
+//                             </thead>
+//                             <tbody>
+//                                 {currentProducts.map((product, idx) => (
+//                                     <WarehouseProductCard
+//                                         idx={startIndex + idx + 1}
+//                                         key={product._id}
+//                                         product={product}
+//                                     />
+//                                 ))}
+//                             </tbody>
+//                         </table>
+//                     </div>
+
+//                     {/* Pagination */}
+//                     {totalPages > 1 && (
+//                         <div className="flex justify-center items-center gap-1 mt-4 flex-wrap">
+//                             <button
+//                                 disabled={currentPage === 1}
+//                                 onClick={() => changePage(currentPage - 1)}
+//                                 className="disabled:opacity-50 hover:text-blue-700 transition-all"
+//                             >
+//                                 <BsArrowLeftSquareFill className='w-6 h-6' />
+//                             </button>
+
+//                             {Array.from({ length: totalPages }, (_, i) => i + 1)
+//                                 .filter(page =>
+//                                     page === 1 ||
+//                                     page === totalPages ||
+//                                     Math.abs(currentPage - page) <= 1
+//                                 )
+//                                 .reduce((acc, page, index, array) => {
+//                                     if (index > 0 && page - array[index - 1] > 1) {
+//                                         acc.push('...');
+//                                     }
+//                                     acc.push(page);
+//                                     return acc;
+//                                 }, [])
+//                                 .map((page, index) => (
+//                                     <button
+//                                         key={index}
+//                                         disabled={page === '...'}
+//                                         onClick={() => page !== '...' && changePage(page)}
+//                                         className={`
+//                                             mx-1 h-6 flex items-center justify-center text-xs font-bold border
+//                                             ${currentPage === page
+//                                                 ? 'bg-[#3B82F6] text-white border-green-900'
+//                                                 : 'border-gray-400 hover:bg-blue-100'}
+//                                             ${page === '...'
+//                                                 ? 'cursor-default text-gray-500 border-none'
+//                                                 : ''
+//                                             }
+//                                             ${String(page).length === 1 ? 'w-6 px-2 rounded-md' : 'px-2 rounded-md'}
+//                                         `}
+//                                     >
+//                                         {page}
+//                                     </button>
+//                                 ))
+//                             }
+
+//                             <button
+//                                 disabled={currentPage === totalPages}
+//                                 onClick={() => changePage(currentPage + 1)}
+//                                 className="disabled:opacity-50 hover:text-blue-700 transition-all"
+//                             >
+//                                 <BsArrowRightSquareFill className='w-6 h-6' />
+//                             </button>
+//                         </div>
+//                     )}
+//                 </div>
+//             </div>
+//         </>
+//     );
+// };
+
+// export default DepotProductsList;
+
+
 import { useState } from "react";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
-import { ImSearch } from 'react-icons/im';
+import { ImSearch } from "react-icons/im";
 import { useGetWarehouseProductListQuery } from "../../redux/features/wareHouse/warehouseStockApi";
-import SummaryPanel from "../../component/common/SummaryPanel";
 import WarehouseProductCard from "../../component/common/WarehouseProductCard";
 import DepotProductSummaryPanel from "../../component/common/DepotProductSummaryPanel";
+import DepotProductRequestModal from "../../component/modals/DepotProductRequestModal";
+
 
 const DepotProductsList = () => {
-    // --- API Data ---
-    const { data, isLoading, isError } = useGetWarehouseProductListQuery();
-    const whProducts = data?.data || [];
+  // --- API Data ---
+  const { data, isLoading, isError } = useGetWarehouseProductListQuery();
+  const whProducts = data?.data || [];
 
-    // --- Pagination & Filters ---
-    const [currentPage, setCurrentPage] = useState(1);
-    const [productsPerPage, setProductsPerPage] = useState(5);
-    const [searchTerm, setSearchTerm] = useState('');
+  // --- Pagination & Filters ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage, setProductsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    // --- Filtering & Sorting ---
-    const filteredProducts = whProducts
-        .filter(product =>
-            product.productName?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .sort((a, b) => a.productName.localeCompare(b.productName));
+  // --- Modal State ---
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
 
-    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = Math.min(startIndex + productsPerPage, filteredProducts.length);
-    const currentProducts = filteredProducts.slice(startIndex, endIndex);
+  // --- Filtering & Sorting ---
+  const filteredProducts = whProducts
+    .filter((product) =>
+      product.productName?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => a.productName.localeCompare(b.productName));
 
-    // --- Totals for Summary ---
-    const totalUnit = filteredProducts.reduce((sum, p) => sum + Number(p.totalQuantity), 0);
-    const totalTradePrice = filteredProducts.reduce((sum, p) => sum + (p.tradePrice || 0) * p.totalQuantity, 0);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = Math.min(
+    startIndex + productsPerPage,
+    filteredProducts.length
+  );
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
-    // --- Pagination Handlers ---
-    const changePage = (page) => setCurrentPage(page);
-    const handleProductsPerPageChange = (e) => {
-        setProductsPerPage(Number(e.target.value));
-        setCurrentPage(1);
-    };
-    const handleSearch = (e) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1);
-    };
+  // --- Totals ---
+  const totalUnit = filteredProducts.reduce(
+    (sum, p) => sum + Number(p.totalQuantity),
+    0
+  );
 
-    // --- Print Handler ---
-    const handlePrint = () => {
-        CurrentWarehouseStockInvoice({
-            invoiceWithAP: 0,
-            totalUnit,
-            totalActualPrice: 0,
-            totalTradePrice,
-            filteredProducts
-        });
-    };
+  const totalTradePrice = filteredProducts.reduce(
+    (sum, p) => sum + (p.tradePrice || 0) * p.totalQuantity,
+    0
+  );
 
-    return (
-        <>
-            <div className="bg-white pb-1">
-                <div>
-                    <h1 className="px-6 py-3 font-bold">Warehouse products list</h1>
-                    <hr className='text-center border border-gray-500 mb-5' />
-                </div>
+  // --- Handlers ---
+  const changePage = (page) => setCurrentPage(page);
 
-                {/* Summary */}
-                <div className="m-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
-                    <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Summary</p>
+  const handleProductsPerPageChange = (e) => {
+    setProductsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
 
-                    <DepotProductSummaryPanel
-                        totals={{
-                            totalUniqueProducts: filteredProducts.length,
-                            totalUnit,
-                            totalTP: totalTradePrice
-                        }}
-                        onPrint={handlePrint}
-                    />
-                </div>
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
 
-                {/* Controls */}
-                <div className="px-6 pb-6">
-                    <div className="mb-5 flex flex-col-reverse md:flex-row justify-center md:justify-between items-center">
-                        <div className="mt-5 md:mt-0">
-                            <label htmlFor="productsPerPage">Show</label>
-                            <select
-                                id="productsPerPage"
-                                value={productsPerPage}
-                                onChange={handleProductsPerPageChange}
-                                className="border border-gray-500 rounded p-1 pointer-cursor mx-2"
-                            >
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                                <option value={50}>50</option>
-                            </select>
-                            <label htmlFor="productsPerPage">products per page</label>
-                        </div>
+  const handlePrint = () => {
+    CurrentWarehouseStockInvoice({
+      invoiceWithAP: 0,
+      totalUnit,
+      totalActualPrice: 0,
+      totalTradePrice,
+      filteredProducts,
+    });
+  };
 
-                        {/* Search Input */}
-                        <div className="flex justify-center rounded-l-lg group">
-                            <div className='flex justify-center items-center border border-gray-500 border-r-0 p-3 rounded-l-full text-black font-extrabold'>
-                                <ImSearch />
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Search products"
-                                value={searchTerm}
-                                onChange={handleSearch}
-                                className="border border-gray-500 border-l-0 px-3 py-1 rounded-r-full focus:outline-none"
-                            />
-                        </div>
-                    </div>
+  if (isLoading) return <p className="text-center py-10">Loading...</p>;
+  if (isError) return <p className="text-center py-10">Failed to load data</p>;
 
-                    {/* Product Table */}
-                    <div className="overflow-x-auto mb-3">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th className="text-center">Sl. No.</th>
-                                    <th>Name</th>
-                                    <th>Pack Size</th>
-                                    <th className='text-center'>Batch</th>
-                                    <th className='text-center'>Exp.</th>
-                                    <th className='text-center'>Quantity</th>
-                                    <th className='text-right'>Price/Unit</th>
-                                    <th className='text-right'>Total Price</th>
-                                    <th className="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentProducts.map((product, idx) => (
-                                    <WarehouseProductCard
-                                        idx={startIndex + idx + 1}
-                                        key={product._id}
-                                        product={product}
-                                    />
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+  return (
+    <>
+      <div className="bg-white pb-1">
+        <div>
+          <h1 className="px-6 py-3 font-bold">Warehouse products list</h1>
+          <hr className="text-center border border-gray-500 mb-5" />
+        </div>
 
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="flex justify-center items-center gap-1 mt-4 flex-wrap">
-                            <button
-                                disabled={currentPage === 1}
-                                onClick={() => changePage(currentPage - 1)}
-                                className="disabled:opacity-50 hover:text-blue-700 transition-all"
-                            >
-                                <BsArrowLeftSquareFill className='w-6 h-6' />
-                            </button>
+        {/* Summary */}
+        <div className="m-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
+          <p className="text-md text-gray-700 text-center mb-4 font-medium">
+            Warehouse Summary
+          </p>
 
-                            {Array.from({ length: totalPages }, (_, i) => i + 1)
-                                .filter(page =>
-                                    page === 1 ||
-                                    page === totalPages ||
-                                    Math.abs(currentPage - page) <= 1
-                                )
-                                .reduce((acc, page, index, array) => {
-                                    if (index > 0 && page - array[index - 1] > 1) {
-                                        acc.push('...');
-                                    }
-                                    acc.push(page);
-                                    return acc;
-                                }, [])
-                                .map((page, index) => (
-                                    <button
-                                        key={index}
-                                        disabled={page === '...'}
-                                        onClick={() => page !== '...' && changePage(page)}
-                                        className={`
-                                            mx-1 h-6 flex items-center justify-center text-xs font-bold border
-                                            ${currentPage === page
-                                                ? 'bg-[#3B82F6] text-white border-green-900'
-                                                : 'border-gray-400 hover:bg-blue-100'}
-                                            ${page === '...'
-                                                ? 'cursor-default text-gray-500 border-none'
-                                                : ''
-                                            }
-                                            ${String(page).length === 1 ? 'w-6 px-2 rounded-md' : 'px-2 rounded-md'}
-                                        `}
-                                    >
-                                        {page}
-                                    </button>
-                                ))
-                            }
+          <DepotProductSummaryPanel
+            totals={{
+              totalUniqueProducts: filteredProducts.length,
+              totalUnit,
+              totalTP: totalTradePrice,
+            }}
+            onRequest={() => setRequestModalOpen(true)}
+            onPrint={handlePrint}
+          />
+        </div>
 
-                            <button
-                                disabled={currentPage === totalPages}
-                                onClick={() => changePage(currentPage + 1)}
-                                className="disabled:opacity-50 hover:text-blue-700 transition-all"
-                            >
-                                <BsArrowRightSquareFill className='w-6 h-6' />
-                            </button>
-                        </div>
-                    )}
-                </div>
+        {/* Controls */}
+        <div className="px-6 pb-6">
+          <div className="mb-5 flex flex-col-reverse md:flex-row justify-center md:justify-between items-center">
+            <div className="mt-5 md:mt-0">
+              <label>Show</label>
+              <select
+                value={productsPerPage}
+                onChange={handleProductsPerPageChange}
+                className="border border-gray-500 rounded p-1 mx-2"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <label>products per page</label>
             </div>
-        </>
-    );
+
+            {/* Search */}
+            <div className="flex justify-center rounded-l-lg">
+              <div className="flex items-center border border-gray-500 border-r-0 p-3 rounded-l-full">
+                <ImSearch />
+              </div>
+              <input
+                type="text"
+                placeholder="Search products"
+                value={searchTerm}
+                onChange={handleSearch}
+                className="border border-gray-500 border-l-0 px-3 py-1 rounded-r-full focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto mb-3">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th className="text-center">Sl. No.</th>
+                  <th>Name</th>
+                  <th>Pack Size</th>
+                  <th className="text-center">Batch</th>
+                  <th className="text-center">Exp.</th>
+                  <th className="text-center">Quantity</th>
+                  <th className="text-right">Price/Unit</th>
+                  <th className="text-right">Total Price</th>
+                  <th className="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentProducts.map((product, idx) => (
+                  <WarehouseProductCard
+                    key={product._id}
+                    idx={startIndex + idx + 1}
+                    product={product}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-1 mt-4 flex-wrap">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+              >
+                <BsArrowLeftSquareFill className="w-6 h-6" />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => changePage(page)}
+                    className={`mx-1 px-2 h-6 text-xs font-bold border rounded-md ${
+                      currentPage === page
+                        ? "bg-blue-600 text-white"
+                        : "border-gray-400"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+              >
+                <BsArrowRightSquareFill className="w-6 h-6" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* MODAL */}
+      <DepotProductRequestModal
+        isOpen={requestModalOpen}
+        onClose={() => setRequestModalOpen(false)}
+      />
+    </>
+  );
 };
 
 export default DepotProductsList;
