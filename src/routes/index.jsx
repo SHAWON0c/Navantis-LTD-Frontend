@@ -29,6 +29,9 @@ import DepotExpriedRequest from "../pages/HQ/Admin/DepotExpriedRequest";
 import DamagedProducts from "../pages/WareHouse/DamagedProducts";
 import DepotDelivery from "../pages/WareHouse/DepotDelivery";
 import AreaPage from "../pages/AreaPage";
+import TerritoryPage from "../pages/Teritory";
+import TerritoryTarget from "../pages/TerritoryTarget";
+import SetTerritoryTarget from "../pages/SetTerritoryTarget";
 
 // ✅ FIXED PATHS
 
@@ -87,7 +90,11 @@ export default function AppRoutes() {
 
         <Route path="/profile" element={<ProfilePage />} /> 
 
+
         <Route path="/area" element={<AreaPage />} />
+        <Route path="/territory" element={<TerritoryPage />} />
+        <Route path="/territory-target" element={<TerritoryTarget />} />
+        <Route path="/territory/:id/set-target" element={<SetTerritoryTarget />} />
 
       </Route>
 
