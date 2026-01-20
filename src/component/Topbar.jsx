@@ -139,24 +139,51 @@ export default function Topbar({ onMenuClick }) {
             Mega Menu
           </button>
 
+
+          here 
+
           {/* ⏰ Digital Clock next to Mega Menu */}
           <div className="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 font-mono text-sm font-semibold text-blue-600 dark:text-blue-400">
             {formattedTime}
           </div>
 
           {megaMenuOpen && (
-            <div className={dropdownClass2}>
-              <button className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <AppWindow className="w-4 h-4" /> Dashboard
-              </button>
-              <button className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <AppWindow className="w-4 h-4" /> Projects
-              </button>
-              <button className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <AppWindow className="w-4 h-4" /> Tasks
-              </button>
+            <div className="absolute top-full left-0 mt-2 w-56 rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+              <ul className="py-2">
+                <li>
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    <AppWindow className="w-4 h-4" />
+                    Dashboard
+                  </button>
+                </li>
+
+                <li>
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    <AppWindow className="w-4 h-4" />
+                    Projects
+                  </button>
+                </li>
+
+                <li>
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    <AppWindow className="w-4 h-4" />
+                    Tasks
+                  </button>
+                </li>
+
+
+                 <li>
+                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    <AppWindow className="w-4 h-4" />
+                    areas
+                  </button>
+                </li>
+
+
+              </ul>
             </div>
           )}
+
         </div>
 
         {/* Settings Dropdown */}

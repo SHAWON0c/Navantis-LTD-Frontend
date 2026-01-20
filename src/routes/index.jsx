@@ -28,6 +28,7 @@ import DepotProductRequest from "../pages/HQ/Admin/DepotProductRequest";
 import DepotExpriedRequest from "../pages/HQ/Admin/DepotExpriedRequest";
 import DamagedProducts from "../pages/WareHouse/DamagedProducts";
 import DepotDelivery from "../pages/WareHouse/DepotDelivery";
+import AreaPage from "../pages/AreaPage";
 
 // ✅ FIXED PATHS
 
@@ -85,6 +86,8 @@ export default function AppRoutes() {
 
 
         <Route path="/profile" element={<ProfilePage />} /> 
+
+        <Route path="/area" element={<AreaPage />} />
 
       </Route>
 
