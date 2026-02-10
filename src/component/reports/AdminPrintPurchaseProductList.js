@@ -1,136 +1,155 @@
-const AdminPurchaseInvoice = ({
-  purchaseOrders,
-  fromDate,
-  toDate,
-  accessAP = true
-}) => {
-
-  // --- Compute totals dynamically ---
+const AdminPurchaseInvoice = ({ purchaseOrders, fromDate, toDate }) => {
+  // ================= TOTALS =================
   const totalUniqueProducts = purchaseOrders.length;
-  const totalUnit = purchaseOrders.reduce((acc, order) => acc + order.productQuantity, 0);
-  const totalTP = purchaseOrders.reduce((acc, order) => acc + order.tradePrice * order.productQuantity, 0);
-  const totalAP = purchaseOrders.reduce((acc, order) => acc + order.actualPrice * order.productQuantity, 0);
+  const totalUnit = purchaseOrders.reduce((acc, order) => acc + order.Quantity, 0);
+  const totalTP = purchaseOrders.reduce(
+    (acc, order) => acc + order.PriceUnitTP * order.Quantity,
+    0
+  );
 
-  // --- Prepare products for table ---
+  // ================= MAP PRODUCTS =================
   const filteredProducts = purchaseOrders.map((order) => ({
-    productName: order.productName,
-    netWeight: `${order.netWeight.value}${order.netWeight.unit}`,
-    batch: order.batch,
-    expire: new Date(order.expireDate).toLocaleDateString('en-GB').replace(/\//g, '-'),
-    totalQuantity: order.productQuantity,
-    tradePrice: order.tradePrice,
-    actualPrice: order.actualPrice,
-    orderDate: order.purchaseDate
+    productName: order.Name,
+    netWeight: order.PackSize,
+    batch: order.Batch || "N/A",
+    expire: new Date(order.Expire).toLocaleDateString("en-GB").replace(/\//g, "-"),
+    totalQuantity: order.Quantity,
+    tradePrice: order.PriceUnitTP,
+    orderDate: order.Date
   }));
 
-  const now = new Date().toLocaleString("en-US", {
-    year: "numeric", month: "long", day: "numeric",
-    hour: "2-digit", minute: "2-digit", second: "2-digit",
-    hour12: true
-  });
+  const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "-");
+  const todayText = new Date().toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // 24-hour format
+  }) + '';
 
-  const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
 
+  const displayDateRange = (fromDate, toDate) => {
+    if (fromDate && toDate && fromDate !== toDate) {
+      return `From <b>${fromDate}</b> to <b>${toDate}</b>`;
+    } else if (fromDate || toDate) {
+      return `Date <b>${fromDate || toDate}</b>`;
+    } else {
+      // Fallback: manual start year to today
+      return `From <b>01-01-2018</b> to <b>${today}</b>`;
+    }
+  };
+
+  // ================= HANDLE PRINT =================
   const handlePrint = () => {
     const companyHeader = `
-      <div>
-        <div style="position: relative; text-align: center; margin-bottom: 20px;">
-          <img 
-            src='/images/NPL-Updated-Logo.png'
-            alt="Company Logo" 
-            style="left: 0; width: 150px; height: auto;"
-          />
-          <h1 style="margin: 0; font-size: 22px; font-weight: bold;">Navantis Pharma Limited</h1>
-          <p style="margin: 0; font-size: 10px;">
-            Haque Villa, House No - 4, Block - C, Road No - 3, Section - 1, Kolwalapara, Mirpur - 1, Dhaka - 1216.
-          </p>
-          <p style="margin: 0; font-size: 10px;">Hotline: +880 1322-852183</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+        <div>
+          <img src='/images/NPL-Updated-Logo.png' alt="Company Logo" style="width: 150px; height: auto;" />
         </div>
-        <div style="text-align: left; margin-bottom: 20px;">
-          <h3 style="margin: 0; font-size: 18px; font-weight: bold; text-align: center;"><u>Admin Purchase List</u></h3>
-          <p style="margin: 5px 0; font-size: 14px; text-align: center;">
-            ${(fromDate && toDate && fromDate !== toDate)
-            ? `Date from <b>${fromDate}</b> to <b>${toDate}</b>`
-            : `Date <b>${fromDate || toDate || 'N/A'}</b>`}
+       <div style="text-align: right; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+          <h1 style="margin: 0; font-size: 20px; font-weight: bold; color: #1a1a1a;">Navantis Pharma Limited</h1>
+          <p style="margin: 2px 0; font-size: 10px; color: #555;">
+            Haque Villa, House No - 4, Block - C, Road No - 3,<br>Section - 1, Kolwalapara, Mirpur - 1, Dhaka - 1216
           </p>
+          <p style="margin: 2px 0; font-size: 10px; color: #555;">Hotline: +880 1322-852183</p>
         </div>
-        <div class="mb-1 text-sm text-gray-400 text-right italic">
-          <h3 class="">Printed on ${now}</h3>
+      </div>
+      </div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin-bottom: 20px;">
+  <!-- Title -->
+<h2 style="
+    margin: 0; 
+    font-size: 16px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    color: #1a1a1a;
+    padding-left: 20px; /* space for the disc */
+    position: relative;
+    flex: 1; 
+    text-align: left;
+">
+  <!-- Disc using pseudo-element -->
+  <span style="
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background-color: #2E86C1; /* accent color */
+      border-radius: 50%;
+      display: inline-block;
+  "></span>
+  
+  Admin Purchase List
+</h2>
+
+
+  <!-- Date Range -->
+<p style="margin: 0; font-size: 12px; flex: 1; text-align: center; color: #333; font-weight: 500;">
+      ${displayDateRange(fromDate, toDate)}
+    </p>
+
+    <!-- Printed On -->
+    <p style="margin: 0; font-size: 10px; flex: 1; text-align: right; font-style: italic; color: #555;">
+      Printed on: <b>${todayText}</b>
+    </p>
+</div>
+
+
+
+      <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #B2BEB5; border-radius: 4px; background-color: #f9f9f9;">
+     <h3 style="margin: 0 0 0px 0; font-size: 12px; font-weight: bold; text-align: center;">Summary</h3>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0;">
+          <span>Total Items</span><span>${totalUniqueProducts}</span>
         </div>
-        <div style="margin-bottom: 20px; padding: 5px 15px; border: 1px solid #B2BEB5; border-radius: 3px;">
-          <p style="font-size: 11px; font-weight: bold; text-align: center; text-transform: uppercase;">
-            Summary
-          </p>
-          <div style="display: flex; justify-content: space-between; padding: 5px 0;">
-            <span style="font-size: 11px; font-weight: 600;">Total Items</span>
-            <span style="font-size: 11px; font-weight: 700;">${totalUniqueProducts}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid #B2BEB5;">
-            <span style="font-size: 11px; font-weight: 600;">Total Quantity</span>
-            <span style="font-size: 11px; font-weight: 700;">${totalUnit}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid #B2BEB5;">
-            <span style="font-size: 11px; font-weight: 600;">Total Trade Price</span>
-            <span style="font-size: 11px; font-weight: 700;">${totalTP.toLocaleString('en-IN')}/-</span>
-          </div>
-          ${accessAP ? `
-            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid #B2BEB5;">
-              <span style="font-size: 11px; font-weight: 600;">Total Actual Price</span>
-              <span style="font-size: 11px; font-weight: 700;">${totalAP.toLocaleString('en-IN')}/-</span>
-            </div>
-          ` : ''}
+        <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; border-top: 1px solid #B2BEB5;">
+          <span>Total Quantity</span><span>${totalUnit}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; border-top: 1px solid #B2BEB5;">
+          <span>Total Trade Price</span><span>${totalTP.toLocaleString("en-IN")}/-</span>
         </div>
       </div>
     `;
 
     const filteredTableContent = `
-      <table style="width: 100%; border-collapse: collapse;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
         <thead>
-          <tr>
-            <th style="text-align: center;">Sl.</th>
-            <th style="text-align: left;">Product Name</th>
-            <th style="text-align: center;">Pack Size</th>
-            <th style="text-align: center;">Batch</th>
-            <th style="text-align: center;">Exp.</th>
-            <th style="text-align: right;">Quantity</th>
-            <th style="text-align: right;">Price/Unit (TP)</th>
-            <th style="text-align: right;">Total Price (TP)</th>
-            ${accessAP ? `
-              <th style="text-align: right;">Price/Unit (AP)</th>
-              <th style="text-align: right;">Total Price (AP)</th>
-            ` : ''}
-            <th style="text-align: center;">Date</th>
+          <tr style="background-color: #e0e0e0; font-weight: bold;">
+            <th style="border: 1px solid #000; padding: 6px; text-align: center;">Sl.</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: left;">Product Name</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: center;">Pack Size</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: center;">Batch</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: center;">Exp.</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: right;">Quantity</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: right;">Price/Unit (TP)</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: right;">Total Price (TP)</th>
+            <th style="border: 1px solid #000; padding: 6px; text-align: center;">Date</th>
           </tr>
         </thead>
         <tbody>
-          ${filteredProducts.map(
-            (product, idx) => `
-              <tr>
-                <td style="text-align: center;">${idx + 1}</td>
-                <td>${product.productName}</td>
-                <td style="text-align: center;">${product.netWeight}</td>
-                <td style="text-align: center;">${product.batch}</td>
-                <td style="text-align: center;">${product.expire}</td>
-                <td style="text-align: right;">${product.totalQuantity}</td>
-                <td style="text-align: right;">${product.tradePrice.toLocaleString('en-IN')}/-</td>
-                <td style="text-align: right;">${(product.tradePrice * product.totalQuantity).toLocaleString('en-IN')}/-</td>
-                ${accessAP ? `
-                  <td style="text-align: right;">${product.actualPrice.toLocaleString('en-IN')}/-</td>
-                  <td style="text-align: right;">${(product.actualPrice * product.totalQuantity).toLocaleString('en-IN')}/-</td>
-                ` : ''}
-                <td style="text-align: center; white-space: nowrap;">${new Date(product.orderDate).toLocaleDateString('en-GB').replace(/\//g, '-')}</td>
-              </tr>
-            `
-          ).join('')}
-          <tr>
-            <td colspan="5" style="text-align: center; font-weight: bold;">Total</td>
-            <td style="text-align: right;">${totalUnit}</td>
+          ${filteredProducts.map((p, idx) => `
+            <tr>
+              <td style="border: 1px solid #000; text-align:center; padding: 5px;">${idx + 1}</td>
+              <td style="border: 1px solid #000; white-space: nowrap; padding: 5px;">${p.productName}</td>
+              <td style="border: 1px solid #000; text-align:center; padding: 5px;">${p.netWeight}</td>
+              <td style="border: 1px solid #000; text-align:center; padding: 5px;">${p.batch}</td>
+              <td style="border: 1px solid #000; text-align:center; padding: 5px;">${p.expire}</td>
+              <td style="border: 1px solid #000; text-align:right; padding: 5px;">${p.totalQuantity}</td>
+              <td style="border: 1px solid #000; text-align:right; padding: 5px;">${p.tradePrice.toLocaleString("en-IN")}/-</td>
+              <td style="border: 1px solid #000; text-align:right; padding: 5px;">${(p.tradePrice * p.totalQuantity).toLocaleString("en-IN")}/-</td>
+              <td style="border: 1px solid #000; text-align:center; padding: 5px;">${new Date(p.orderDate).toLocaleDateString("en-GB").replace(/\//g, "-")}</td>
+            </tr>
+          `).join("")}
+          <tr style="font-weight: bold; background-color: #f0f0f0;">
+            <td colspan="5" style="text-align:center; padding: 5px;">Total</td>
+            <td style="text-align:right; padding: 5px;">${totalUnit}</td>
             <td></td>
-            <td style="text-align: right;">${totalTP.toLocaleString('en-IN')}/-</td>
-            ${accessAP ? `
-              <td></td>
-              <td style="text-align: right;">${totalAP.toLocaleString('en-IN')}/-</td>
-            ` : ''}
+            <td style="text-align:right; padding: 5px;">${totalTP.toLocaleString("en-IN")}/-</td>
             <td></td>
           </tr>
         </tbody>
@@ -139,21 +158,47 @@ const AdminPurchaseInvoice = ({
 
     const newWindow = window.open();
     const styles = [...document.querySelectorAll('link[rel="stylesheet"], style')]
-      .map((style) => style.outerHTML).join('');
+      .map(s => s.outerHTML)
+      .join("");
 
     newWindow.document.write(`
       <html>
         <head>
-          <title>Admin Purchase List generated on ${today}</title>
+          <title>Admin Purchase List - ${today}</title>
           ${styles}
           <style>
+            /* ===== PRINT STYLES ===== */
+            @page {
+              size: A4;
+              margin: 5mm 8mm 3mm 8mm; /* top right bottom left */
+            }
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: Arial, sans-serif;
+              color: #000;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 11px;
+            }
+            th, td {
+              border: 1px solid #000;
+              padding: 6px;
+            }
+            th {
+              background-color: #e0e0e0;
+              font-weight: bold;
+            }
+            tr:nth-child(even) {
+              background-color: #f9f9f9;
+            }
+            /* Hide browser default header/footer */
             @media print {
-              @page { size: A4; margin: 5mm; }
-              body { margin: 0; padding: 0; font-family: Arial, sans-serif; position: relative; }
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: middle; font-size: 10px; }
-              th { background-color: #f0f0f0; }
-              td.date-column { white-space: nowrap; }
+              body {
+                -webkit-print-color-adjust: exact;
+              }
             }
           </style>
         </head>

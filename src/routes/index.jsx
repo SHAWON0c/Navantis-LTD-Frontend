@@ -32,6 +32,7 @@ import AreaPage from "../pages/AreaPage";
 import TerritoryPage from "../pages/Teritory";
 import TerritoryTarget from "../pages/TerritoryTarget";
 import SetTerritoryTarget from "../pages/SetTerritoryTarget";
+import UserProfile from "../pages/UserProfile";
 
 // ✅ FIXED PATHS
 
@@ -53,17 +54,21 @@ export default function AppRoutes() {
       <Route element={<DashboardLayout />}>
 
         {/* Default dashboard */}
-       <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+       <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
         <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/profile" element={<UserProfile/>} />
+  
       </Route>
 
-         <Route element={<ProtectedRoute allowedRoles={["md"]} />}>
+         <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
         <Route path="/md-dashboard" element={<Dashboard />} />
       </Route>
 
         {/* Admin */}
+         <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
         <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
         <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
+        </Route>
 
         {/* Warehouse */}
 
@@ -88,7 +93,7 @@ export default function AppRoutes() {
          <Route path="/depot/stock-out" element={<DepotStockOut />} />
 
 
-        <Route path="/profile" element={<ProfilePage />} /> 
+        {/* <Route path="/profile" element={<ProfilePage />} />  */}
 
 
         <Route path="/area" element={<AreaPage />} />

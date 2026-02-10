@@ -1,50 +1,117 @@
-// src/provider/AuthProvider.jsx
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setCredentials, resetAuthState } from "../redux/features/auth/authSlice";
-import { Navigate, Outlet } from "react-router-dom";
-import { PropagateLoader } from "react-spinners";
+// import React, { createContext, useContext, useEffect, useState } from "react";
+// import axios from "axios";
 
-export default function AuthProvider({ roles = [] }) {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+// // 1️⃣ Create context
+// const AuthContext = createContext();
 
-  // Restore user from localStorage
+// // 2️⃣ Custom hook to use auth
+// export const useAuth = () => useContext(AuthContext);
+
+// // 3️⃣ Provider component
+// const AuthProvider = ({ children }) => {
+//   const [userInfo, setUserInfo] = useState({ email: "", name: "" });
+//   const [loading, setLoading] = useState(true);
+
+// useEffect(() => {
+//   const fetchUser = async () => {
+//     try {
+//       const token = localStorage.getItem("token");
+//       if (!token) {
+//         setLoading(false);
+//         return;
+//       }
+
+//       const res = await axios.get("http://localhost:5000/api/users/me", {
+//         headers: { Authorization: token },
+//       });
+
+//       if (res.data.success) {
+//         const user = res.data.data.user;
+//         const org = res.data.data.organizationProfile;
+
+//         setUserInfo({
+//           name: org?.name || user?.name || "",   // org name first, fallback user name
+//           email: user?.email || "", // user email first, fallback org email
+//         });
+//       }
+//     } catch (err) {
+//       console.error("Failed to fetch user info:", err);
+//       setUserInfo({ email: "", name: "" });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   fetchUser();
+// }, []);
+
+
+//   return (
+//     <AuthContext.Provider value={{ userInfo, loading }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export default AuthProvider;
+
+
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+
+// 1️⃣ Create context
+const AuthContext = createContext();
+
+// 2️⃣ Custom hook to use auth
+export const useAuth = () => useContext(AuthContext);
+
+// 3️⃣ Provider component
+const AuthProvider = ({ children }) => {
+  const [userInfo, setUserInfo] = useState({ email: "", name: "" });
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser?.token) {
-      dispatch(setCredentials(storedUser));
-    } else {
-      dispatch(resetAuthState());
-    }
-  }, [dispatch]);
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
-  // Wait until user is loaded
-  if (user === undefined) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <PropagateLoader color="rgb(248,113,113)" size={15} />
-      </div>
-    );
-  }
+        const res = await axios.get("http://localhost:5000/api/users/me", {
+          headers: { Authorization: token },
+        });
 
-  // Not logged in
-  if (!user) return <Navigate to="/login" replace />;
+        if (res.data.success) {
+          const user = res.data.data; // ✅ user object
+          const org = res.data.data.organizationProfile;
+          console.log("API response:", user); 
 
-  // Role-based access
-  if (roles.length && !roles.includes(user.role)) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-8">
-        <div className="bg-white p-10 rounded-xl shadow-md max-w-md text-center">
-          <h2 className="text-2xl font-semibold text-gray-800">Access Denied</h2>
-          <p className="mt-4 text-gray-600">
-            You do not have permission to access this page. Please contact HR, Admin, or IT for proper credentials.
-          </p>
-        </div>
-      </div>
-    );
-  }
+          console.log("Fetched user:", user); 
+          console.log("Fetched org:", org);
 
-  // Authorized → render child routes
-  return <Outlet />;
-}
+          setUserInfo({
+            name: org?.name || "",     // you can still keep org name
+            email: user?.email || "",  // ✅ user email only
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch user info:", err);
+        setUserInfo({ email: "", name: "" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ userInfo, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthProvider;

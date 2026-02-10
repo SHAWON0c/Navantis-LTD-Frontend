@@ -1,17 +1,12 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { useGetBrandsQuery, useGetProductsByBrandQuery } from "../../../redux/features/products/productsApi";
 import { useCreatePurchaseOrderMutation } from "../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
-import { useUserProfile } from "../../../hooks/useUserProfile";
-// ✅ your custom hook
+import { useAuth } from "../../../provider/AuthProvider"; // ✅ use AuthProvider
 
 const PurchaseOrder = () => {
-  // 1️⃣ Get current user profile
-  const { data, error } = useUserProfile();
-
-  const user = data?.data?.user;
-  const org = data?.data?.organizationProfile;
-
-  console.log("User Profile Data:", org);
+  // 1️⃣ Get user info from AuthProvider
+  const { userInfo, loading: authLoading } = useAuth();
 
   // 2️⃣ Fetch brands
   const { data: brands = [], isLoading: brandsLoading } = useGetBrandsQuery();
@@ -19,7 +14,7 @@ const PurchaseOrder = () => {
   const [brandOpen, setBrandOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState("");
 
-  // Fetch products
+  // Fetch products by brand
   const { data: productsData = {}, isLoading: productsLoading } =
     useGetProductsByBrandQuery(selectedBrand, { skip: !selectedBrand });
 
@@ -41,18 +36,20 @@ const PurchaseOrder = () => {
     expireDate: "",
     actualPrice: "",
     tradePrice: "",
-    addedByName: org?.name || "", // ✅ default
-    addedByEmail: user?.email || "",                             // ✅ default
+    addedByName: userInfo?.name || "",   // ✅ default from AuthProvider
+    addedByEmail: userInfo?.email || "", // ✅ default from AuthProvider
   });
 
-  // Update form when user/org loads
+  // Update form when userInfo changes
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      addedByName: org?.name || "",
-      addedByEmail: user?.email || "",
-    }));
-  }, [user, org]);
+    if (userInfo) {
+      setFormData((prev) => ({
+        ...prev,
+        addedByName: userInfo.name || "",
+        addedByEmail: userInfo.email || "",
+      }));
+    }
+  }, [userInfo]);
 
   const brandRef = useRef();
   const productRef = useRef();
@@ -73,40 +70,23 @@ const PurchaseOrder = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-
   // Handle product select
-  // const handleProductSelect = (prod) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     productId: prod._id,
-  //     productName: prod.productName,
-  //     productShortCode: prod.productShortCode,
-  //     packSize: prod.packSize,
-  //     category: prod.category, // ✅ Add category here
-  //   }));
-  //   setProductOpen(false);
-  // };
-
   const handleProductSelect = (prod) => {
-  setFormData((prev) => ({
-    ...prev,
-    productId: prod._id || "",
-    productName: prod.productName || "",
-    productShortCode: prod.productShortCode || "",
-    packSize: prod.packSize || "",
-    category: prod.category || "", // ✅ if no category, set empty string
-  }));
-  setProductOpen(false);
-};
-
-
+    setFormData((prev) => ({
+      ...prev,
+      productId: prod._id || "",
+      productName: prod.productName || "",
+      productShortCode: prod.productShortCode || "",
+      packSize: prod.packSize || "",
+      category: prod.category || "",
+    }));
+    setProductOpen(false);
+  };
 
   // Parse packSize into numeric value + unit
   const parsePackSize = (packSize) => {
     const match = packSize.match(/^(\d+)([a-zA-Z]+)$/);
-    if (match) {
-      return { value: Number(match[1]), unit: match[2] };
-    }
+    if (match) return { value: Number(match[1]), unit: match[2] };
     return { value: 0, unit: "" };
   };
 
@@ -117,18 +97,11 @@ const PurchaseOrder = () => {
 
     const payload = {
       productId: formData.productId,
-      productName: formData.productName,
-      netWeight: netWeight,
-      category: formData.category,
       productQuantity: Number(formData.productQuantity),
       batch: formData.batchNumber,
       expireDate: new Date(formData.expireDate).toISOString(),
       actualPrice: Number(formData.actualPrice),
       tradePrice: Number(formData.tradePrice),
-      addedBy: {
-        name: formData.addedByName,
-        email: formData.addedByEmail,
-      },
     };
 
     try {
@@ -145,8 +118,8 @@ const PurchaseOrder = () => {
         expireDate: "",
         actualPrice: "",
         tradePrice: "",
-        addedByName: org?.name || user?.email || "",
-        addedByEmail: user?.email || "",
+        addedByName: userInfo?.name || "",
+        addedByEmail: userInfo?.email || "",
       });
       setSelectedBrand("");
     } catch (err) {
@@ -154,6 +127,8 @@ const PurchaseOrder = () => {
       alert("Failed to create purchase order.");
     }
   };
+
+  if (authLoading) return <div>Loading user info...</div>;
 
   return (
     <div className="mx-auto p-2">
@@ -184,7 +159,6 @@ const PurchaseOrder = () => {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -230,19 +204,18 @@ const PurchaseOrder = () => {
                 placeholder={selectedBrand ? "Select product" : "Select a brand first"}
                 onClick={() => selectedBrand && setProductOpen((p) => !p)}
                 disabled={!selectedBrand}
-                className={`w-full border rounded p-2 pr-8 ${selectedBrand
-                  ? "border-gray-300 cursor-pointer"
-                  : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
-                  }`}
+                className={`w-full border rounded p-2 pr-8 ${
+                  selectedBrand ? "border-gray-300 cursor-pointer" : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
+                }`}
               />
               {/* Down Arrow */}
               <svg
-                className={`w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none ${!selectedBrand && "text-gray-300"
-                  }`}
+                className={`w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none ${
+                  !selectedBrand && "text-gray-300"
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -268,7 +241,6 @@ const PurchaseOrder = () => {
           </div>
         </div>
 
-
         {/* Auto fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="Product Short Code" value={formData.productShortCode} readOnly />
@@ -277,14 +249,7 @@ const PurchaseOrder = () => {
 
         {/* Purchase Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Category"
-            name="category"
-            value={formData.category}
-            readOnly
-            className="bg-gray-100 cursor-not-allowed"
-          />
-
+          <Input label="Category" name="category" value={formData.category} readOnly className="bg-gray-100 cursor-not-allowed" />
           <Input label="Quantity" name="productQuantity" value={formData.productQuantity} onChange={handleFormChange} />
           <Input label="Batch Number" name="batchNumber" value={formData.batchNumber} onChange={handleFormChange} />
           <Input label="Expire Date" type="date" name="expireDate" value={formData.expireDate} onChange={handleFormChange} />
@@ -294,23 +259,9 @@ const PurchaseOrder = () => {
 
         {/* Added By */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Added By Name"
-            name="addedByName"
-            value={formData.addedByName}
-            disabled
-            className="bg-gray-100 cursor-not-allowed"
-          />
-          <Input
-            label="Added By Email"
-            name="addedByEmail"
-            value={formData.addedByEmail}
-            disabled
-            className="bg-gray-100 cursor-not-allowed"
-          />
+          <Input label="Added By Name" name="addedByName" value={formData.addedByName} disabled className="bg-gray-100 cursor-not-allowed" />
+          <Input label="Added By Email" name="addedByEmail" value={formData.addedByEmail} disabled className="bg-gray-100 cursor-not-allowed" />
         </div>
-
-
 
         {/* Submit Button */}
         <button
@@ -325,7 +276,7 @@ const PurchaseOrder = () => {
   );
 };
 
-// Input component (UNCHANGED STYLE)
+// Input component
 const Input = ({ label, ...props }) => (
   <div className="mb-2">
     <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
