@@ -13,10 +13,11 @@ const WarehouseDamageRequest = () => {
   // ✅ Use array inside `data`
   const filteredProducts = whReceiveRequests?.data || [];
 
-  // ✅ Totals
-  const totalReceivedQty = filteredProducts.reduce((acc, item) => acc + (item.receivedQty || 0), 0);
-  const totalDamageQty = filteredProducts.reduce((acc, item) => acc + (item.damageQty || 0), 0);
-  const totalRemainingStock = filteredProducts.reduce((acc, item) => acc + (item.remainingStock || 0), 0);
+  // ✅ Use totals from API directly
+  const totalProducts = whReceiveRequests?.totalProducts || 0;
+  const totalReceivedQty = whReceiveRequests?.totalReceivedQty || 0;
+  const totalDamageQty = whReceiveRequests?.totalDamageQty || 0;
+  const totalRemainingStock = whReceiveRequests?.totalRemainingStock || 0;
 
   return (
     <div className="mx-auto p-2">
@@ -36,12 +37,12 @@ const WarehouseDamageRequest = () => {
 
             <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
               <p className="text-sm">
-                Total Products: <span className="font-medium text-blue-700">{filteredProducts.length}</span>
+                Total Products: <span className="font-medium text-blue-700">{totalProducts}</span>
               </p>
               <p className="text-sm">
                 Total Received Qty: <span className="font-medium text-blue-700">{totalReceivedQty}</span>
               </p>
-              <p className="text-sm ">
+              <p className="text-sm">
                 Total Damage Qty: <span className="font-medium text-red-500">{totalDamageQty}</span>
               </p>
               <p className="text-sm">
@@ -61,7 +62,7 @@ const WarehouseDamageRequest = () => {
                     <th className="text-center">Batch</th>
                     <th className="text-center">Exp.</th>
                     <th className="text-center">Received Qty</th>
-                    <th className="text-center text-red-500 ">Damage Qty</th>
+                    <th className="text-center text-red-500">Damage Qty</th>
                     <th className="text-center">Remaining Stock</th>
                     <th className="text-center">Details</th>
                     <th className="text-center">Approve</th>
@@ -69,15 +70,16 @@ const WarehouseDamageRequest = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts.map((product, idx) => (
-                    <WarehouseDamageRequestCard
-                      key={product.id} // unique key
-                      idx={idx + 1}
-                      product={product}
-                      refetch={refetch}
-                    />
-                  ))}
-                  {filteredProducts.length === 0 && (
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product, idx) => (
+                      <WarehouseDamageRequestCard
+                        key={product._id} // use backend _id
+                        idx={idx + 1}
+                        product={product}
+                        refetch={refetch}
+                      />
+                    ))
+                  ) : (
                     <tr>
                       <td colSpan={10} className="text-center py-4 text-gray-500">
                         No damage requests found

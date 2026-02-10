@@ -1,19 +1,14 @@
 import { useGetWarehouseReceiveRequestQuery } from "../../redux/features/wareHouse/warehouseReceiveApi";
 import WarehouseRequestProductCard from "./WarehouseRequestProductCard";
 
-
 const WarehouseRequest = () => {
   const { data: whReceiveRequests, isLoading, refetch } = useGetWarehouseReceiveRequestQuery();
 
-
-
-  // ✅ Use the array inside `data`
+  // Use the array inside `data` from backend
   const filteredProducts = whReceiveRequests?.data || [];
 
-  // Calculate totals based on available fields
-  const totalOrderQuantity = filteredProducts.reduce((acc, item) => acc + (item.orderQuantity || 0), 0);
-  const totalStockQuantity = filteredProducts.reduce((acc, item) => acc + (item.stockQuantity || 0), 0);
-  const totalMissingQuantity = filteredProducts.reduce((acc, item) => acc + (item.missingQuantity || 0), 0);
+  // Use totals directly from backend
+  const { totalProducts = 0, totalOrderQuantity = 0, totalStockQuantity = 0, totalMissingQuantity = 0, count = 0 } = whReceiveRequests || {};
 
   return (
     <div className="mx-auto p-2">
@@ -24,15 +19,16 @@ const WarehouseRequest = () => {
       </div>
 
       {/* Main Content */}
-      <div className="space-y-6 mt-4 "> {/* Adds spacing between sections and moves content slightly down */}
+      <div className="space-y-6 mt-4">
         <div className="bg-white pb-1 rounded-lg">
-          {/* Product Info */}
+
+          {/* Product Info / Summary */}
           <div className="m-0 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md ">
             <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Request Summary</p>
 
             <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
               <p className="text-sm">
-                Total Products: <span className="font-medium text-blue-700">{filteredProducts.length}</span>
+                Total Products: <span className="font-medium text-blue-700">{totalProducts}</span>
               </p>
               <p className="text-sm">
                 Total Order Quantity: <span className="font-medium text-blue-700">{totalOrderQuantity}</span>
@@ -53,13 +49,13 @@ const WarehouseRequest = () => {
                 <thead>
                   <tr>
                     <th className="text-center">Sl. No.</th>
-                    <th>Name</th>
+                    <th>Name / Details</th>
                     <th className="text-center">Batch</th>
                     <th className="text-center">Exp.</th>
                     <th className="text-center">Order Quantity</th>
                     <th className="text-center">Stock Quantity</th>
                     <th className="text-center">Missing Quantity</th>
-                    <th className="text-center">Details</th>
+                      <th className="text-center">Details</th>
                     <th className="text-center">Approve</th>
                     <th className="text-center">Deny</th>
                   </tr>
@@ -68,9 +64,16 @@ const WarehouseRequest = () => {
                   {filteredProducts.map((product, idx) => (
                     <WarehouseRequestProductCard
                       idx={idx + 1}
-                      key={product.purchaseOrderId} // safer unique key
-                      product={product}
+                      key={product.purchaseOrderId} // unique key
+                      product={product}            // full product data
                       refetch={refetch}
+                      summary={{
+                        count,
+                        totalProducts,
+                        totalOrderQuantity,
+                        totalStockQuantity,
+                        totalMissingQuantity
+                      }}
                     />
                   ))}
                 </tbody>
@@ -78,11 +81,8 @@ const WarehouseRequest = () => {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
-
   );
 };
 

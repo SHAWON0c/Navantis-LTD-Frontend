@@ -99,11 +99,12 @@ const PurchaseOrderList = () => {
               <th className="px-4 py-2 text-center">Sl. No.</th>
               <th className="px-4 py-2">Product Name</th>
               <th className="px-4 py-2">Pack Size</th>
-              <th className="px-4 py-2">Batch</th> {/* Added Batch */}
+              <th className="px-4 py-2">Batch</th>
               <th className="px-4 py-2 text-center">Quantity</th>
               <th className="px-4 py-2 text-center">Expire Date</th>
-              <th className="px-4 py-2 text-right">TP</th> {/* Removed AP */}
+              <th className="px-4 py-2 text-right">TP</th>
               <th className="px-4 py-2 text-right">Total Price</th>
+              <th className="px-4 py-2 text-center">Warehouse Status</th> {/* New */}
               <th className="px-4 py-2">Purchase Date</th>
             </tr>
           </thead>
@@ -114,19 +115,19 @@ const PurchaseOrderList = () => {
                 <td className="px-4 py-2 text-center">{startIndex + idx + 1}</td>
                 <td className="px-4 py-2">{order.Name}</td>
                 <td className="px-4 py-2">{order.PackSize}</td>
-                <td className="px-4 py-2">{order.Batch}</td> {/* Added Batch */}
+                <td className="px-4 py-2">{order.Batch}</td>
                 <td className="px-4 py-2 text-center">{order.Quantity}</td>
                 <td className="px-4 py-2 text-center">
                   {new Date(order.Expire).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-2 text-right">{order?.PriceUnitTP?.toLocaleString()}</td>
                 <td className="px-4 py-2 text-right">{order?.TotalPrice?.toLocaleString()}</td>
-                <td className="px-4 py-2">
-                  {new Date(order.Date).toLocaleDateString()}
-                </td>
+                <td className="px-4 py-2 text-center">{order.warehouseStatus}</td> {/* New */}
+                <td className="px-4 py-2">{new Date(order.Date).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
+
         </table>
       </div>
 

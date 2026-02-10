@@ -58,7 +58,7 @@ export const warehouseDamageAPI = baseAPI.injectEndpoints({
         // Fetch all damage requests (default)
         getDamageRequests: builder.query({
             query: () => ({
-                url: "/warehouse/damage-report", // GET endpoint
+                url: "warehouse/damage/pending", // GET endpoint
                 method: "GET",
             }),
         }),
