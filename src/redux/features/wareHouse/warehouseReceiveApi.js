@@ -8,6 +8,7 @@ export const warehouseReceiveAPI = baseAPI.injectEndpoints({
         url: "/purchase-orders/pending",
         method: "GET",
       }),
+      providesTags: ['WarehouseReceive'], // ✅ tag for invalidation
     }),
 
     // Submit a new warehouse receive
@@ -17,23 +18,28 @@ export const warehouseReceiveAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ['WarehouseReceive'], // ✅ triggers refetch
     }),
 
     // Get differences / warehouse receive requests
     getWarehouseReceiveRequest: builder.query({
       query: () => ({
-        url: "/purchase-orders/differences",
+        url: "/warehouse/receive/pending",
         method: "GET",
       }),
+      providesTags: ['WarehouseReceive'], // ✅ this tag is used for automatic refetch
+      // Optional: auto-refetch every 5s for live updates
+      // keepUnusedDataFor: 0, // remove cached data immediately if unused
     }),
 
-    // ✅ Update warehouse receive (PUT)
+    // Update warehouse receive
     updateReceive: builder.mutation({
-      query: ({ purchaseOrderId, data }) => ({
-        url: `warehouse/${purchaseOrderId}`,
+      query: ({ receiveId, data }) => ({
+        url: `/warehouse/receive/${receiveId}`,
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ['WarehouseReceive'], // ✅ triggers refetch
     }),
   }),
   overrideExisting: false,
@@ -43,5 +49,5 @@ export const {
   useGetAllReceivesQuery,
   useSubmitReceiveMutation,
   useGetWarehouseReceiveRequestQuery,
-  useUpdateReceiveMutation, // ✅ added mutation hook
+  useUpdateReceiveMutation,
 } = warehouseReceiveAPI;

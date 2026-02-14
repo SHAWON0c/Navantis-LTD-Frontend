@@ -17,3 +17,14 @@
 .animate-slide {
   animation: slide 15s linear infinite;
 }
+
+
+/* SweetAlert2 custom pharma style */
+.swal2-popup {
+  border-radius: 12px !important;
+  font-family: "Inter", sans-serif;
+}
+
+.swal2-title {
+  color: #065f46 !important;
+}

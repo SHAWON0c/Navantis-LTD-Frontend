@@ -54,46 +54,48 @@ export default function AppRoutes() {
       <Route element={<DashboardLayout />}>
 
         {/* Default dashboard */}
-       <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
-        <Route path="/user-dashboard" element={<UserDashboard />} />
-        <Route path="/profile" element={<UserProfile/>} />
-  
-      </Route>
+        <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
+          <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/profile" element={<UserProfile />} />
 
-         <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
-        <Route path="/md-dashboard" element={<Dashboard />} />
-      </Route>
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
+          <Route path="/md-dashboard" element={<Dashboard />} />
+        </Route>
 
         {/* Admin */}
-         <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
-        <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
-        <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
+        <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
+          <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
+          <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
         </Route>
 
         {/* Warehouse */}
 
-        <Route path="/admin/warehouse-request" element={<WarehouseRequest/>} />
-        <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
-        <Route path="/admin/depot-request" element={<DepotProductRequest />} />
-        <Route path="/admin/expired-request" element={<DepotExpriedRequest />} />
+        <Route element={<ProtectedRoute allowedRoles={["managing-director" ,"warehouse-manager"]} />}>
+
+          <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
+          <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
+          <Route path="/admin/depot-request" element={<DepotProductRequest />} />
+          <Route path="/admin/expired-request" element={<DepotExpriedRequest />} />
 
 
-         <Route path="/warehouse/receive" element={<WarehouseAddProduct />} />
-         <Route path="/warehouse/stock-in" element={<StockIn />} />
-         <Route path="/warehouse/stock-out" element={<WarehouseStockOut />} />
-         <Route path="/warehouse/products" element={<WarehouseProductsList />} />
-         <Route path="/warehouse/depot-delivery" element={<DepotDelivery />} />
+          <Route path="/warehouse/receive" element={<WarehouseAddProduct />} />
+          <Route path="/warehouse/stock-in" element={<StockIn />} />
+          <Route path="/warehouse/stock-out" element={<WarehouseStockOut />} />
+          <Route path="/warehouse/products" element={<WarehouseProductsList />} />
+          <Route path="/warehouse/depot-delivery" element={<DepotDelivery />} />
+        </Route>
+
+
+        <Route path="/depot/products" element={<DepotProductsList />} />
+        <Route path="/warehouse/damaged" element={<DamagedProducts />} />
+        <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
+        <Route path="/depot/stock-in" element={<DepotStockIn />} />
+        <Route path="/depot/stock-out" element={<DepotStockOut />} />
 
 
 
-         <Route path="/depot/products" element={<DepotProductsList />} />  
-         <Route path="/warehouse/damaged" element={<DamagedProducts />} />
-         <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
-         <Route path="/depot/stock-in" element={<DepotStockIn />} />
-         <Route path="/depot/stock-out" element={<DepotStockOut />} />
-
-
-        {/* <Route path="/profile" element={<ProfilePage />} />  */}
 
 
         <Route path="/area" element={<AreaPage />} />

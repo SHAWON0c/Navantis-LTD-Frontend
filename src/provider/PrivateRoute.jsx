@@ -1,81 +1,6 @@
-
-// src/provider/PrivateRoute.jsx
-// import { useEffect, useState } from "react";
-// import { Navigate, Outlet, useLocation } from "react-router-dom";
-
-// const ProtectedRoute = ({ allowedRoles }) => {
-//   const location = useLocation();
-//   const [loading, setLoading] = useState(true);
-//   const [isAllowed, setIsAllowed] = useState(false);
-//   const [redirectPath, setRedirectPath] = useState("/login");
-
-//   const verifyToken = async () => {
-//     const token = localStorage.getItem("token"); // raw JWT
-
-//     if (!token) {
-//       setRedirectPath("/login");
-//       setIsAllowed(false);
-//       setLoading(false);
-//       return;
-//     }
-
-//     try {
-//       const res = await fetch("http://localhost:5000/api/auth/verify-token", {
-//         headers: { Authorization: token },
-//       });
-
-//       if (!res.ok) throw new Error("Invalid token");
-
-//       const data = await res.json();
-
-//       if (allowedRoles && !allowedRoles.includes(data.role)) {
-//         setRedirectPath("/unauthorized");
-//         setIsAllowed(false);
-//       } else {
-//         setIsAllowed(true);
-//       }
-//     } catch (err) {
-//       localStorage.removeItem("token"); // remove invalid token immediately
-//       setRedirectPath("/login");
-//       setIsAllowed(false);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     // Initial check
-//     verifyToken();
-
-//     // Periodic check every 30 seconds
-//     const intervalId = setInterval(verifyToken, 30000);
-
-//     // Listen for token changes in other tabs / manual edits
-//     const handleStorageChange = (e) => {
-//       if (e.key === "token") verifyToken();
-//     };
-//     window.addEventListener("storage", handleStorageChange);
-
-//     return () => {
-//       clearInterval(intervalId);
-//       window.removeEventListener("storage", handleStorageChange);
-//     };
-//   }, [allowedRoles]);
-
-//   if (loading) return <div>Loading...</div>;
-
-//   if (!isAllowed) return <Navigate to={redirectPath} state={{ from: location }} replace />;
-
-//   return <Outlet />;
-// };
-
-// export default ProtectedRoute;
-
-
-
-
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Loader from "../component/Loader";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const location = useLocation();
@@ -138,7 +63,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     };
   }, [allowedRoles]);
 
-  if (loading) return <div>Loading...</div>;
+if (loading) return null;
 
   if (!isAllowed)
     return <Navigate to={redirectPath} state={{ from: location }} replace />;

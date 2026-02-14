@@ -1,6 +1,7 @@
 // UserProfile.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Loader from "../component/Loader";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -35,7 +36,7 @@ const UserProfile = () => {
     fetchUser();
   }, []);
 
-  if (loading) return <p>Loading user profile...</p>;
+  if (loading) return <Loader/>;
   if (!userData) return <p>No user data found.</p>;
 
   const org = userData.organizationProfile || {};

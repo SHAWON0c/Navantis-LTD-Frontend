@@ -6,11 +6,16 @@ import FiltersAndSummaryPanel from "../../../component/common/FiltersAndSummaryP
 import AdminPurchaseInvoice from "../../../component/reports/AdminPrintPurchaseProductList";
 
 const PurchaseOrderList = () => {
-  const { data, isLoading, isError } = useGetPurchaseOrdersQuery();
+  // --- API query ---
+  const { data, isLoading, isError } = useGetPurchaseOrdersQuery(undefined, {
+    pollingInterval: 10000, // 🔹 optional auto-refresh every 10s
+  });
 
+  // --- Pagination state ---
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(10);
 
+  // --- Filters state ---
   const [filters, setFilters] = useState({
     searchTerm: "",
     year: "",
@@ -22,7 +27,7 @@ const PurchaseOrderList = () => {
   if (isLoading) return <Loader />;
   if (isError) return <p className="text-red-500 text-center">Failed to load purchase orders.</p>;
 
-  // API Data
+  // --- Raw API Data ---
   let purchaseOrders = data?.data || [];
 
   // ---------------- FILTERING ----------------
@@ -41,19 +46,12 @@ const PurchaseOrderList = () => {
   });
 
   // ---------------- TOTALS ----------------
-  const totalUniqueProducts = data?.totalUniqueProducts || 0;
-  const totalUnit = data?.totalUnits || 0;
-  const totalTP = data?.totalTradePrice || 0;
-  const totalAP = 0; // Not used anymore
+  const totalUniqueProducts = data?.totalUniqueProducts ?? purchaseOrders.length;
+  const totalUnit = data?.totalUnits ?? purchaseOrders.reduce((sum, p) => sum + Number(p.Quantity || 0), 0);
+  const totalTP = data?.totalTradePrice ?? purchaseOrders.reduce((sum, p) => sum + Number(p.TotalPrice || 0), 0);
 
   const clearFilters = () =>
-    setFilters({
-      searchTerm: "",
-      year: "",
-      month: "",
-      fromDate: "",
-      toDate: ""
-    });
+    setFilters({ searchTerm: "", year: "", month: "", fromDate: "", toDate: "" });
 
   // ---------------- PAGINATION ----------------
   const totalPages = Math.ceil(purchaseOrders.length / productsPerPage);
@@ -104,7 +102,7 @@ const PurchaseOrderList = () => {
               <th className="px-4 py-2 text-center">Expire Date</th>
               <th className="px-4 py-2 text-right">TP</th>
               <th className="px-4 py-2 text-right">Total Price</th>
-              <th className="px-4 py-2 text-center">Warehouse Status</th> {/* New */}
+              <th className="px-4 py-2 text-center">Warehouse Status</th>
               <th className="px-4 py-2">Purchase Date</th>
             </tr>
           </thead>
@@ -117,17 +115,14 @@ const PurchaseOrderList = () => {
                 <td className="px-4 py-2">{order.PackSize}</td>
                 <td className="px-4 py-2">{order.Batch}</td>
                 <td className="px-4 py-2 text-center">{order.Quantity}</td>
-                <td className="px-4 py-2 text-center">
-                  {new Date(order.Expire).toLocaleDateString()}
-                </td>
+                <td className="px-4 py-2 text-center">{new Date(order.Expire).toLocaleDateString()}</td>
                 <td className="px-4 py-2 text-right">{order?.PriceUnitTP?.toLocaleString()}</td>
                 <td className="px-4 py-2 text-right">{order?.TotalPrice?.toLocaleString()}</td>
-                <td className="px-4 py-2 text-center">{order.warehouseStatus}</td> {/* New */}
+                <td className="px-4 py-2 text-center">{order.warehouseStatus}</td>
                 <td className="px-4 py-2">{new Date(order.Date).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
-
         </table>
       </div>
 
@@ -156,4 +151,5 @@ const PurchaseOrderList = () => {
     </div>
   );
 };
+
 export default PurchaseOrderList;

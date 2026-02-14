@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useGetBrandsQuery, useGetProductsByBrandQuery } from "../../../redux/features/products/productsApi";
 import { useCreatePurchaseOrderMutation } from "../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
 import { useAuth } from "../../../provider/AuthProvider"; // ✅ use AuthProvider
+import Loader from "../../../component/Loader";
 
 const PurchaseOrder = () => {
   // 1️⃣ Get user info from AuthProvider
@@ -128,7 +129,7 @@ const PurchaseOrder = () => {
     }
   };
 
-  if (authLoading) return <div>Loading user info...</div>;
+  if (authLoading) return <Loader/>;
 
   return (
     <div className="mx-auto p-2">

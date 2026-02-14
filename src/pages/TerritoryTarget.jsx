@@ -36,7 +36,7 @@ const TerritoryTarget = () => {
   return (
     <div className="bg-white pb-4 p-6">
       {isLoading ? (
-        <p>Loading...</p>
+        <p>Loading... from teritiort </p>
       ) : isError ? (
         <p className="text-red-500">Error loading territories.</p>
       ) : (

@@ -1,14 +1,29 @@
+import Loader from "../../component/Loader";
 import { useGetWarehouseReceiveRequestQuery } from "../../redux/features/wareHouse/warehouseReceiveApi";
 import WarehouseRequestProductCard from "./WarehouseRequestProductCard";
 
 const WarehouseRequest = () => {
-  const { data: whReceiveRequests, isLoading, refetch } = useGetWarehouseReceiveRequestQuery();
+  // Fetch pending warehouse receive requests
+  const { data: whReceiveRequests, isLoading } = useGetWarehouseReceiveRequestQuery(undefined, {
+    // Optional: live updates every 5s
+    pollingInterval: 5000,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
 
-  // Use the array inside `data` from backend
+  // Extract data and totals safely
   const filteredProducts = whReceiveRequests?.data || [];
+  const {
+    totalProducts = 0,
+    totalOrderQuantity = 0,
+    totalStockQuantity = 0,
+    totalMissingQuantity = 0,
+    count = 0,
+  } = whReceiveRequests || {};
 
-  // Use totals directly from backend
-  const { totalProducts = 0, totalOrderQuantity = 0, totalStockQuantity = 0, totalMissingQuantity = 0, count = 0 } = whReceiveRequests || {};
+  if (isLoading) {
+    return <Loader/>
+  }
 
   return (
     <div className="mx-auto p-2">
@@ -55,7 +70,7 @@ const WarehouseRequest = () => {
                     <th className="text-center">Order Quantity</th>
                     <th className="text-center">Stock Quantity</th>
                     <th className="text-center">Missing Quantity</th>
-                      <th className="text-center">Details</th>
+                    <th className="text-center">Details</th>
                     <th className="text-center">Approve</th>
                     <th className="text-center">Deny</th>
                   </tr>
@@ -64,15 +79,14 @@ const WarehouseRequest = () => {
                   {filteredProducts.map((product, idx) => (
                     <WarehouseRequestProductCard
                       idx={idx + 1}
-                      key={product.purchaseOrderId} // unique key
-                      product={product}            // full product data
-                      refetch={refetch}
+                      key={product.warehouseReceiveId} // ✅ use unique warehouseReceiveId as key
+                      product={product}
                       summary={{
                         count,
                         totalProducts,
                         totalOrderQuantity,
                         totalStockQuantity,
-                        totalMissingQuantity
+                        totalMissingQuantity,
                       }}
                     />
                   ))}
@@ -80,6 +94,7 @@ const WarehouseRequest = () => {
               </table>
             </div>
           </div>
+
         </div>
       </div>
     </div>
