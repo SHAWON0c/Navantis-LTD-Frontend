@@ -14,7 +14,7 @@ import ProtectedRoute from "../provider/PrivateRoute";
 import PurchaseOrder from "../pages/HQ/Admin/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/PurchaseOrderList";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
-import ProfilePage from "../pages/profile/ProfilePage";
+// import ProfilePage from "../pages/profile/ProfilePage";
 import WarehouseRequest from "../pages/WareHouse/WarehouseRequest";
 import StockIn from "../pages/WareHouse/warehouseStockin";
 import WarehouseProductsList from "../pages/WareHouse/warehouseProductsList";
@@ -24,15 +24,17 @@ import DepotStockIn from "../pages/Depot/DepotStockIn";
 import WarehouseStockOut from "../pages/WareHouse/warehouseStockOut";
 import DepotStockOut from "../pages/Depot/DepotStockOut";
 import WarehouseDamageRequest from "../pages/HQ/Admin/WarehouseDamageRequest";
-import DepotProductRequest from "../pages/HQ/Admin/DepotProductRequest";
+// import DepotProductRequest from "../pages/HQ/Admin/DepotProductRequest";
 import DepotExpriedRequest from "../pages/HQ/Admin/DepotExpriedRequest";
 import DamagedProducts from "../pages/WareHouse/DamagedProducts";
 import DepotDelivery from "../pages/WareHouse/DepotDelivery";
 import AreaPage from "../pages/AreaPage";
-import TerritoryPage from "../pages/Teritory";
+// import TerritoryPage from "../pages/Teritory";
 import TerritoryTarget from "../pages/TerritoryTarget";
 import SetTerritoryTarget from "../pages/SetTerritoryTarget";
 import UserProfile from "../pages/UserProfile";
+import Customer from "../pages/mpo/customer/Customer";
+import CreateCustomer from "../pages/mpo/customer/CreateCustomer";
 
 // ✅ FIXED PATHS
 
@@ -76,7 +78,7 @@ export default function AppRoutes() {
 
           <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
           <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
-          <Route path="/admin/depot-request" element={<DepotProductRequest />} />
+          {/* <Route path="/admin/depot-request" element={<DepotProductRequest />} /> */}
           <Route path="/admin/expired-request" element={<DepotExpriedRequest />} />
 
 
@@ -99,9 +101,13 @@ export default function AppRoutes() {
 
 
         <Route path="/area" element={<AreaPage />} />
-        <Route path="/territory" element={<TerritoryPage />} />
+        {/* <Route path="/territory" element={<TerritoryPage />} /> */}
         <Route path="/territory-target" element={<TerritoryTarget />} />
         <Route path="/territory/:id/set-target" element={<SetTerritoryTarget />} />
+
+
+        <Route path="/customer/list" element={<Customer />} />
+        <Route path="/customer/add" element={<CreateCustomer />} />  
 
       </Route>
 

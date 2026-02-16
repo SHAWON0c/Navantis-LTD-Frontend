@@ -1,130 +1,410 @@
+
+// import React, { useState, useRef, useEffect } from "react";
+// import { FaTimes } from "react-icons/fa";
+// import toast from "react-hot-toast";
+
+// import {
+//   useGetBrandsQuery,
+//   useGetProductsByBrandQuery,
+// } from "../../redux/features/products/productsApi";
+
+// import {
+//   useSendProductRequestMutation,
+//   useGetDepotProductStockCountQuery,
+// } from "../../redux/features/depot/depotStockApi";
+
+// const DepotProductRequestModal = ({ isOpen, onClose }) => {
+//   // ---------------- API ----------------
+//   const { data: brands = [], isLoading: brandsLoading } = useGetBrandsQuery();
+//   const [selectedBrand, setSelectedBrand] = useState("");
+
+//   const { data: productsData = {}, isLoading: productsLoading } =
+//     useGetProductsByBrandQuery(selectedBrand, { skip: !selectedBrand });
+
+//   const products = productsData.products || [];
+
+//   const [sendProductRequest, { isLoading: isSending }] =
+//     useSendProductRequestMutation();
+
+//   // ---------------- STATES ----------------
+//   const [brandOpen, setBrandOpen] = useState(false);
+//   const [productOpen, setProductOpen] = useState(false);
+//   const [selectedProduct, setSelectedProduct] = useState(null);
+//   const [requestQty, setRequestQty] = useState("");
+
+//   // Stock info
+//   const { data: stockData, refetch } = useGetDepotProductStockCountQuery(
+//     selectedProduct?._id,
+//     { skip: !selectedProduct }
+//   );
+
+//   const warehouseStock = stockData?.totalDepotQuantity || 0;
+//   const previouslyRequested = stockData?.totalPendingQuantity || 0;
+
+//   const brandRef = useRef(null);
+//   const productRef = useRef(null);
+
+//   // Close dropdown on outside click
+//   useEffect(() => {
+//     const handler = (e) => {
+//       if (brandRef.current && !brandRef.current.contains(e.target))
+//         setBrandOpen(false);
+//       if (productRef.current && !productRef.current.contains(e.target))
+//         setProductOpen(false);
+//     };
+//     document.addEventListener("mousedown", handler);
+//     return () => document.removeEventListener("mousedown", handler);
+//   }, []);
+
+//   // Refetch stock when product changes
+//   useEffect(() => {
+//     if (selectedProduct) refetch();
+//   }, [selectedProduct, refetch]);
+
+//   if (!isOpen) return null;
+
+//   // ---------------- SUBMIT ----------------
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+//   if (!selectedProduct || !requestQty) return;
+
+//   const payload = {
+//     requestedBy: "Depot A",
+//     productId: selectedProduct._id,
+//     quantity: Number(requestQty),
+//   };
+
+//   try {
+//     await sendProductRequest(payload).unwrap();
+
+//     // Show toast first
+//     toast.success("Product request submitted successfully!", {
+//       duration: 2000,
+//     });
+
+//     // Close modal smoothly
+//     setTimeout(() => {
+//       onClose();
+//     }, 400);
+
+//     // Reload AFTER toast finishes
+//     setTimeout(() => {
+//       window.location.reload();
+//     }, 2300);
+
+//   } catch (err) {
+//     console.error("REQUEST ERROR ❌", err);
+//     toast.error(err?.data?.message || "Failed to submit request");
+//   }
+// };
+
+
+//   // Disable submit if pending exists
+//   const disableSubmit = previouslyRequested > 0;
+
+//   return (
+//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+//       <div className="bg-white w-full max-w-xl rounded-xl shadow-xl animate-scaleIn">
+
+//         {/* HEADER */}
+//         <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50 rounded-t-xl">
+//           <h2 className="text-lg font-semibold">Depot Product Request</h2>
+//           <button onClick={onClose} className="text-gray-600 hover:text-red-500">
+//             <FaTimes size={18} />
+//           </button>
+//         </div>
+
+//         {/* BODY */}
+//         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
+
+//           {/* Requested By */}
+//           <div>
+//             <label className="text-sm font-medium">Requested By</label>
+//             <input
+//               value="Depot A"
+//               readOnly
+//               className="w-full border rounded-md p-2 bg-gray-100"
+//             />
+//           </div>
+
+//           {/* BRAND DROPDOWN */}
+//           <div ref={brandRef} className="relative">
+//             <label className="text-sm font-medium">Brand</label>
+//             <input
+//               readOnly
+//               value={selectedBrand}
+//               placeholder="Select Brand"
+//               onClick={() => setBrandOpen(!brandOpen)}
+//               className="w-full border rounded-md p-2 cursor-pointer bg-white"
+//             />
+
+//             {brandOpen && (
+//               <ul className="absolute z-20 w-full bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto mt-1">
+//                 {brandsLoading ? (
+//                   <li className="p-2 text-gray-400">Loading...</li>
+//                 ) : (
+//                   brands.map((b) => (
+//                     <li
+//                       key={b}
+//                       className="p-2 hover:bg-blue-100 cursor-pointer"
+//                       onClick={() => {
+//                         setSelectedBrand(b);
+//                         setSelectedProduct(null);
+//                         setBrandOpen(false);
+//                       }}
+//                     >
+//                       {b}
+//                     </li>
+//                   ))
+//                 )}
+//               </ul>
+//             )}
+//           </div>
+
+//           {/* PRODUCT DROPDOWN */}
+//           <div ref={productRef} className="relative">
+//             <label className="text-sm font-medium">Product</label>
+//             <input
+//               readOnly
+//               value={selectedProduct?.productName || ""}
+//               placeholder="Select Product"
+//               disabled={!selectedBrand}
+//               onClick={() => selectedBrand && setProductOpen(!productOpen)}
+//               className={`w-full border rounded-md p-2 cursor-pointer ${
+//                 !selectedBrand && "bg-gray-100"
+//               }`}
+//             />
+
+//             {productOpen && selectedBrand && (
+//               <ul className="absolute z-20 w-full bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto mt-1">
+//                 {productsLoading ? (
+//                   <li className="p-2 text-gray-400">Loading...</li>
+//                 ) : (
+//                   products.map((p) => (
+//                     <li
+//                       key={p._id}
+//                       className="p-2 hover:bg-blue-100 cursor-pointer"
+//                       onClick={() => {
+//                         setSelectedProduct(p);
+//                         setProductOpen(false);
+//                       }}
+//                     >
+//                       {p.productName}
+//                     </li>
+//                   ))
+//                 )}
+//               </ul>
+//             )}
+//           </div>
+
+//           {/* STOCK INFO */}
+//           {selectedProduct && (
+//             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border">
+//               <div className="text-center">
+//                 <p className="text-sm text-green-700">Available in Depot</p>
+//                 <p className="text-2xl font-bold">{warehouseStock}</p>
+//               </div>
+//               <div className="text-center">
+//                 <p className="text-sm text-red-600">Previously Requested</p>
+//                 <p className="text-2xl font-bold">{previouslyRequested}</p>
+//               </div>
+//             </div>
+//           )}
+
+//           {/* REQUEST QTY */}
+//           <div>
+//             <label className="text-sm font-medium">Request Quantity</label>
+//             <input
+//               type="number"
+//               min={1}
+//               max={warehouseStock}
+//               value={requestQty}
+//               onChange={(e) => setRequestQty(e.target.value)}
+//               disabled={!selectedProduct || disableSubmit}
+//               className="w-full border rounded-md p-2"
+//             />
+//           </div>
+
+//           {/* WARNING */}
+//           {disableSubmit && (
+//             <p className="text-sm text-red-600 font-medium">
+//               ⚠ Request already pending. Cannot submit again.
+//             </p>
+//           )}
+
+//           {/* SUBMIT BUTTON */}
+//           <button
+//             type="submit"
+//             disabled={!selectedProduct || !requestQty || disableSubmit || isSending}
+//             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-md transition"
+//           >
+//             {isSending ? "Sending..." : "Submit Request"}
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default DepotProductRequestModal;
+
+
+
 import React, { useState, useRef, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
+import toast from "react-hot-toast";
+
 import {
   useGetBrandsQuery,
   useGetProductsByBrandQuery,
 } from "../../redux/features/products/productsApi";
-import { useSendProductRequestMutation } from "../../redux/features/depot/depotStockApi";
+
+import {
+  useSendProductRequestMutation,
+  useGetDepotProductStockCountQuery,
+} from "../../redux/features/depot/depotStockApi";
 
 const DepotProductRequestModal = ({ isOpen, onClose }) => {
-  // ---------------- HOOKS (always run) ----------------
+  // ---------------- API ----------------
   const { data: brands = [], isLoading: brandsLoading } = useGetBrandsQuery();
   const [selectedBrand, setSelectedBrand] = useState("");
+
   const { data: productsData = {}, isLoading: productsLoading } =
     useGetProductsByBrandQuery(selectedBrand, { skip: !selectedBrand });
+
   const products = productsData.products || [];
 
   const [sendProductRequest, { isLoading: isSending }] =
     useSendProductRequestMutation();
 
+  // ---------------- STATES ----------------
   const [brandOpen, setBrandOpen] = useState(false);
   const [productOpen, setProductOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [requestQty, setRequestQty] = useState("");
+  const [submitted, setSubmitted] = useState(false); // ✅ lock UI after submit
+
+  // Stock info
+  const { data: stockData, refetch } = useGetDepotProductStockCountQuery(
+    selectedProduct?._id,
+    { skip: !selectedProduct }
+  );
+
+  const warehouseStock = stockData?.totalDepotQuantity || 0;
+  const previouslyRequested = stockData?.totalPendingQuantity || 0;
 
   const brandRef = useRef(null);
   const productRef = useRef(null);
 
-  // Temporary stock info (replace with API if available)
-  const warehouseStock = 120;
-  const previouslyRequested = 10;
-
-  // Close dropdowns on outside click
+  // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handler = (e) => {
       if (brandRef.current && !brandRef.current.contains(e.target))
         setBrandOpen(false);
       if (productRef.current && !productRef.current.contains(e.target))
         setProductOpen(false);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // ---------------- EARLY RETURN ----------------
+  // Refetch stock when product changes
+  useEffect(() => {
+    if (selectedProduct) refetch();
+  }, [selectedProduct, refetch]);
+
   if (!isOpen) return null;
 
-  // ---------------- HANDLERS ----------------
+  // ---------------- SUBMIT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedProduct || !requestQty) return;
 
     const payload = {
-      requestedBy: "Depot A", // replace with auth info if needed
+      requestedBy: "Depot A",
       productId: selectedProduct._id,
       quantity: Number(requestQty),
     };
 
     try {
       await sendProductRequest(payload).unwrap();
-      alert("Product request sent successfully ✅");
 
-      // Reset form
-      setSelectedBrand("");
-      setSelectedProduct(null);
+      // ✅ Success Toast
+      toast.success("✅ Product request submitted successfully!", {
+        duration: 2500,
+      });
+
+      // Lock UI
+      setSubmitted(true);
       setRequestQty("");
-      setBrandOpen(false);
-      setProductOpen(false);
-      onClose();
-    } catch (error) {
-      console.error("SEND PRODUCT REQUEST ERROR ❌", error);
-      alert(error?.data?.message || "Failed to send product request");
+
+      // Smooth reload after toast
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+
+    } catch (err) {
+      console.error("REQUEST ERROR ❌", err);
+      toast.error(err?.data?.message || "Failed to submit request");
     }
   };
 
-  // ---------------- UI ----------------
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white w-full max-w-lg rounded-lg shadow-lg">
+  // Disable submit if pending exists
+  const disableSubmit = previouslyRequested > 0 || submitted;
 
-        {/* Header */}
-        <div className="flex justify-between items-center px-5 py-4 border-b">
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="bg-white w-full max-w-xl rounded-xl shadow-xl 
+                      animate-[scaleIn_0.2s_ease-out]">
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50 rounded-t-xl">
           <h2 className="text-lg font-semibold">Depot Product Request</h2>
-          <button onClick={onClose}>
-            <FaTimes />
+          <button onClick={onClose} className="text-gray-600 hover:text-red-500">
+            <FaTimes size={18} />
           </button>
         </div>
 
-        {/* Body */}
+        {/* BODY */}
         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
 
           {/* Requested By */}
           <div>
-            <label className="block text-sm font-medium mb-1">Requested By</label>
+            <label className="text-sm font-medium">Requested By</label>
             <input
-              type="text"
               value="Depot A"
               readOnly
-              className="w-full border rounded p-2 bg-gray-100 cursor-not-allowed"
+              className="w-full border rounded-md p-2 bg-gray-100"
             />
           </div>
 
-          {/* Brand */}
+          {/* BRAND DROPDOWN */}
           <div ref={brandRef} className="relative">
-            <label className="block text-sm font-medium mb-1">Brand</label>
+            <label className="text-sm font-medium">Brand</label>
             <input
               readOnly
               value={selectedBrand}
-              placeholder="Select brand"
-              onClick={() => setBrandOpen((p) => !p)}
-              className="w-full border rounded p-2 cursor-pointer"
+              placeholder="Select Brand"
+              onClick={() => setBrandOpen(!brandOpen)}
+              className="w-full border rounded-md p-2 cursor-pointer bg-white"
             />
+
             {brandOpen && (
-              <ul className="absolute z-10 w-full bg-white border rounded shadow max-h-40 overflow-y-auto mt-1">
+              <ul className="absolute z-20 w-full bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto mt-1">
                 {brandsLoading ? (
-                  <li className="p-2 text-gray-500">Loading...</li>
+                  <li className="p-2 text-gray-400">Loading...</li>
                 ) : (
-                  brands.map((brand) => (
+                  brands.map((b) => (
                     <li
-                      key={brand}
+                      key={b}
+                      className="p-2 hover:bg-blue-100 cursor-pointer"
                       onClick={() => {
-                        setSelectedBrand(brand);
+                        setSelectedBrand(b);
                         setSelectedProduct(null);
                         setBrandOpen(false);
                       }}
-                      className="p-2 hover:bg-blue-100 cursor-pointer"
                     >
-                      {brand}
+                      {b}
                     </li>
                   ))
                 )}
@@ -132,32 +412,35 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Product */}
+          {/* PRODUCT DROPDOWN */}
           <div ref={productRef} className="relative">
-            <label className="block text-sm font-medium mb-1">Product</label>
+            <label className="text-sm font-medium">Product</label>
             <input
               readOnly
               value={selectedProduct?.productName || ""}
-              placeholder={selectedBrand ? "Select product" : "Select brand first"}
+              placeholder="Select Product"
               disabled={!selectedBrand}
-              onClick={() => selectedBrand && setProductOpen((p) => !p)}
-              className={`w-full border rounded p-2 ${!selectedBrand && "bg-gray-100 cursor-not-allowed"}`}
+              onClick={() => selectedBrand && setProductOpen(!productOpen)}
+              className={`w-full border rounded-md p-2 cursor-pointer ${
+                !selectedBrand && "bg-gray-100"
+              }`}
             />
+
             {productOpen && selectedBrand && (
-              <ul className="absolute z-10 w-full bg-white border rounded shadow max-h-40 overflow-y-auto mt-1">
+              <ul className="absolute z-20 w-full bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto mt-1">
                 {productsLoading ? (
-                  <li className="p-2 text-gray-500">Loading...</li>
+                  <li className="p-2 text-gray-400">Loading...</li>
                 ) : (
-                  products.map((prod) => (
+                  products.map((p) => (
                     <li
-                      key={prod._id}
+                      key={p._id}
+                      className="p-2 hover:bg-blue-100 cursor-pointer"
                       onClick={() => {
-                        setSelectedProduct(prod);
+                        setSelectedProduct(p);
                         setProductOpen(false);
                       }}
-                      className="p-2 hover:bg-blue-100 cursor-pointer"
                     >
-                      {prod.productName}
+                      {p.productName}
                     </li>
                   ))
                 )}
@@ -165,44 +448,56 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Stock Info */}
+          {/* STOCK INFO */}
           {selectedProduct && (
-            <div className="grid grid-cols-2 gap-4 p-4 bg-green-50 rounded text-center">
-              <div>
-                <p className="text-sm text-green-700">Available in Warehouse</p>
+            <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border">
+              <div className="text-center">
+                <p className="text-sm text-green-700">Available in Depot</p>
                 <p className="text-2xl font-bold">{warehouseStock}</p>
               </div>
-              <div>
-                <p className="text-sm text-blue-700">Previously Requested</p>
+              <div className="text-center">
+                <p className="text-sm text-red-600">Previously Requested</p>
                 <p className="text-2xl font-bold">{previouslyRequested}</p>
               </div>
             </div>
           )}
 
-          {/* Quantity */}
+          {/* REQUEST QTY */}
           <div>
-            <label className="block text-sm font-medium mb-1">Request Quantity</label>
+            <label className="text-sm font-medium">Request Quantity</label>
             <input
               type="number"
               min={1}
               max={warehouseStock}
               value={requestQty}
               onChange={(e) => setRequestQty(e.target.value)}
-              disabled={!selectedProduct}
-              onWheel={(e) => e.target.blur()}
-              className="w-full border rounded p-2"
+              disabled={!selectedProduct || disableSubmit}
+              className="w-full border rounded-md p-2"
             />
           </div>
 
-          {/* Submit */}
+          {/* WARNING */}
+          {previouslyRequested > 0 && (
+            <p className="text-sm text-red-600 font-medium">
+              ⚠ Request already pending. Cannot submit again.
+            </p>
+          )}
+
+          {submitted && (
+            <p className="text-sm text-green-600 font-medium">
+              ✅ Request submitted successfully. Reloading...
+            </p>
+          )}
+
+          {/* SUBMIT BUTTON */}
           <button
             type="submit"
-            disabled={!selectedProduct || !requestQty || isSending}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white p-2 rounded"
+            disabled={!selectedProduct || !requestQty || disableSubmit || isSending}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 
+                       text-white font-semibold py-2 rounded-md transition"
           >
-            {isSending ? "Sending..." : "Submit Request"}
+            {isSending ? "Sending..." : submitted ? "Submitted" : "Submit Request"}
           </button>
-
         </form>
       </div>
     </div>

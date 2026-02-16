@@ -51,16 +51,16 @@ const WarehouseProductsList = () => {
   };
 
   // --- Print handler ---
-const handlePrint = () => {
-  PrintWarehouseStockList({
-    products: whProducts,
-    summary: {
-      totalUniqueProducts,
-      totalUnits,
-      totalTradePrice,
-    },
-  });
-};
+  const handlePrint = () => {
+    PrintWarehouseStockList({
+      products: whProducts,
+      summary: {
+        totalUniqueProducts,
+        totalUnits,
+        totalTradePrice,
+      },
+    });
+  };
 
 
   return (
@@ -121,27 +121,28 @@ const handlePrint = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto px-6">
-        <table className="table w-full">
+      <div className="overflow-x-auto px-6 mt-4">
+        <table className="table-auto w-full border-collapse">
           <thead>
-            <tr>
-              <th className="text-center">✔</th>
-              <th className="text-center">Sl</th>
-              <th>Name</th>
-              <th>Pack Size</th>
-              <th className="text-center">Batch</th>
-              <th className="text-center">Exp</th>
-              <th className="text-center">Qty</th>
-              <th className="text-right">Price</th>
-              <th className="text-right">Total</th>
-              <th className="text-center">Action</th>
+            <tr className="bg-gray-100  border-gray-400">
+              <th className="text-center py-2 px-4">✔</th>
+              <th className="text-center py-2 px-4">Sl</th>
+              <th className="text-left py-2 px-4">Name</th>
+              <th className="text-center py-2 px-4">Pack Size</th>
+              <th className="text-center py-2 px-4">Batch</th>
+              <th className="text-center py-2 px-4">Exp.</th>
+              <th className="text-center py-2 px-4">Qty</th>
+              <th className="text-right py-2 px-4">Price</th>
+              <th className="text-right py-2 px-4">Total</th>
+              <th className="text-center py-2 px-4">Action</th>
             </tr>
           </thead>
+
           <tbody>
             {currentProducts.map((product, idx) => (
               <WarehouseProductCard
                 key={product._id}
-                idx={startIndex + idx + 1}
+                idx={startIndex + idx + 1} // Serial number
                 product={product}
                 checked={selectedProductId === product._id}
                 onToggle={() => toggleProduct(product)}
@@ -150,6 +151,7 @@ const handlePrint = () => {
           </tbody>
         </table>
       </div>
+
 
       {/* Pagination */}
       {totalPages > 1 && (

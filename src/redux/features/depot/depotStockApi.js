@@ -1,5 +1,3 @@
-// src/redux/features/depot/depotStockApi.js
-
 import { baseAPI } from "../../services/baseApi";
 
 export const depotStockAPI = baseAPI.injectEndpoints({
@@ -17,7 +15,7 @@ export const depotStockAPI = baseAPI.injectEndpoints({
     // 📦 Depot Product LIST
     getDepotProductList: builder.query({
       query: (params) => ({
-        url: "/depot/products",
+        url: "/depot-products",
         method: "GET",
         params,
       }),
@@ -52,17 +50,30 @@ export const depotStockAPI = baseAPI.injectEndpoints({
     // ✅ Update Depot Request Status
     updateDepotRequestStatus: builder.mutation({
       query: ({ id, ...payload }) => ({
-        url: `/depot/requests/${id}`,
+        url: `/depotRequests/${id}/status`,
         method: "PATCH",
         body: payload,
       }),
     }),
 
-    // =====================================================
-    // 📦 SEND PRODUCT REQUEST APIs (DEPOT → WAREHOUSE)
-    // =====================================================
+    // 📊 Grouped Depot Requests by Status (Date Wise)
+    getGroupedDepotRequests: builder.query({
+      query: (status) => ({
+        url: "/depotRequests/grouped",
+        method: "GET",
+        params: { status }, // "accepted", "requested", "pending"
+      }),
+    }),
 
-    // 📤 Send Product Request (Create)
+
+     getDepotProductStockCount: builder.query({
+      query: (productId) => ({
+        url: `/depot-products/stock-count/${productId}`,
+        method: "GET",
+      }),
+    }),
+
+    // 📝 Send a new Depot Product Request
     sendProductRequest: builder.mutation({
       query: (payload) => ({
         url: "/depotRequests",
@@ -71,37 +82,9 @@ export const depotStockAPI = baseAPI.injectEndpoints({
       }),
     }),
 
-    // 📑 Sent Product Requests by Status
-    getSentProductRequestsByStatus: builder.query({
-      query: (status) => ({
-        url: `/depotRequests/${status}`,
-        method: "GET",
-      }),
-    }),
-
-    // 📑 All Sent Product Requests (filterable)
-    getSentProductRequestList: builder.query({
-      query: (params) => ({
-        url: "/depot/send-product-request",
-        method: "GET",
-        params, // status, pagination, date range
-      }),
-    }),
-
-    // ✅ Update Send Product Request Status
-    updateSendProductRequestStatus: builder.mutation({
-      query: ({ id, ...payload }) => ({
-        url: `/depotRequests/${id}/status`,
-        method: "PATCH",
-        body: payload, // { status, approvedQty? }
-      }),
-    }),
-
   }),
   overrideExisting: false,
 });
-
-
 
 export const {
   // 📦 Depot stock
@@ -110,13 +93,17 @@ export const {
   useGetDepotStockOutListQuery,
   useDepotStockOutMutation,
 
-  // 📑 Depot request
+  // 📑 Depot Requests
   useGetDepotRequestsByStatusQuery,
   useUpdateDepotRequestStatusMutation,
 
-  // 📦 Send product request (Depot → Warehouse)
+  // ✅ Grouped Depot Requests
+  useGetGroupedDepotRequestsQuery,
+
+  // ✅ Approve Mutation
+  useApproveDepotRequestMutation,
+
+  // 📝 Send new request
   useSendProductRequestMutation,
-  useGetSentProductRequestsByStatusQuery,
-  useGetSentProductRequestListQuery,
-  useUpdateSendProductRequestStatusMutation,
+  useGetDepotProductStockCountQuery,
 } = depotStockAPI;

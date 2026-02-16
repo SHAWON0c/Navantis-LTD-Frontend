@@ -1,104 +1,53 @@
-
-
-
-// const WarehouseProductCard = ({ idx, product, checked, onToggle }) => {
-//   // ✅ Pack size from netWeight
-//   const packSize = product?.netWeight
-//     ? `${product.netWeight.value}${product.netWeight.unit}`
-//     : "-";
-
-//   // ✅ Expiry date formatting
-//   const expiryDate = product?.expireDate
-//     ? new Date(product.expireDate).toLocaleDateString()
-//     : "-";
-
-//   // ✅ Use backend values directly
-//   const tradePrice = product.tradePrice ?? 0;
-//   const totalPrice = product.totalTradePrice ?? 0;
-
-//   // ✅ Format numbers for display
-//   const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-//   return (
-//     <tr>
-//       <td className="text-center">
-//         <input
-//           type="checkbox"
-//           checked={checked}
-//           onChange={onToggle}
-//         />
-//       </td>
-
-//       <td className="text-center">{idx}</td>
-
-//       <td>{product.productName}</td>
-
-//       {/* Pack Size */}
-//       <td>{packSize}</td>
-
-//       <td className="text-center">{product.batch}</td>
-
-//       {/* Exp Date */}
-//       <td className="text-center">{expiryDate}</td>
-
-//       <td className="text-center">{product.totalQuantity ?? 0}</td>
-
-//       <td className="text-right">{formatNumber(tradePrice)}</td>
-
-//       <td className="text-right">{formatNumber(totalPrice)}</td>
-
-//       <td className="text-center">—</td>
-//     </tr>
-//   );
-// };
-
-// export default WarehouseProductCard;
-
-
-
 import React from "react";
 
 const WarehouseProductCard = ({ idx, product, checked, onToggle }) => {
-  // ✅ Pack size
   const packSize = product?.packSize || "-";
-
-  // ✅ Expiry date formatting
   const expiryDate = product?.expireDate
     ? new Date(product.expireDate).toLocaleDateString()
     : "-";
 
-  // ✅ Prices from backend
   const tradePrice = product.tradePrice ?? 0;
   const totalQuantity = product.totalQuantity ?? 0;
   const totalPrice = tradePrice * totalQuantity;
 
-  // ✅ Format numbers for display
   const formatNumber = (num) =>
     num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <tr>
-      <td className="text-center">
+    <tr className="border-b border-gray-300 hover:bg-gray-50 transition-colors">
+      {/* Checkbox */}
+      <td className="text-center px-4 py-2">
         <input type="checkbox" checked={checked} onChange={onToggle} />
       </td>
 
-      <td className="text-center">{idx}</td>
+      {/* Serial Number */}
+      <td className="text-center px-4 py-2">{idx}</td>
 
-      <td>{product.productName}</td>
+      {/* Product Name */}
+      <td className="px-4 py-2">{product.productName}</td>
 
-      <td>{packSize}</td>
+      {/* Pack Size */}
+      <td className="text-center px-4 py-2">{packSize}</td>
 
-      <td className="text-center">{product.batch}</td>
+      {/* Batch */}
+      <td className="text-center px-4 py-2">{product.batch}</td>
 
-      <td className="text-center">{expiryDate}</td>
+      {/* Expiry */}
+      <td className="text-center px-4 py-2">{expiryDate}</td>
 
-      <td className="text-center">{totalQuantity}</td>
+      {/* Quantity */}
+      <td className="text-center px-4 py-2">{totalQuantity}</td>
 
-      <td className="text-right">{formatNumber(tradePrice)}</td>
+      {/* Price/Unit */}
+      <td className="text-right px-4 py-2">{formatNumber(tradePrice)}</td>
 
-      <td className="text-right">{formatNumber(totalPrice)}</td>
+      {/* Total Price */}
+      <td className="text-right px-4 py-2">{formatNumber(totalPrice)}</td>
 
-      <td className="text-center">—</td>
+      {/* Action */}
+      <td className="text-center px-4 py-2">
+        <button className="text-blue-500 hover:underline">Action</button>
+      </td>
     </tr>
   );
 };
