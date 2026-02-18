@@ -10,10 +10,10 @@ export const orderAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["Orders"], // you can use this to refetch order list if needed
+      invalidatesTags: ["Orders"], // Refetch orders list after creation
     }),
 
-    // ✅ Get all orders (optional)
+    // ✅ Get all orders
     getAllOrders: builder.query({
       query: () => ({
         url: "/orders",
@@ -21,8 +21,31 @@ export const orderAPI = baseAPI.injectEndpoints({
       }),
       providesTags: ["Orders"],
     }),
+
+    // ✅ Get pending orders
+    getPendingOrders: builder.query({
+      query: () => ({
+        url: "/orders/pending",
+        method: "GET",
+      }),
+      providesTags: ["Orders"], // Optional: allows cache updates
+    }),
+
+    // ✅ Approve Order
+    approveOrder: builder.mutation({
+      query: (orderId) => ({
+        url: `/orders/approve/${orderId}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Orders"], // Refetch order list after approval
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useCreateOrderMutation, useGetAllOrdersQuery } = orderAPI;
+export const {
+  useCreateOrderMutation,
+  useGetAllOrdersQuery,
+  useGetPendingOrdersQuery, // ✅ new hook for pending orders
+  useApproveOrderMutation,
+} = orderAPI;

@@ -36,6 +36,7 @@ import UserProfile from "../pages/UserProfile";
 import Customer from "../pages/mpo/customer/Customer";
 import CreateCustomer from "../pages/mpo/customer/CreateCustomer";
 import PlaceOrder from "../pages/mpo/order/PlaceOrder";
+import PendingOrders from "../pages/Depot/approveOrder";
 
 // ✅ FIXED PATHS
 
@@ -99,6 +100,7 @@ export default function AppRoutes() {
         <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
         <Route path="/depot/stock-in" element={<DepotStockIn />} />
         <Route path="/depot/stock-out" element={<DepotStockOut />} />
+        <Route path="/depot/order-delivery" element={<PendingOrders />} />
 
 
         <Route path="/area" element={<AreaPage />} />
