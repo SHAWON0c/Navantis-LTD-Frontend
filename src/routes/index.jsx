@@ -35,6 +35,7 @@ import SetTerritoryTarget from "../pages/SetTerritoryTarget";
 import UserProfile from "../pages/UserProfile";
 import Customer from "../pages/mpo/customer/Customer";
 import CreateCustomer from "../pages/mpo/customer/CreateCustomer";
+import PlaceOrder from "../pages/mpo/order/PlaceOrder";
 
 // ✅ FIXED PATHS
 
@@ -90,14 +91,14 @@ export default function AppRoutes() {
         </Route>
 
 
+
+
+       <Route element={<ProtectedRoute allowedRoles={["managing-director" ,"warehouse-manager"]} />}>
         <Route path="/depot/products" element={<DepotProductsList />} />
         <Route path="/warehouse/damaged" element={<DamagedProducts />} />
         <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
         <Route path="/depot/stock-in" element={<DepotStockIn />} />
         <Route path="/depot/stock-out" element={<DepotStockOut />} />
-
-
-
 
 
         <Route path="/area" element={<AreaPage />} />
@@ -108,6 +109,9 @@ export default function AppRoutes() {
 
         <Route path="/customer/list" element={<Customer />} />
         <Route path="/customer/add" element={<CreateCustomer />} />  
+
+        <Route path="orders/place" element={<PlaceOrder />} />
+        </Route>
 
       </Route>
 
