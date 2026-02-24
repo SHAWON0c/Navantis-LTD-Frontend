@@ -10,7 +10,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["Orders"], // Refetch orders list after creation
+      invalidatesTags: ["Orders"],
     }),
 
     // ✅ Get all orders
@@ -28,7 +28,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: "/orders/pending",
         method: "GET",
       }),
-      providesTags: ["Orders"], // Optional: allows cache updates
+      providesTags: ["Orders"],
     }),
 
     // ✅ Approve Order
@@ -37,7 +37,16 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: `/orders/approve/${orderId}`,
         method: "PATCH",
       }),
-      invalidatesTags: ["Orders"], // Refetch order list after approval
+      invalidatesTags: ["Orders"],
+    }),
+
+    // ✅ Deliver Order
+    deliverOrder: builder.mutation({
+      query: (orderId) => ({
+        url: `/orders/deliver/${orderId}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Orders"], // Refetch orders after delivery
     }),
   }),
   overrideExisting: false,
@@ -46,6 +55,7 @@ export const orderAPI = baseAPI.injectEndpoints({
 export const {
   useCreateOrderMutation,
   useGetAllOrdersQuery,
-  useGetPendingOrdersQuery, // ✅ new hook for pending orders
+  useGetPendingOrdersQuery,
   useApproveOrderMutation,
+  useDeliverOrderMutation, // ✅ new hook for delivering orders
 } = orderAPI;

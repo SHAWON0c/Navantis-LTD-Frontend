@@ -1,178 +1,399 @@
+// // src/components/PendingOrdersCard.jsx
+// import React, { useState } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import {
+//   FaBoxOpen,
+//   FaClipboardList,
+//   FaHistory,
+//   FaCheck,
+//   FaChevronDown,
+//   FaChevronUp,
+// } from "react-icons/fa";
+
+// import { useGetPendingOrdersQuery, useApproveOrderMutation } from "../../redux/features/orders/orderApi";
+// import Loader from "../../component/Loader";
+// import OrderProductsDetailsModal from "../../component/modals/OrderProductsDetailsModal";
+
+// const PendingOrdersCard = () => {
+//   const { data, isLoading, refetch } = useGetPendingOrdersQuery(); // ONLY this query
+//   const orders = data?.data || [];
+//   const [selectedProductOrder, setSelectedProductOrder] = useState(null);
+//   const [expandedRows, setExpandedRows] = useState([]);
+//   const [approveOrder] = useApproveOrderMutation(); // Approve mutation
+
+//   if (isLoading) return <Loader />;
+//   if (!orders.length) return <p className="text-center mt-12 text-gray-500">No pending orders</p>;
+
+//   const toggleRow = (orderId) => {
+//     setExpandedRows((prev) =>
+//       prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+//     );
+//   };
+
+//   const handleApprove = async (orderId) => {
+//     try {
+//       await approveOrder(orderId).unwrap();
+//       alert("✅ Order approved successfully!");
+//       refetch();
+//     } catch (err) {
+//       console.error(err);
+//       alert("❌ Failed to approve order");
+//     }
+//   };
+
+//   // Placeholder functions (you can implement later)
+//   const assignRider = (orderId, riderId) => {
+//     console.log("Assign Rider:", orderId, riderId);
+//     alert(`Assign Rider ID ${riderId} to order ${orderId}`);
+//   };
+//   const handleDeliver = (orderId) => {
+//     console.log("Deliver Order:", orderId);
+//     alert(`Deliver order ${orderId}`);
+//   };
+
+//   return (
+//     <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+//       <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">
+//         Pending Orders
+//       </h1>
+
+//       <div className="overflow-x-auto bg-white shadow rounded-xl">
+//         <table className="min-w-full divide-y divide-gray-200">
+//           <thead className="bg-gray-100">
+//             <tr>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer ID</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Territory</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Mode</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+//             </tr>
+//           </thead>
+
+//           <tbody className="bg-white divide-y divide-gray-200">
+//             {orders.map((order, index) => {
+//               const isExpanded = expandedRows.includes(order.orderId);
+
+//               return (
+//                 <React.Fragment key={order.orderId}>
+//                   <motion.tr
+//                     initial={{ opacity: 0, y: 10 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     transition={{ duration: 0.2 }}
+//                     className="hover:bg-gray-50"
+//                   >
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.customerName}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.customerId}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.territory.territoryName}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{new Date(order.orderDate).toLocaleDateString("en-GB")}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.payMode}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.phoneNumber}</td>
+//                     <td className="px-6 py-4 whitespace-nowrap flex flex-wrap gap-2">
+//                       {/* Logic: Approve / Assign Rider / Deliver */}
+//                       {order.orderStatus !== "confirmed" ? (
+//                         <button
+//                           onClick={() => handleApprove(order.orderId)}
+//                           className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+//                         >
+//                           <FaCheck /> Approve
+//                         </button>
+//                       ) : !order.assignedRiderId ? (
+//                         <select
+//                           onChange={(e) => assignRider(order.orderId, e.target.value)}
+//                           className="px-3 py-1 text-sm rounded-md border border-gray-300"
+//                         >
+//                           <option value="">Assign Rider</option>
+//                           {order.riders?.map((r) => (
+//                             <option key={r.id} value={r.id}>{r.name}</option>
+//                           ))}
+//                         </select>
+//                       ) : (
+//                         <button
+//                           onClick={() => handleDeliver(order.orderId)}
+//                           className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+//                         >
+//                           Deliver
+//                         </button>
+//                       )}
+
+//                       {/* Details and History */}
+//                       <button
+//                         onClick={() => alert("View Details placeholder")}
+//                         className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+//                       >
+//                         <FaClipboardList /> Details
+//                       </button>
+//                       <button
+//                         onClick={() => alert("Customer history placeholder")}
+//                         className="flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+//                       >
+//                         <FaHistory /> History
+//                       </button>
+//                     </td>
+//                   </motion.tr>
+
+//                   {/* Collapsible Products */}
+//                   {isExpanded && (
+//                     <tr className="bg-gray-50">
+//                       <td colSpan={8} className="px-6 py-4">
+//                         <div className="overflow-x-auto">
+//                           <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+//                             <thead className="bg-gray-200">
+//                               <tr>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Product</th>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Pack Size</th>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Trade Price</th>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Quantity</th>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Earliest Expiry</th>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Batch</th>
+//                                 <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Depot Quantity</th>
+//                               </tr>
+//                             </thead>
+//                             <tbody className="bg-white divide-y divide-gray-200">
+//                               {order.products.map((p) => (
+//                                 <tr key={p.productId}>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.productName}</td>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.packSize}</td>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.tradePrice}</td>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.quantity}</td>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.earliestExpiryDate ? new Date(p.earliestExpiryDate).toLocaleDateString("en-GB") : "-"}</td>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.batch || "-"}</td>
+//                                   <td className="px-4 py-2 text-sm text-gray-700">{p.depotTotalQuantity || "-"}</td>
+//                                 </tr>
+//                               ))}
+//                             </tbody>
+//                           </table>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   )}
+//                 </React.Fragment>
+//               );
+//             })}
+//           </tbody>
+//         </table>
+//       </div>
+
+//       {/* Product Modal */}
+//       <AnimatePresence>
+//         {selectedProductOrder && (
+//           <OrderProductsDetailsModal
+//             isOpen={!!selectedProductOrder}
+//             order={selectedProductOrder}
+//             onClose={() => setSelectedProductOrder(null)}
+//             onDeliver={handleApprove}
+//           />
+//         )}
+//       </AnimatePresence>
+//     </div>
+//   );
+// };
+
+// export default PendingOrdersCard;
+
+
+
 // src/components/PendingOrdersCard.jsx
-
-
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaUser,
-  FaIdBadge,
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaHome,
-  FaMoneyBillWave,
-  FaPhone,
-  FaBoxOpen,
-  FaHistory,
   FaClipboardList,
+  FaHistory,
+  FaCheck,
 } from "react-icons/fa";
 
-import OrderProductsDetailsModal from "../../component/modals/OrderProductsDetailsModal";
-import {
-  useGetPendingOrdersQuery,
-  useApproveOrderMutation,
+import { 
+  useGetPendingOrdersQuery, 
+  useApproveOrderMutation, 
+  useDeliverOrderMutation // ✅ deliver mutation
 } from "../../redux/features/orders/orderApi";
 import Loader from "../../component/Loader";
-
-// Info Cell Component
-const InfoCell = ({ icon, label, value }) => (
-  <div className="flex items-center gap-2">
-    {icon && <span className="text-lg">{icon}</span>}
-    <div className="flex flex-col">
-      <span className="uppercase tracking-wide text-gray-400 text-xs md:text-sm">{label}</span>
-      <span className="text-gray-700 font-medium text-sm md:text-base">{value}</span>
-    </div>
-  </div>
-);
+import OrderProductsDetailsModal from "../../component/modals/OrderProductsDetailsModal";
 
 const PendingOrdersCard = () => {
   const { data, isLoading, refetch } = useGetPendingOrdersQuery();
   const orders = data?.data || [];
 
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedProductOrder, setSelectedProductOrder] = useState(null);
+  const [expandedRows, setExpandedRows] = useState([]);
+
   const [approveOrder] = useApproveOrderMutation();
+  const [deliverOrder] = useDeliverOrderMutation(); // ✅ deliver API hook
 
-const handleApprove = async (orderId) => {
-  try {
-    await approveOrder(orderId).unwrap(); // PATCH request
+  if (isLoading) return <Loader />;
+  if (!orders.length) return <p className="text-center mt-12 text-gray-500">No pending orders</p>;
 
-    // Close any open modal if the approved order is selected
-    if (selectedOrder?.orderId === orderId) setSelectedOrder(null);
-    if (selectedProductOrder?.orderId === orderId) setSelectedProductOrder(null);
+  const toggleRow = (orderId) => {
+    setExpandedRows(prev =>
+      prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]
+    );
+  };
 
-    alert("✅ Order approved successfully!"); // show success alert
-    refetch(); // Refetch pending orders
-  } catch (err) {
-    console.error(err);
-    alert("❌ Failed to approve order");
-  }
-};
+  const handleApprove = async (orderId) => {
+    try {
+      await approveOrder(orderId).unwrap();
+      alert("✅ Order approved successfully!");
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to approve order");
+    }
+  };
 
+  const handleDeliver = async (orderId) => {
+    try {
+      await deliverOrder(orderId).unwrap(); // ✅ call deliver API with orderId
+      alert("✅ Order delivered successfully!");
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to deliver order");
+    }
+  };
 
-  if (isLoading)
-    return <Loader></Loader>
-  if (!orders.length)
-    return <p className="text-center mt-12 text-gray-500">No pending orders</p>;
+  const assignRider = (orderId, riderId) => {
+    console.log("Assign Rider:", orderId, riderId);
+    alert(`Assign Rider ID ${riderId} to order ${orderId}`);
+  };
 
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen space-y-6">
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-6">
+    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">
         Pending Orders
       </h1>
 
-      {orders.map((order, index) => (
-        <motion.div
-          key={order.orderId}
-          className="bg-white rounded-2xl shadow-md p-6 border border-gray-300 relative"
-        >
-          {/* Serial Number */}
-          <div className="absolute top-3 left-3 bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
-            {index + 1}
-          </div>
+      <div className="overflow-x-auto bg-white shadow rounded-xl">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Territory</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Mode</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
 
-          {/* Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border border-gray-300 p-4 rounded-lg">
-            <InfoCell icon={<FaUser className="text-pink-500" />} label="Customer Name" value={order.customer.customerName} />
-            <InfoCell icon={<FaIdBadge className="text-indigo-500" />} label="Customer ID" value={order.customer.customerId} />
-            <InfoCell icon={<FaMapMarkerAlt className="text-green-500" />} label="Territory" value={order.territory.territoryName} />
-            <InfoCell icon={<FaCalendarAlt className="text-yellow-500" />} label="Order Date" value={new Date(order.orderDate).toLocaleDateString("en-GB")} />
-            <InfoCell icon={<FaHome className="text-purple-500" />} label="Address" value={order.customer.address} />
-            <InfoCell icon={<FaMoneyBillWave className="text-teal-500" />} label="Payment Mode" value={order.payMode} />
-            <InfoCell icon={<FaPhone className="text-orange-500" />} label="Order By" value={order.customer.phoneNumber} />
-            <InfoCell icon={<FaPhone className="text-red-500" />} label="Phone" value={order.customer.phoneNumber} />
-          </div>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {orders.map((order, index) => {
+              const isExpanded = expandedRows.includes(order.orderId);
 
-          {/* Action Buttons */}
-          <div className="mt-4 flex flex-wrap justify-between items-center">
-            {/* Left Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedOrder(order)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
-              >
-                <FaClipboardList className="text-yellow-300" /> View Details
-              </button>
-              <button
-                onClick={() => setSelectedOrder(order)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
-              >
-                <FaHistory className="text-pink-300" /> Customer History
-              </button>
-            </div>
+              return (
+                <React.Fragment key={order.orderId}>
+                  <motion.tr
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.customerName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.customerId}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.territory.territoryName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{new Date(order.orderDate).toLocaleDateString("en-GB")}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.payMode}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.phoneNumber}</td>
+                    <td className="px-6 py-4 whitespace-nowrap flex flex-wrap gap-2">
+                      {order.orderStatus !== "confirmed" ? (
+                        <button
+                          onClick={() => handleApprove(order.orderId)}
+                          className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                        >
+                          <FaCheck /> Approve
+                        </button>
+                      ) : !order.assignedRiderId ? (
+                        <select
+                          onChange={(e) => assignRider(order.orderId, e.target.value)}
+                          className="px-3 py-1 text-sm rounded-md border border-gray-300"
+                        >
+                          <option value="">Assign Rider</option>
+                          {order.riders?.map((r) => (
+                            <option key={r.id} value={r.id}>{r.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <button
+                          onClick={() => handleDeliver(order.orderId)} // ✅ use orderId here
+                          className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                        >
+                          Deliver
+                        </button>
+                      )}
 
-            {/* Right Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setSelectedProductOrder(order)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
-              >
-                <FaBoxOpen className="text-green-300" /> View Products
-              </button>
-              <button
-                onClick={() => handleApprove(order.orderId)}
-                className="bg-green-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
-              >
-                Approve
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      ))}
+                      <button
+                        onClick={() => alert("View Details placeholder")}
+                        className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                      >
+                        <FaClipboardList /> Details
+                      </button>
+                      <button
+                        onClick={() => alert("Customer history placeholder")}
+                        className="flex items-center gap-1 bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                      >
+                        <FaHistory /> History
+                      </button>
+                    </td>
+                  </motion.tr>
 
-      {/* Modals */}
+                  {/* Collapsible Products */}
+                  {isExpanded && (
+                    <tr className="bg-gray-50">
+                      <td colSpan={8} className="px-6 py-4">
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+                            <thead className="bg-gray-200">
+                              <tr>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Product</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Pack Size</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Trade Price</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Quantity</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Earliest Expiry</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Batch</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Depot Quantity</th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {order.products.map((p) => (
+                                <tr key={p.productId}>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.productName}</td>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.packSize}</td>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.tradePrice}</td>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.quantity}</td>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.earliestExpiryDate ? new Date(p.earliestExpiryDate).toLocaleDateString("en-GB") : "-"}</td>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.batch || "-"}</td>
+                                  <td className="px-4 py-2 text-sm text-gray-700">{p.depotTotalQuantity || "-"}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Product Modal */}
       <AnimatePresence>
-        {selectedOrder && (
-          <ModalDummy
-            isOpen={!!selectedOrder}
-            order={selectedOrder}
-            onClose={() => setSelectedOrder(null)}
-          />
-        )}
         {selectedProductOrder && (
           <OrderProductsDetailsModal
             isOpen={!!selectedProductOrder}
             order={selectedProductOrder}
             onClose={() => setSelectedProductOrder(null)}
-            onDeliver={handleApprove} // PATCH call
+            onDeliver={handleDeliver} // ✅ now calls deliver API using orderId
           />
         )}
       </AnimatePresence>
-    </div>
-  );
-};
-
-// Temporary modal for View Details / History
-const ModalDummy = ({ isOpen, order, onClose }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-2xl p-6 shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4">Order Details (Dummy)</h2>
-        <p>Customer: {order.customer.customerName}</p>
-        <p>Customer ID: {order.customer.customerId}</p>
-        <p>Territory: {order.territory.territoryName}</p>
-        <p>Order Date: {new Date(order.orderDate).toLocaleDateString("en-GB")}</p>
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-red-500 text-white px-6 py-2 rounded-xl font-semibold flex items-center gap-2"
-          >
-            Close
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
