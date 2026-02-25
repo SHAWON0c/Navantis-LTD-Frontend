@@ -38,6 +38,10 @@ import CreateCustomer from "../pages/mpo/customer/CreateCustomer";
 import PlaceOrder from "../pages/mpo/order/PlaceOrder";
 import PendingOrders from "../pages/Depot/approveOrder";
 
+
+import HardcodedInvoicePrint from "../component/reports/InvoicePrintPage";
+import DispatchRidersPage from "../pages/Depot/DispatchRidersPage";
+
 // ✅ FIXED PATHS
 
 
@@ -101,6 +105,7 @@ export default function AppRoutes() {
         <Route path="/depot/stock-in" element={<DepotStockIn />} />
         <Route path="/depot/stock-out" element={<DepotStockOut />} />
         <Route path="/depot/order-delivery" element={<PendingOrders />} />
+        <Route path="/depot/dispatch-rider" element={<DispatchRidersPage />} />
 
 
         <Route path="/area" element={<AreaPage />} />
@@ -113,6 +118,8 @@ export default function AppRoutes() {
         <Route path="/customer/add" element={<CreateCustomer />} />  
 
         <Route path="orders/place" element={<PlaceOrder />} />
+
+        <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
         </Route>
 
       </Route>

@@ -28,3 +28,32 @@
 .swal2-title {
   color: #065f46 !important;
 }
+
+
+
+.invoice-print {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  margin: auto;
+  background: white;
+  color: black;
+}
+
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .invoice-print {
+    width: 100%;
+    padding: 10mm;
+  }
+}
+
+
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+}

@@ -16,3 +16,25 @@
 
 
 /* SweetAlert2 custom pharma style */
+
+
+
+.invoice-print {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  margin: auto;
+  background: white;
+  color: black;
+}
+
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .invoice-print {
+    width: 100%;
+    padding: 10mm;
+  }
+}
