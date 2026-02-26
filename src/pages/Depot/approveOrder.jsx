@@ -479,7 +479,19 @@ const PendingOrdersCard = () => {
   const navigate = useNavigate();
 
   if (isLoading) return <Loader />;
-  if (!orders.length) return <p className="text-center mt-12 text-gray-500">No pending orders</p>;
+if (!orders.length) {
+  return (
+    <div className="text-center mt-12">
+      <p className="text-gray-500 mb-4 mt-60">No pending orders</p>
+      <button
+        onClick={() => window.location.reload()} // Full page reload
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+      >
+        Refresh
+      </button>
+    </div>
+  );
+}
 
   const toggleRow = (orderId) => {
     setExpandedRows(prev =>
