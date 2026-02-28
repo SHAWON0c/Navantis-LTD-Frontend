@@ -63,7 +63,7 @@ export default function AppRoutes() {
       <Route element={<DashboardLayout />}>
 
         {/* Default dashboard */}
-        <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["managing-director","mpo","warehouse-manager"]} />}>
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/profile" element={<UserProfile />} />
 
@@ -99,7 +99,7 @@ export default function AppRoutes() {
 
 
 
-       <Route element={<ProtectedRoute allowedRoles={["managing-director" ,"warehouse-manager"]} />}>
+       <Route element={<ProtectedRoute allowedRoles={["managing-director" ,"warehouse-manager" ,"mpo"]} />}>
         <Route path="/depot/products" element={<DepotProductsList />} />
         <Route path="/warehouse/damaged" element={<DamagedProducts />} />
         <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />

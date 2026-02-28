@@ -198,12 +198,104 @@
 
 
 
+// import { useState } from "react";
+// import { NavLink } from "react-router-dom";
+// import { ChevronRight, Activity } from "lucide-react";
+// import sidebarConfig from "../config/sidebar.config.json";
+// import { iconMap } from "../config/iconMap";
+// import { img } from "framer-motion/client";
+
+// export default function Sidebar({ isOpen }) {
+//   const [openMenu, setOpenMenu] = useState(null);
+
+//   const toggleMenu = (key) => {
+//     setOpenMenu(openMenu === key ? null : key);
+//   };
+
+//   const linkClass =
+//     "flex items-center gap-3 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors text-white font-bold"
+
+//   const sectionClass =
+//     "flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-500 cursor-pointer text-white text-sm";
+
+//   return (
+//     <aside className={`bg-[#0F213D] h-full ${isOpen ? "w-64" : "w-16"} transition-all`}>
+//       {/* Logo */}
+//       <div className="h-16 flex items-center justify-center border-b border-white bg-black dark:bg-gray-800">
+//         {isOpen ? (
+//           <img
+//             src="/images/NPL-Logo2.png"
+//             alt="Logo"
+//             className="h-auto w-auto"
+//           />
+//         ) : (
+//           <Activity />
+//         )}
+//       </div>
+
+
+//       <nav className="p-2 space-y-1 text-white">
+//         {sidebarConfig.map((menu) => {
+//           const Icon = iconMap[menu.icon];
+
+//           // 🔹 Simple link
+//           if (!menu.children) {
+//             return (
+//               <NavLink key={menu.key} to={menu.path} className={linkClass}>
+//                 <Icon className="w-5 h-5" />
+//                 {isOpen && menu.label}
+//               </NavLink>
+//             );
+//           }
+
+//           // 🔹 Dropdown section
+//           return (
+//             <div key={menu.key}>
+//               <div onClick={() => toggleMenu(menu.key)} className={sectionClass}>
+//                 <div className="flex items-center gap-3 font-bold text-base">
+//                   <Icon className="w-5 h-5" />
+//                   {isOpen && menu.label}
+//                 </div>
+//                 {isOpen && (
+//                   <ChevronRight
+//                     className={`w-4 h-4 transition-transform ${openMenu === menu.key ? "rotate-90" : ""
+//                       }`}
+//                   />
+//                 )}
+//               </div>
+
+//               {openMenu === menu.key && isOpen && (
+//                 <div className="ml-6 mt-1 space-y-1 text-sm">
+//                   {menu.children.map((child) => {
+//                     const ChildIcon = iconMap[child.icon];
+
+//                     return (
+//                       <NavLink
+//                         key={child.path}
+//                         to={child.path}
+//                         className="flex items-center gap-2 py-1 px-2 rounded text-gray-100 hover:bg-blue-500 hover:text-white"
+//                       >
+//                         <ChildIcon className="w-4 h-4 text-white" /> {/* icon color white */}
+//                         {child.label}
+//                       </NavLink>
+//                     );
+//                   })}
+//                 </div>
+//               )}
+
+//             </div>
+//           );
+//         })}
+//       </nav>
+//     </aside>
+//   );
+// }
+
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ChevronRight, Activity } from "lucide-react";
 import sidebarConfig from "../config/sidebar.config.json";
 import { iconMap } from "../config/iconMap";
-import { img } from "framer-motion/client";
 
 export default function Sidebar({ isOpen }) {
   const [openMenu, setOpenMenu] = useState(null);
@@ -213,29 +305,47 @@ export default function Sidebar({ isOpen }) {
   };
 
   const linkClass =
-    "flex items-center gap-3 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors text-white font-bold"
+    "flex items-center gap-3 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors text-white font-bold";
 
   const sectionClass =
     "flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-500 cursor-pointer text-white text-sm";
+
+  // 🔹 Get user role from localStorage
+  const userRole = localStorage.getItem("role");
+
+  // 🔹 Filter sidebar based on allowedRoles
+  const filteredSidebar = sidebarConfig
+    .map((menu) => {
+      if (!menu.children) {
+        if (!menu.allowedRoles || menu.allowedRoles.includes(userRole)) {
+          return menu;
+        }
+        return null;
+      }
+
+      const allowedChildren = menu.children.filter(
+        (child) => !child.allowedRoles || child.allowedRoles.includes(userRole)
+      );
+
+      if (allowedChildren.length === 0) return null;
+
+      return { ...menu, children: allowedChildren };
+    })
+    .filter(Boolean); // remove nulls
 
   return (
     <aside className={`bg-[#0F213D] h-full ${isOpen ? "w-64" : "w-16"} transition-all`}>
       {/* Logo */}
       <div className="h-16 flex items-center justify-center border-b border-white bg-black dark:bg-gray-800">
         {isOpen ? (
-          <img
-            src="/images/NPL-Logo2.png"
-            alt="Logo"
-            className="h-auto w-auto"
-          />
+          <img src="/images/NPL-Logo2.png" alt="Logo" className="h-auto w-auto" />
         ) : (
           <Activity />
         )}
       </div>
 
-
       <nav className="p-2 space-y-1 text-white">
-        {sidebarConfig.map((menu) => {
+        {filteredSidebar.map((menu) => {
           const Icon = iconMap[menu.icon];
 
           // 🔹 Simple link
@@ -258,8 +368,9 @@ export default function Sidebar({ isOpen }) {
                 </div>
                 {isOpen && (
                   <ChevronRight
-                    className={`w-4 h-4 transition-transform ${openMenu === menu.key ? "rotate-90" : ""
-                      }`}
+                    className={`w-4 h-4 transition-transform ${
+                      openMenu === menu.key ? "rotate-90" : ""
+                    }`}
                   />
                 )}
               </div>
@@ -275,14 +386,13 @@ export default function Sidebar({ isOpen }) {
                         to={child.path}
                         className="flex items-center gap-2 py-1 px-2 rounded text-gray-100 hover:bg-blue-500 hover:text-white"
                       >
-                        <ChildIcon className="w-4 h-4 text-white" /> {/* icon color white */}
+                        <ChildIcon className="w-4 h-4 text-white" />
                         {child.label}
                       </NavLink>
                     );
                   })}
                 </div>
               )}
-
             </div>
           );
         })}

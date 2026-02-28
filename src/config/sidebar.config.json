@@ -4,202 +4,176 @@
     "label": "Admin",
     "icon": "Users",
     "children": [
-      { "label": "Purchase Order", "path": "/admin/purchase-order", "icon": "FileText" },
-      { "label": "Purchase List", "path": "/admin/purchase-list", "icon": "ClipboardList" },
-
-      { "label": "Warehouse Request", "path": "/admin/warehouse-request", "icon": "Warehouse" },
-      { "label": "Damage Request", "path": "/admin/damage-request", "icon": "FileText" },
-      { "label": "Depot Request", "path": "/admin/depot-request", "icon": "Building2" },
-      { "label": "Expired Request", "path": "/admin/expired-request", "icon": "FileText" },
-      { "label": "Ex. Return Request", "path": "/admin/ex-return-request", "icon": "FileText" },
-
-      { "label": "Missing Products", "path": "/admin/missing-products", "icon": "ClipboardList" },
-      { "label": "Price Update", "path": "/admin/price-update", "icon": "FileText" },
-      { "label": "Damaged & Expired", "path": "/admin/damaged-expired", "icon": "FileText" },
-      { "label": "Expired Returns", "path": "/admin/expired-returns", "icon": "FileText" },
-
-      { "label": "Doctor", "path": "/admin/doctor", "icon": "Stethoscope" },
-      { "label": "Customer", "path": "/admin/customer", "icon": "UserCheck" },
-      { "label": "Update Customer", "path": "/admin/update-customer", "icon": "UserCheck" }
+      { "label": "Purchase Order", "path": "/admin/purchase-order", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Purchase List", "path": "/admin/purchase-list", "icon": "ClipboardList", "allowedRoles": ["managing-director"] },
+      { "label": "Warehouse Request", "path": "/admin/warehouse-request", "icon": "Warehouse", "allowedRoles": ["managing-director"] },
+      { "label": "Damage Request", "path": "/admin/damage-request", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Depot Request", "path": "/admin/depot-request", "icon": "Building2", "allowedRoles": ["managing-director"] },
+      { "label": "Expired Request", "path": "/admin/expired-request", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Ex. Return Request", "path": "/admin/ex-return-request", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Missing Products", "path": "/admin/missing-products", "icon": "ClipboardList", "allowedRoles": ["managing-director"] },
+      { "label": "Price Update", "path": "/admin/price-update", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Damaged & Expired", "path": "/admin/damaged-expired", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Expired Returns", "path": "/admin/expired-returns", "icon": "FileText", "allowedRoles": ["managing-director"] },
+      { "label": "Doctor", "path": "/admin/doctor", "icon": "Stethoscope", "allowedRoles": ["managing-director"] },
+      { "label": "Customer", "path": "/admin/customer", "icon": "UserCheck", "allowedRoles": ["managing-director"] },
+      { "label": "Update Customer", "path": "/admin/update-customer", "icon": "UserCheck", "allowedRoles": ["managing-director"] }
     ]
   },
-
   {
     "key": "warehouse",
     "label": "Warehouse",
     "icon": "Warehouse",
     "children": [
-      { "label": "Receive New Products", "path": "/warehouse/receive", "icon": "FileText" },
-      { "label": "Depot Delivery", "path": "/warehouse/depot-delivery", "icon": "Building2" },
-
-      { "label": "Products List", "path": "/warehouse/products", "icon": "ClipboardList" },
-
-      { "label": "Stock In", "path": "/warehouse/stock-in", "icon": "FileText" },
-      { "label": "Stock Out", "path": "/warehouse/stock-out", "icon": "FileText" },
-
-      { "label": "Damaged Products", "path": "/warehouse/damaged", "icon": "FileText" }
+      { "label": "Receive New Products", "path": "/warehouse/receive", "icon": "FileText", "allowedRoles": ["managing-director"," warehouse-manager"] },
+      { "label": "Depot Delivery", "path": "/warehouse/depot-delivery", "icon": "Building2", "allowedRoles": ["managing-director","warehouse-manager"] },
+      { "label": "Products List", "path": "/warehouse/products", "icon": "ClipboardList", "allowedRoles": ["managing-director","warehouse-manager"] },
+      { "label": "Stock In", "path": "/warehouse/stock-in", "icon": "FileText", "allowedRoles": ["managing-director","warehouse-manager"] },
+      { "label": "Stock Out", "path": "/warehouse/stock-out", "icon": "FileText", "allowedRoles": ["managing-director","warehouse-manager"] },
+      { "label": "Damaged Products", "path": "/warehouse/damaged", "icon": "FileText", "allowedRoles": ["managing-director","warehouse-manager"] }
     ]
   },
-
   {
     "key": "depot",
     "label": "Depot",
     "icon": "Building2",
     "children": [
-      { "label": "Receive Request", "path": "/depot/receive-request", "icon": "FileText" },
-      { "label": "Products List", "path": "/depot/products", "icon": "ClipboardList" },
-
-      { "label": "Receive Products", "path": "/depot/receive", "icon": "FileText" },
-
-      { "label": "Stock In", "path": "/depot/stock-in", "icon": "FileText" },
-      { "label": "Stock Out", "path": "/depot/stock-out", "icon": "FileText" },
-
-      { "label": "Sales Returned", "path": "/depot/sales-returned", "icon": "FileText" },
-      { "label": "Expired Products", "path": "/depot/expired", "icon": "FileText" },
-      { "label": "Ex. Return Status", "path": "/depot/ex-return-status", "icon": "FileText" },
-
-      { "label": "Dispatch Rider", "path": "/depot/dispatch-rider", "icon": "UserCheck" },
-      { "label": "Order Delivery", "path": "/depot/order-delivery", "icon": "ClipboardList" },
-
-      { "label": "Invoice & Payment", "path": "/depot/invoice-payment", "icon": "FileText" },
-      { "label": "Delivery Report", "path": "/depot/delivery-report", "icon": "FileBarChart" }
+      { "label": "Receive Request", "path": "/depot/receive-request", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Products List", "path": "/depot/products", "icon": "ClipboardList", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Receive Products", "path": "/depot/receive", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Stock In", "path": "/depot/stock-in", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Stock Out", "path": "/depot/stock-out", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Sales Returned", "path": "/depot/sales-returned", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Expired Products", "path": "/depot/expired", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Ex. Return Status", "path": "/depot/ex-return-status", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Dispatch Rider", "path": "/depot/dispatch-rider", "icon": "UserCheck", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Order Delivery", "path": "/depot/order-delivery", "icon": "ClipboardList", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Invoice & Payment", "path": "/depot/invoice-payment", "icon": "FileText", "allowedRoles": ["managing-director","depot-manager"] },
+      { "label": "Delivery Report", "path": "/depot/delivery-report", "icon": "FileBarChart", "allowedRoles": ["managing-director","depot-manager"] }
     ]
   },
-
-  
   {
     "key": "institute",
     "label": "Institute",
     "icon": "Building2",
     "children": [
-      { "label": "Add New Institute", "path": "/institute/add", "icon": "FileText" },
-      { "label": "Institute List", "path": "/institute/list", "icon": "ClipboardList" },
-      { "label": "Place Order", "path": "/institute/place-order", "icon": "ShoppingCart" }
+      { "label": "Add New Institute", "path": "/institute/add", "icon": "FileText", "allowedRoles": ["admin"] },
+      { "label": "Institute List", "path": "/institute/list", "icon": "ClipboardList", "allowedRoles": ["admin"] },
+      { "label": "Place Order", "path": "/institute/place-order", "icon": "ShoppingCart", "allowedRoles": ["admin"] }
     ]
   },
-
   {
     "key": "doctorRequisition",
     "label": "Doctor Requisition",
     "icon": "Stethoscope",
     "children": [
-      { "label": "Add New Doctor", "path": "/doctor-requisition/add-doctor", "icon": "UserCheck" },
-      { "label": "Place Doctor Order", "path": "/doctor-requisition/place-order", "icon": "ShoppingCart" }
+      { "label": "Add New Doctor", "path": "/doctor-requisition/add-doctor", "icon": "UserCheck", "allowedRoles": ["admin"] },
+      { "label": "Place Doctor Order", "path": "/doctor-requisition/place-order", "icon": "ShoppingCart", "allowedRoles": ["admin"] }
     ]
   },
-
   {
     "key": "reports",
     "label": "Reports",
     "icon": "FileBarChart",
     "children": [
-      { "label": "Net Sales", "path": "/reports/net-sales", "icon": "FileText" },
-      { "label": "Products Summary", "path": "/reports/products-summary", "icon": "ClipboardList" },
-      { "label": "Product Summary (All)", "path": "/reports/product-summary-all", "icon": "ClipboardList" },
-      { "label": "Product Summary (Customer)", "path": "/reports/product-summary-customer", "icon": "ClipboardList" },
-      { "label": "Sales Returns", "path": "/reports/sales-returns", "icon": "FileText" },
-      { "label": "Product Sales Returns", "path": "/reports/product-sales-returns", "icon": "FileText" },
-      { "label": "Expired Products", "path": "/reports/expired", "icon": "FileText" },
-      { "label": "Customer Invoice & Sales", "path": "/reports/customer-invoice-sales", "icon": "FileText" }
+      { "label": "Net Sales", "path": "/reports/net-sales", "icon": "FileText", "allowedRoles": ["admin","accountant"] },
+      { "label": "Products Summary", "path": "/reports/products-summary", "icon": "ClipboardList", "allowedRoles": ["admin","accountant"] },
+      { "label": "Product Summary (All)", "path": "/reports/product-summary-all", "icon": "ClipboardList", "allowedRoles": ["admin","accountant"] },
+      { "label": "Product Summary (Customer)", "path": "/reports/product-summary-customer", "icon": "ClipboardList", "allowedRoles": ["admin","accountant"] },
+      { "label": "Sales Returns", "path": "/reports/sales-returns", "icon": "FileText", "allowedRoles": ["admin","accountant"] },
+      { "label": "Product Sales Returns", "path": "/reports/product-sales-returns", "icon": "FileText", "allowedRoles": ["admin","accountant"] },
+      { "label": "Expired Products", "path": "/reports/expired", "icon": "FileText", "allowedRoles": ["admin","accountant"] },
+      { "label": "Customer Invoice & Sales", "path": "/reports/customer-invoice-sales", "icon": "FileText", "allowedRoles": ["admin","accountant"] }
     ]
   },
-
   {
     "key": "achievement",
     "label": "Achievement",
     "icon": "Trophy",
     "children": [
-      { "label": "Target vs Sales Achievement", "path": "/achievement/target-sales", "icon": "FileBarChart" },
-      { "label": "Achievement & Growth", "path": "/achievement/growth", "icon": "FileBarChart" },
-      { "label": "Product Wise Target vs Sales", "path": "/achievement/product-wise", "icon": "FileBarChart" },
-      { "label": "All Products Target vs Sales", "path": "/achievement/all-products", "icon": "FileBarChart" }
+      { "label": "Target vs Sales Achievement", "path": "/achievement/target-sales", "icon": "FileBarChart", "allowedRoles": ["admin","sales-manager"] },
+      { "label": "Achievement & Growth", "path": "/achievement/growth", "icon": "FileBarChart", "allowedRoles": ["admin","sales-manager"] },
+      { "label": "Product Wise Target vs Sales", "path": "/achievement/product-wise", "icon": "FileBarChart", "allowedRoles": ["admin","sales-manager"] },
+      { "label": "All Products Target vs Sales", "path": "/achievement/all-products", "icon": "FileBarChart", "allowedRoles": ["admin","sales-manager"] }
     ]
   },
-
   {
     "key": "doctor",
     "label": "Doctor",
     "icon": "Stethoscope",
     "children": [
-      { "label": "Add New Doctor", "path": "/doctor/add", "icon": "UserCheck" },
-      { "label": "Doctor List", "path": "/doctor/list", "icon": "ClipboardList" }
+      { "label": "Add New Doctor", "path": "/doctor/add", "icon": "UserCheck", "allowedRoles": ["admin"] },
+      { "label": "Doctor List", "path": "/doctor/list", "icon": "ClipboardList", "allowedRoles": ["admin"] }
     ]
   },
-
   {
     "key": "orders",
     "label": "Orders",
     "icon": "ShoppingCart",
     "children": [
-      { "label": "Place Order", "path": "/orders/place", "icon": "FileText" },
-      { "label": "My Orders", "path": "/orders/my-orders", "icon": "ClipboardList" }
+      { "label": "Place Order", "path": "/orders/place", "icon": "FileText", "allowedRoles": ["mpo","sales"] },
+      { "label": "My Orders", "path": "/orders/my-orders", "icon": "ClipboardList", "allowedRoles": ["mpo","sales"] }
     ]
   },
-
   {
     "key": "customer",
     "label": "Customer",
     "icon": "UserCheck",
     "children": [
-      { "label": "Add New Customer", "path": "/customer/add", "icon": "FileText" },
-      { "label": "Customer List", "path": "/customer/list", "icon": "ClipboardList" }
+      { "label": "Add New Customer", "path": "/customer/add", "icon": "FileText", "allowedRoles": ["mpo","sales"] },
+      { "label": "Customer List", "path": "/customer/list", "icon": "ClipboardList", "allowedRoles": ["mpo","sales"] }
     ]
   },
-
   {
     "key": "salesReport",
     "label": "Sales Report",
     "icon": "FileBarChart",
     "children": [
-      { "label": "Product Summary", "path": "/sales-report/product-summary", "icon": "ClipboardList" },
-      { "label": "Due Payment", "path": "/sales-report/due-payment", "icon": "FileText" },
-      { "label": "Target vs Sales", "path": "/sales-report/target-sales", "icon": "FileBarChart" },
-      { "label": "Achievement & Growth", "path": "/sales-report/achievement-growth", "icon": "FileBarChart" },
-      { "label": "Product Wise Target vs Sales", "path": "/sales-report/product-wise-target", "icon": "FileBarChart" }
+      { "label": "Product Summary", "path": "/sales-report/product-summary", "icon": "ClipboardList", "allowedRoles": ["admin","sales","accountant"] },
+      { "label": "Due Payment", "path": "/sales-report/due-payment", "icon": "FileText", "allowedRoles": ["accountant"] },
+      { "label": "Target vs Sales", "path": "/sales-report/target-sales", "icon": "FileBarChart", "allowedRoles": ["admin","sales"] },
+      { "label": "Achievement & Growth", "path": "/sales-report/achievement-growth", "icon": "FileBarChart", "allowedRoles": ["admin","sales"] },
+      { "label": "Product Wise Target vs Sales", "path": "/sales-report/product-wise-target", "icon": "FileBarChart", "allowedRoles": ["admin","sales"] }
     ]
   },
-{
-  "key": "hr",
-  "label": "HR",
-  "icon": "Users",
-  "children": [
-    { "label": "Daily Attendance", "path": "/hr/daily-attendance", "icon": "CalendarCheck" },
-    { "label": "Leave Balance", "path": "/hr/leave-balance", "icon": "ClipboardCheck" },
-    { "label": "Leave Application & Approval", "path": "/hr/leave-application", "icon": "ClipboardList" },
-    { "label": "Salary Structure", "path": "/hr/salary-structure", "icon": "FileText" },
-    { "label": "TA/DA Management", "path": "/hr/ta-da", "icon": "Truck" },
-    { "label": "Festival Bonus Management", "path": "/hr/festival-bonus", "icon": "Gift" },
-    { "label": "PF Management", "path": "/hr/pf-management", "icon": "DollarSign" },
-    { "label": "Monthly Payslip Generation", "path": "/hr/monthly-payslip", "icon": "FileText" },
-    { "label": "Final Settlement & Payment", "path": "/hr/final-settlement", "icon": "FileText" },
-    { "label": "Yearly Assessment", "path": "/hr/yearly-assessment", "icon": "Trophy" },
-    { "label": "User Asset Management", "path": "/hr/user-assets", "icon": "Laptop" },
-    { "label": "Office Gate Pass System", "path": "/hr/gate-pass", "icon": "Lock" },
-    { "label": "Vendor & Service Provider Database", "path": "/hr/vendor-database", "icon": "List" },
-    { "label": "Assets List (HQ & Depot)", "path": "/hr/assets-list", "icon": "Package" },
-    { "label": "Personal Information Update", "path": "/hr/personal-info", "icon": "UserPlus" },
-    { "label": "Leave & Attendance View", "path": "/hr/leave-attendance-view", "icon": "ClipboardList" },
-    { "label": "Payslip & Tax Certificate", "path": "/hr/payslip-tax", "icon": "Receipt" },
-    { "label": "HR Notice Board", "path": "/hr/notice-board", "icon": "AlertTriangle" },
-    { "label": "Letters & Employment Docs", "path": "/hr/employment-docs", "icon": "FileText" }
-  ]
-},
-{
-  "key": "accountant",
-  "label": "Accountant",
-  "icon": "Landmark",
-  "children": [
-    { "label": "Daily Collections", "path": "/accountant/daily-collections", "icon": "FileText" },
-    { "label": "Due Payments", "path": "/accountant/due-payments", "icon": "FileText" },
-    { "label": "MPO Statement", "path": "/accountant/mpo-statement", "icon": "FileText" },
-    { "label": "Invoice Sales Summary", "path": "/accountant/invoice-sales-summary", "icon": "FileText" },
-    { "label": "Expense Tracking", "path": "/accountant/expense-tracking", "icon": "DollarSign" },
-    { "label": "Payment Approval", "path": "/accountant/payment-approval", "icon": "ClipboardCheck" },
-    { "label": "Reports & Analysis", "path": "/accountant/reports", "icon": "BarChart3" }
-  ]
-}
-
-
-
-
+  {
+    "key": "hr",
+    "label": "HR",
+    "icon": "Users",
+    "children": [
+      { "label": "Daily Attendance", "path": "/hr/daily-attendance", "icon": "CalendarCheck", "allowedRoles": ["hr"] },
+      { "label": "Leave Balance", "path": "/hr/leave-balance", "icon": "ClipboardCheck", "allowedRoles": ["hr"] },
+      { "label": "Leave Application & Approval", "path": "/hr/leave-application", "icon": "ClipboardList", "allowedRoles": ["hr"] },
+      { "label": "Salary Structure", "path": "/hr/salary-structure", "icon": "FileText", "allowedRoles": ["hr"] },
+      { "label": "TA/DA Management", "path": "/hr/ta-da", "icon": "Truck", "allowedRoles": ["hr"] },
+      { "label": "Festival Bonus Management", "path": "/hr/festival-bonus", "icon": "Gift", "allowedRoles": ["hr"] },
+      { "label": "PF Management", "path": "/hr/pf-management", "icon": "DollarSign", "allowedRoles": ["hr"] },
+      { "label": "Monthly Payslip Generation", "path": "/hr/monthly-payslip", "icon": "FileText", "allowedRoles": ["hr"] },
+      { "label": "Final Settlement & Payment", "path": "/hr/final-settlement", "icon": "FileText", "allowedRoles": ["hr"] },
+      { "label": "Yearly Assessment", "path": "/hr/yearly-assessment", "icon": "Trophy", "allowedRoles": ["hr"] },
+      { "label": "User Asset Management", "path": "/hr/user-assets", "icon": "Laptop", "allowedRoles": ["hr"] },
+      { "label": "Office Gate Pass System", "path": "/hr/gate-pass", "icon": "Lock", "allowedRoles": ["hr"] },
+      { "label": "Vendor & Service Provider Database", "path": "/hr/vendor-database", "icon": "List", "allowedRoles": ["hr"] },
+      { "label": "Assets List (HQ & Depot)", "path": "/hr/assets-list", "icon": "Package", "allowedRoles": ["hr"] },
+      { "label": "Personal Information Update", "path": "/hr/personal-info", "icon": "UserPlus", "allowedRoles": ["hr"] },
+      { "label": "Leave & Attendance View", "path": "/hr/leave-attendance-view", "icon": "ClipboardList", "allowedRoles": ["hr"] },
+      { "label": "Payslip & Tax Certificate", "path": "/hr/payslip-tax", "icon": "Receipt", "allowedRoles": ["hr"] },
+      { "label": "HR Notice Board", "path": "/hr/notice-board", "icon": "AlertTriangle", "allowedRoles": ["hr"] },
+      { "label": "Letters & Employment Docs", "path": "/hr/employment-docs", "icon": "FileText", "allowedRoles": ["hr"] }
+    ]
+  },
+  {
+    "key": "accountant",
+    "label": "Accountant",
+    "icon": "Landmark",
+    "children": [
+      { "label": "Daily Collections", "path": "/accountant/daily-collections", "icon": "FileText", "allowedRoles": ["accountant"] },
+      { "label": "Due Payments", "path": "/accountant/due-payments", "icon": "FileText", "allowedRoles": ["accountant"] },
+      { "label": "MPO Statement", "path": "/accountant/mpo-statement", "icon": "FileText", "allowedRoles": ["accountant"] },
+      { "label": "Invoice Sales Summary", "path": "/accountant/invoice-sales-summary", "icon": "FileText", "allowedRoles": ["accountant"] },
+      { "label": "Expense Tracking", "path": "/accountant/expense-tracking", "icon": "DollarSign", "allowedRoles": ["accountant"] },
+      { "label": "Payment Approval", "path": "/accountant/payment-approval", "icon": "ClipboardCheck", "allowedRoles": ["accountant"] },
+      { "label": "Reports & Analysis", "path": "/accountant/reports", "icon": "BarChart3", "allowedRoles": ["accountant"] }
+    ]
+  }
 ]

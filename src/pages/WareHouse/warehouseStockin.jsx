@@ -110,7 +110,7 @@ const WarehouseStockIn = () => {
 
           <tbody>
             {currentItems.map((item, idx) => (
-              <tr key={item.productId + idx} className="border-b hover:bg-gray-50">
+              <tr key={item._id || startIndex + idx} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-2 text-center">{startIndex + idx + 1}</td>
                 <td className="px-4 py-2">{item.Name}</td>
                 <td className="px-4 py-2">{item.PackSize}</td>
