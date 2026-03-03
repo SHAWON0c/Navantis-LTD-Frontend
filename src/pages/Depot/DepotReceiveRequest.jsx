@@ -1,89 +1,71 @@
-import { useGetWarehouseReceiveRequestQuery } from "../../redux/features/wareHouse/warehouseReceiveApi";
-import WarehouseRequestProductCard from "../WareHouse/WarehouseRequestProductCard";
+import React, { useState } from "react";
+import { useGetGroupedDepotRequestsQuery } from "../../redux/features/depot/depotProductRequestAPI";
 
+const STATUS_OPTIONS = ["pending", "requested", "accepted"];
 
-const WarehouseRequest = () => {
-  const { data: whReceiveRequests, isLoading, refetch } = useGetWarehouseReceiveRequestQuery();
+const DepotRequests = () => {
+  const [selectedStatus, setSelectedStatus] = useState("pending");
 
+  // Fetch grouped requests
+  const { data, isLoading, isError } = useGetGroupedDepotRequestsQuery(selectedStatus);
 
+  if (isLoading) return <p className="text-center mt-4">Loading requests...</p>;
+  if (isError) return <p className="text-center text-red-500 mt-4">Failed to load requests!</p>;
 
-  // ✅ Use the array inside `data`
-  const filteredProducts = whReceiveRequests?.data || [];
-
-  // Calculate totals based on available fields
-  const totalOrderQuantity = filteredProducts.reduce((acc, item) => acc + (item.orderQuantity || 0), 0);
-  const totalStockQuantity = filteredProducts.reduce((acc, item) => acc + (item.stockQuantity || 0), 0);
-  const totalMissingQuantity = filteredProducts.reduce((acc, item) => acc + (item.missingQuantity || 0), 0);
+  // Transform data: convert object to array of { date, requests }
+  const groupedRequests = data?.data
+    ? Object.entries(data.data).map(([date, requests]) => ({ date, requests }))
+    : [];
 
   return (
-    <div className="mx-auto p-2">
-
-      {/* Top Bar */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
+    <div className="p-4">
+      {/* ====== Top Bar: Status Filters ====== */}
+      <div className="flex gap-4 mb-6">
+        {STATUS_OPTIONS.map((status) => (
+          <button
+            key={status}
+            onClick={() => setSelectedStatus(status)}
+            className={`px-4 py-2 rounded font-semibold ${
+              selectedStatus === status
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
       </div>
 
-      {/* Main Content */}
-      <div className="space-y-6 mt-4 "> {/* Adds spacing between sections and moves content slightly down */}
-        <div className="bg-white pb-1 rounded-lg">
-          {/* Product Info */}
-          <div className="m-0 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md ">
-            <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Request Summary</p>
-
-            <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
-              <p className="text-sm">
-                Total Products: <span className="font-medium text-blue-700">{filteredProducts.length}</span>
-              </p>
-              <p className="text-sm">
-                Total Order Quantity: <span className="font-medium text-blue-700">{totalOrderQuantity}</span>
-              </p>
-              <p className="text-sm">
-                Total Stock Quantity: <span className="font-medium text-blue-700">{totalStockQuantity}</span>
-              </p>
-              <p className="text-sm">
-                Total Missing Quantity: <span className="font-medium text-blue-700">{totalMissingQuantity}</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="p-6">
-            <div className="overflow-x-auto mb-3">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th className="text-center">Sl. No.</th>
-                    <th>Name</th>
-                    <th className="text-center">Batch</th>
-                    <th className="text-center">Exp.</th>
-                    <th className="text-center">Order Quantity</th>
-                    <th className="text-center">Stock Quantity</th>
-                    <th className="text-center">Missing Quantity</th>
-                    <th className="text-center">Details</th>
-                    <th className="text-center">Approve</th>
-                    <th className="text-center">Deny</th>
+      {/* ====== Requests Table ====== */}
+      {groupedRequests.length > 0 ? (
+        groupedRequests.map(({ date, requests }) => (
+          <div key={date} className="mb-6">
+            <h3 className="font-bold mb-2">Date: {new Date(date).toLocaleDateString()}</h3>
+            <table className="table-auto w-full border border-gray-300 text-left">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 border">#</th>
+                  <th className="px-4 py-2 border">Product Name</th>
+                  <th className="px-4 py-2 border text-center">Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.map((req, idx) => (
+                  <tr key={req._id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-2 text-center">{idx + 1}</td>
+                    <td className="px-4 py-2">{req.name}</td>
+                    <td className="px-4 py-2 text-center">{req.quantity}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts.map((product, idx) => (
-                    <WarehouseRequestProductCard
-                      idx={idx + 1}
-                      key={product.purchaseOrderId} // safer unique key
-                      product={product}
-                      refetch={refetch}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
-
-
-      </div>
+        ))
+      ) : (
+        <p className="text-center text-gray-500">No requests found for "{selectedStatus}" status.</p>
+      )}
     </div>
-
   );
 };
 
-export default WarehouseRequest;
+export default DepotRequests;

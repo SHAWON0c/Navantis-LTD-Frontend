@@ -4,13 +4,32 @@ export const depotStockAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
 
     // 📦 Depot Stock IN LIST
-    getDepotStockInList: builder.query({
-      query: (params) => ({
-        url: "/depot/stock-in",
-        method: "GET",
-        params,
-      }),
-    }),
+// 🟢 Daily Stock-In List
+getDailyStockInList: builder.query({
+  query: (params) => ({
+    url: "/depot-products/daily-stockin/", // backend route for dailyStockIn controller
+    method: "GET",
+    params, // optional filters
+  }),
+}),
+
+// 🟢 Daily Stock-Out List
+getDailyStockOutList: builder.query({
+  query: (params) => ({
+    url: "/depot-products/daily-stockout", // backend route for dailyStockOut controller
+    method: "GET",
+    params, // optional filters
+  }),
+}),
+
+// 🟢 ✅ Depot Receive Stock Report
+getDepotReceiveStock: builder.query({
+  query: (params) => ({
+    url: "/depot-products/receive-stock", // backend route
+    method: "GET",
+    params, // optional query params
+  }),
+}),
 
     // 📦 Depot Product LIST
     getDepotProductList: builder.query({
@@ -66,10 +85,19 @@ export const depotStockAPI = baseAPI.injectEndpoints({
     }),
 
 
-     getDepotProductStockCount: builder.query({
+    getDepotProductStockCount: builder.query({
       query: (productId) => ({
         url: `/depot-products/stock-count/${productId}`,
         method: "GET",
+      }),
+    }),
+
+    // 🟢 ✅ Depot Receive Stock Report
+    getDepotReceiveStock: builder.query({
+      query: (params) => ({
+        url: "/depot-products/receive-stock", // backend route for depotReceiveStock
+        method: "GET",
+        params, // optional query params if needed
       }),
     }),
 
@@ -88,9 +116,10 @@ export const depotStockAPI = baseAPI.injectEndpoints({
 
 export const {
   // 📦 Depot stock
-  useGetDepotStockInListQuery,
+  useGetDailyStockInListQuery,
+  
   useGetDepotProductListQuery,
-  useGetDepotStockOutListQuery,
+  useGetDailyStockOutListQuery,
   useDepotStockOutMutation,
 
   // 📑 Depot Requests
@@ -106,4 +135,7 @@ export const {
   // 📝 Send new request
   useSendProductRequestMutation,
   useGetDepotProductStockCountQuery,
+
+
+  useGetDepotReceiveStockQuery,
 } = depotStockAPI;

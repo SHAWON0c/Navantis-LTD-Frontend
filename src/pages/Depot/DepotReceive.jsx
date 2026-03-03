@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Loader from "../../component/Loader";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
-
 import FiltersAndSummaryPanel from "../../component/common/FiltersAndSummaryPanel";
-import { useGetDailyStockInListQuery } from "../../redux/features/depot/depotStockApi";
+import { useGetDepotReceiveStockQuery } from "../../redux/features/depot/depotStockApi";
 
-const DepotStockIn = () => {
+
+const DepotReceive = () => {
   // --- API query ---
-  const { data: apiData, isLoading, isError } = useGetDailyStockInListQuery();
+  const { data: apiData, isLoading, isError } = useGetDepotReceiveStockQuery();
 
   // --- Pagination state ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +23,7 @@ const DepotStockIn = () => {
   });
 
   if (isLoading) return <Loader />;
-  if (isError) return <p className="text-red-500 text-center">Failed to load depot stock.</p>;
+  if (isError) return <p className="text-red-500 text-center">Failed to load depot received stock.</p>;
 
   // --- Raw API Data ---
   let stockList = apiData?.data || [];
@@ -34,7 +34,7 @@ const DepotStockIn = () => {
     const stockYear = stockDate.getFullYear();
     const stockMonth = stockDate.getMonth() + 1;
 
-    const matchesSearch = item.productName.toLowerCase().includes(filters.searchTerm.toLowerCase());
+    const matchesSearch = item.name.toLowerCase().includes(filters.searchTerm.toLowerCase());
     const matchesYear = filters.year ? stockYear === Number(filters.year) : true;
     const matchesMonth = filters.month ? stockMonth === Number(filters.month) : true;
     const matchesFromDate = filters.fromDate ? stockDate >= new Date(filters.fromDate) : true;
@@ -45,8 +45,8 @@ const DepotStockIn = () => {
 
   // ---------------- TOTALS ----------------
   const totalUniqueProducts = apiData?.totalUniqueProducts ?? stockList.length;
-  const totalUnit = apiData?.totalUnits ?? stockList.reduce((sum, p) => sum + Number(p.quantityIn || 0), 0);
-  const totalTP = apiData?.totalTradePrice ?? stockList.reduce((sum, p) => sum + Number(p.actualPrice || 0), 0);
+  const totalUnit = apiData?.totalUnits ?? stockList.reduce((sum, p) => sum + Number(p.quantity || 0), 0);
+  const totalTP = apiData?.totalTradePrice ?? stockList.reduce((sum, p) => sum + Number(p.totalPrice || 0), 0);
 
   const clearFilters = () =>
     setFilters({ searchTerm: "", year: "", month: "", fromDate: "", toDate: "" });
@@ -63,10 +63,9 @@ const DepotStockIn = () => {
 
   return (
     <div className="mx-auto p-2">
-
       {/* Header */}
       <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">Depot / Admin / Stock In</h2>
+        <h2 className="text-base font-bold">Depot / Admin / Received Stock</h2>
       </div>
 
       {/* Filters + Summary */}
@@ -87,22 +86,19 @@ const DepotStockIn = () => {
         }
       />
 
-      {/* TABLE */}
+      {/* Table */}
       <div className="overflow-x-auto mt-10">
         <table className="table-auto w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-100">
               <th className="px-4 py-2 text-center">Sl. No.</th>
               <th className="px-4 py-2">Product Name</th>
-              <th className="px-4 py-2">Brand</th>
-              <th className="px-4 py-2">Short Code</th>
               <th className="px-4 py-2">Pack Size</th>
-              <th className="px-4 py-2">Category</th>
-              <th className="px-4 py-2">Actual Price</th>
               <th className="px-4 py-2">Batch</th>
               <th className="px-4 py-2 text-center">Quantity</th>
-              <th className="px-4 py-2 text-center">Stock Before</th>
-              <th className="px-4 py-2 text-center">Stock After</th>
+              <th className="px-4 py-2 text-right">Price/Unit</th>
+              <th className="px-4 py-2 text-right">Actual Price</th>
+              <th className="px-4 py-2 text-right">Total Price</th>
               <th className="px-4 py-2 text-center">Expire Date</th>
               <th className="px-4 py-2 text-center">Stock In Date</th>
             </tr>
@@ -112,16 +108,13 @@ const DepotStockIn = () => {
             {currentItems.map((item, idx) => (
               <tr key={item._id || startIndex + idx} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-2 text-center">{startIndex + idx + 1}</td>
-                <td className="px-4 py-2">{item.productName}</td>
-                <td className="px-4 py-2">{item.brand}</td>
-                <td className="px-4 py-2">{item.productShortCode}</td>
+                <td className="px-4 py-2">{item.name}</td>
                 <td className="px-4 py-2">{item.packSize}</td>
-                <td className="px-4 py-2">{item.category}</td>
-                <td className="px-4 py-2 text-right">{item.actualPrice?.toLocaleString()}</td>
                 <td className="px-4 py-2">{item.batch}</td>
-                <td className="px-4 py-2 text-center">{item.quantityIn}</td>
-                <td className="px-4 py-2 text-center">{item.stockAvailableBefore}</td>
-                <td className="px-4 py-2 text-center">{item.stockAvailableAfter}</td>
+                <td className="px-4 py-2 text-center">{item.quantity}</td>
+                <td className="px-4 py-2 text-right">{item.pricePerUnit?.toLocaleString()}</td>
+                <td className="px-4 py-2 text-right">{item.actualPrice?.toLocaleString()}</td>
+                <td className="px-4 py-2 text-right">{item.totalPrice?.toLocaleString()}</td>
                 <td className="px-4 py-2 text-center">{new Date(item.expireDate).toLocaleDateString()}</td>
                 <td className="px-4 py-2 text-center">{new Date(item.stockInDate).toLocaleDateString()}</td>
               </tr>
@@ -130,7 +123,7 @@ const DepotStockIn = () => {
         </table>
       </div>
 
-      {/* PAGINATION */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-4">
           <button disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>
@@ -156,4 +149,4 @@ const DepotStockIn = () => {
   );
 };
 
-export default DepotStockIn;
+export default DepotReceive;

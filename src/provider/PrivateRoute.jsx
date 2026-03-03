@@ -19,7 +19,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-token", {
+      const res = await fetch("https://ems.navantispharma.com/api/auth/verify-token", {
         headers: { Authorization: token }, // send raw token
       });
 
