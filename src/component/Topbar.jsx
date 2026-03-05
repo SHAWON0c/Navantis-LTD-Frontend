@@ -109,11 +109,11 @@ export default function Topbar({ onMenuClick }) {
     <header className="h-16 w-full flex items-center justify-between px-4 shadow-sm bg-white dark:bg-gray-800 dark:text-gray-200">
       {/* LEFT */}
       <div className="flex items-center gap-4">
-        <Menu
-          onClick={onMenuClick}
-          className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200"
-        />
-        <span className="text-xl font-semibold tracking-wide">NPL EMS</span>
+<Menu
+  onClick={onMenuClick}
+  className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200 "
+/>
+        <span className="md:text-xl text-sm font-semibold tracking-wide">NPL EMS</span>
       </div>
 
       {/* CENTER */}
@@ -131,7 +131,7 @@ export default function Topbar({ onMenuClick }) {
       {/* RIGHT */}
       <div className="flex items-center gap-4 relative">
         {/* Mega Menu with Clock */}
-        <div className="relative flex items-center gap-3" ref={megaRef}>
+        <div className="relative flex items-center gap-3 hidden md:block" ref={megaRef}>
           <button
             onClick={() => setMegaMenuOpen(!megaMenuOpen)}
             className="text-sm text-gray-600 hover:text-black dark:text-gray-200 dark:hover:text-white"

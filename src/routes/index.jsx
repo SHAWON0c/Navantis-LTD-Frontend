@@ -43,6 +43,7 @@ import HardcodedInvoicePrint from "../component/reports/InvoicePrintPage";
 import DispatchRidersPage from "../pages/Depot/DispatchRidersPage";
 import InvoiceAndPayment from "../pages/Depot/InvoiceAndPayment";
 import DepotReceive from "../pages/Depot/DepotReceive";
+import DashboardSelector from "../component/DashboardSelector";
 
 // ✅ FIXED PATHS
 
@@ -64,25 +65,21 @@ export default function AppRoutes() {
       <Route element={<DashboardLayout />}>
 
         {/* Default dashboard */}
-        <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
-          <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route element={<ProtectedRoute allowedRoles={["md","mpo","wm"]} />}>
+          <Route path="/dashboard" element={<DashboardSelector/>} />
           <Route path="/profile" element={<UserProfile />} />
 
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
-          <Route path="/md-dashboard" element={<Dashboard />} />
-        </Route>
-
         {/* Admin */}
-        <Route element={<ProtectedRoute allowedRoles={["managing-director"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["md"]} />}>
           <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
           <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
         </Route>
 
         {/* Warehouse */}
 
-        <Route element={<ProtectedRoute allowedRoles={["managing-director" ,"warehouse-manager"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["md" ,"wm"]} />}>
 
           <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
           <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
@@ -100,7 +97,7 @@ export default function AppRoutes() {
 
 
 
-       <Route element={<ProtectedRoute allowedRoles={["managing-director" ,"warehouse-manager" ,"mpo"]} />}>
+       <Route element={<ProtectedRoute allowedRoles={["md" ,"wm" ,"mpo"]} />}>
         <Route path="/depot/products" element={<DepotProductsList />} />
         <Route path="/warehouse/damaged" element={<DamagedProducts />} />
         <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />

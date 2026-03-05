@@ -24,12 +24,12 @@ export default function UserDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Sticky Header */}
-      <header className="w-full bg-blue-800 text-white shadow-md sticky top-0 z-50">
+      {/* <header className="w-full bg-blue-800 text-white shadow-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">welcome</h1>
           <span className="font-medium">{user.name || "User"}</span>
         </div>
-      </header>
+      </header> */}
 
       {/* Main Content */}
       <main className="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">

@@ -39,20 +39,17 @@ export default function Login() {
   };
 
   // Redirect based on role after successful login
-  useEffect(() => {
-    if (isSuccess && user) {
-      switch (user.role) {
-        case "user":
-          navigate("/user-dashboard");
-          break;
-        case "md":
-          navigate("/md-dashboard");
-          break;
-        default:
-          navigate("/"); // fallback
-      }
+useEffect(() => {
+  if (isSuccess && user) {
+    switch (user.role) {
+      case "user":
+        navigate("/user-dashboard");
+        break;d
+      default:
+        navigate("/"); // fallback
     }
-  }, [isSuccess, user, navigate]);
+  }
+}, [isSuccess, user, navigate]);
 
   return (
     <div className="flex w-full min-h-screen bg-gray-50">

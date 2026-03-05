@@ -22,7 +22,7 @@ export default function HomeLayout() {
   }, []);
 
   const modules = [
-    { label: "Sales", icon: <FaChartLine />, link: "/user-dashboard" },
+    { label: "Sales", icon: <FaChartLine />, link: "/dashboard" },
     { label: "CCTV", icon: <FaVideo />, link: "/cctv" },
     { label: "Website", icon: <FaGlobe />, link: "/website" },
     { label: "Dashboard", icon: <FaTachometerAlt />, link: "/dashboard" },
