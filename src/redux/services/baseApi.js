@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseAPI = createApi({
   reducerPath: "baseAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://ems.navantispharma.com/api", 
+    baseUrl: "http://localhost:5000/api", 
 
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");

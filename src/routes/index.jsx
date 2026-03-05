@@ -64,7 +64,7 @@ export default function AppRoutes() {
       <Route element={<DashboardLayout />}>
 
         {/* Default dashboard */}
-        <Route element={<ProtectedRoute allowedRoles={["managing-director","mpo","warehouse-manager"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="/user-dashboard" element={<UserDashboard />} />
           <Route path="/profile" element={<UserProfile />} />
 

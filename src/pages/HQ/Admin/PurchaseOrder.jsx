@@ -2,12 +2,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useGetBrandsQuery, useGetProductsByBrandQuery } from "../../../redux/features/products/productsApi";
 import { useCreatePurchaseOrderMutation } from "../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
-import { useAuth } from "../../../provider/AuthProvider"; // ✅ use AuthProvider
+
 import Loader from "../../../component/Loader";
+import { useAuth } from "../../../provider/AuthProvider";
 
 const PurchaseOrder = () => {
   // 1️⃣ Get user info from AuthProvider
-  const { userInfo, loading: authLoading } = useAuth();
+  const { user, loading } = useAuth();
+  const userInfo = user || {}; // Ensure we have an object to avoid undefined errors
+  const authLoading = loading; // Renamed for clarity
+
+  console.log("Authenticated user info:", user);
 
   // 2️⃣ Fetch brands
   const { data: brands = [], isLoading: brandsLoading } = useGetBrandsQuery();
@@ -80,6 +85,8 @@ const PurchaseOrder = () => {
       productShortCode: prod.productShortCode || "",
       packSize: prod.packSize || "",
       category: prod.category || "",
+      actualPrice: prod.costOfGoodsLanded || " ",
+      tradePrice: prod.tradePrice || " ",
     }));
     setProductOpen(false);
   };
@@ -129,7 +136,7 @@ const PurchaseOrder = () => {
     }
   };
 
-  if (authLoading) return <Loader/>;
+  if (authLoading) return <Loader />;
 
   return (
     <div className="mx-auto p-2">
@@ -205,15 +212,13 @@ const PurchaseOrder = () => {
                 placeholder={selectedBrand ? "Select product" : "Select a brand first"}
                 onClick={() => selectedBrand && setProductOpen((p) => !p)}
                 disabled={!selectedBrand}
-                className={`w-full border rounded p-2 pr-8 ${
-                  selectedBrand ? "border-gray-300 cursor-pointer" : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
-                }`}
+                className={`w-full border rounded p-2 pr-8 ${selectedBrand ? "border-gray-300 cursor-pointer" : "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
+                  }`}
               />
               {/* Down Arrow */}
               <svg
-                className={`w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none ${
-                  !selectedBrand && "text-gray-300"
-                }`}
+                className={`w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none ${!selectedBrand && "text-gray-300"
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
