@@ -3,7 +3,11 @@ import { useAuth } from "../../provider/AuthProvider";
 
 
 export default function UserDashboard() {
-  const { user, loading } = useAuth();
+  const { user, loading, fetchUser } = useAuth();
+  console.log("UserDashboard - user:", user, "loading:", loading);
+  const handleRefresh = () => {
+    fetchUser(); // reload user from backend
+  };
 
   if (loading) {
     return (
@@ -22,7 +26,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-auto bg-gray-100 flex flex-col">
       {/* Sticky Header */}
       {/* <header className="w-full bg-blue-800 text-white shadow-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -49,7 +53,7 @@ export default function UserDashboard() {
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 flex flex-col">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">Professional Access</h2>
             <p className="text-gray-700">
-              Here you can access resources and tools assigned to your role. 
+              Here you can access resources and tools assigned to your role.
               For any access issues, contact <span className="font-medium">HR</span>, <span className="font-medium">Admin</span>, or <span className="font-medium">IT</span>.
             </p>
           </div>
@@ -73,12 +77,21 @@ export default function UserDashboard() {
             </ul>
           </div>
         </div>
+
+
       </main>
 
-      {/* Footer */}
-      <footer className="w-full bg-gray-200 text-gray-700 py-4 text-center mt-auto">
-        &copy; {new Date().getFullYear()} Your Organization. All rights reserved.
-      </footer>
+
+      <div className="flex justify-center mb-4">
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+          >
+            Refresh
+          </button>
+        </div>
+
+
     </div>
   );
 }

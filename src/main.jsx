@@ -9,24 +9,38 @@ import AuthProvider from "./provider/AuthProvider.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // make sure styles are imported
 
+// ReactDOM.createRoot(document.getElementById("root")).render(
+//   <React.StrictMode>
+//     <Provider store={store}>
+//       <AuthProvider>
+//         <BrowserRouter>
+//           <App />
+//           {/* 🟢 ToastContainer here at root */}
+//           <ToastContainer
+//             position="top-right"
+//             autoClose={3000}
+//             hideProgressBar={false}
+//             newestOnTop
+//             closeOnClick
+//             rtl={false}
+//             pauseOnFocusLoss
+//             draggable
+//             pauseOnHover
+//           />
+//         </BrowserRouter>
+//       </AuthProvider>
+//     </Provider>
+//   </React.StrictMode>
+// );
+
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
       <AuthProvider>
         <BrowserRouter>
           <App />
-          {/* 🟢 ToastContainer here at root */}
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
+          <ToastContainer />
         </BrowserRouter>
       </AuthProvider>
     </Provider>

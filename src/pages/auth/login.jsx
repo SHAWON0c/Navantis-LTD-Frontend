@@ -1,58 +1,56 @@
-
-import { useState, useEffect } from "react";
+// src/pages/auth/Login.jsx
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import logo from "/images/NPL-Updated-Logo.png";
-import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../../redux/features/auth/authSlice";
 import { useLoginMutation } from "../../redux/features/auth/authAPI";
 
 export default function Login() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
-  // RTK Query mutation
-  const [login, { isLoading, isSuccess, isError, error, data }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
-  // Get user from Redux
-  const { user } = useSelector((state) => state.auth);
-
-  // Handle form submit
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginError("");
 
     try {
       const response = await login({ employeeId, password }).unwrap();
-      console.log("Login success:", response);
 
-      // Save token & role in Redux
-      dispatch(setCredentials({ user: { employeeId, role: response.role }, token: response.token }));
+      // ✅ Save user info in Redux
+      dispatch(
+        setCredentials({
+          user: { employeeId, role: response.role },
+          token: response.token,
+        })
+      );
 
-      // Optional: persist token in localStorage
+      // ✅ Persist in localStorage
       localStorage.setItem("token", response.token);
       localStorage.setItem("role", response.role);
+
+      toast.success("Login successful!");
+
+      // ✅ Navigate to dashboard for all roles
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       console.error("Login failed:", err);
+      setLoginError(err?.data?.message || "Login failed. Please check your credentials.");
+      toast.error(err?.data?.message || "Login failed.");
     }
   };
 
-  // Redirect based on role after successful login
-useEffect(() => {
-  if (isSuccess && user) {
-    switch (user.role) {
-      case "user":
-        navigate("/user-dashboard");
-        break;d
-      default:
-        navigate("/"); // fallback
-    }
-  }
-}, [isSuccess, user, navigate]);
-
   return (
     <div className="flex w-full min-h-screen bg-gray-50">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar newestOnTop closeOnClick pauseOnHover />
       <div className="flex-1 flex items-center justify-center px-8 py-16">
         <div className="w-full max-w-md bg-white p-10 rounded-2xl shadow-2xl border border-gray-100">
 
@@ -66,14 +64,12 @@ useEffect(() => {
           </div>
 
           {/* API Error */}
-          {isError && (
-            <div className="mt-4 text-sm text-red-600 text-center">
-              {error?.data?.message || "Something went wrong."}
-            </div>
+          {loginError && (
+            <div className="mt-4 text-sm text-red-600 text-center">{loginError}</div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="mt-8 space-y-6">
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="space-y-2">
               <label className="text-sm text-gray-600">Employee ID or Email</label>
               <input

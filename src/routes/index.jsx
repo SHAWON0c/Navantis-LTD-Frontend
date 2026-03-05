@@ -44,6 +44,7 @@ import DispatchRidersPage from "../pages/Depot/DispatchRidersPage";
 import InvoiceAndPayment from "../pages/Depot/InvoiceAndPayment";
 import DepotReceive from "../pages/Depot/DepotReceive";
 import DashboardSelector from "../component/DashboardSelector";
+import MPOPage from "../pages/dashboard/MPOPage";
 
 // ✅ FIXED PATHS
 
@@ -65,11 +66,9 @@ export default function AppRoutes() {
       <Route element={<DashboardLayout />}>
 
         {/* Default dashboard */}
-        <Route element={<ProtectedRoute allowedRoles={["md","mpo","wm"]} />}>
           <Route path="/dashboard" element={<DashboardSelector/>} />
           <Route path="/profile" element={<UserProfile />} />
 
-        </Route>
 
         {/* Admin */}
         <Route element={<ProtectedRoute allowedRoles={["md"]} />}>
