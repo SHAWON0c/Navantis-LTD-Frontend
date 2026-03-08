@@ -119,9 +119,10 @@ export const orderAPI = baseAPI.injectEndpoints({
 
     // ✅ Approve Order
     approveOrder: builder.mutation({
-      query: (orderId) => ({
+      query: ({ orderId, products }) => ({
         url: `/orders/approve/${orderId}`,
         method: "PATCH",
+        body: { products }, // optional for single-batch auto assign
       }),
       invalidatesTags: ["Orders"],
     }),

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Loader from "../../../component/Loader";
+import Loader from "../../../../component/Loader";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
-import { useGetPurchaseOrdersQuery } from "../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
-import FiltersAndSummaryPanel from "../../../component/common/FiltersAndSummaryPanel";
-import AdminPurchaseInvoice from "../../../component/reports/AdminPrintPurchaseProductList";
+import { useGetPurchaseOrdersQuery } from "../../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
+import FiltersAndSummaryPanel from "../../../../component/common/FiltersAndSummaryPanel";
+import AdminPurchaseInvoice from "../../../../component/reports/AdminPrintPurchaseProductList";
 
 const PurchaseOrderList = () => {
   // --- API query ---

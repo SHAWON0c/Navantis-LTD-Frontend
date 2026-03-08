@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { useGetBrandsQuery, useGetProductsByBrandQuery } from "../../../redux/features/products/productsApi";
-import { useCreatePurchaseOrderMutation } from "../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
+import { useGetBrandsQuery, useGetProductsByBrandQuery } from "../../../../redux/features/products/productsApi";
+import { useCreatePurchaseOrderMutation } from "../../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
 
-import Loader from "../../../component/Loader";
-import { useAuth } from "../../../provider/AuthProvider";
+import Loader from "../../../../component/Loader";
+import { useAuth } from "../../../../provider/AuthProvider";
+import toast from "../../../../utils/toast";
 
 const PurchaseOrder = () => {
   // 1️⃣ Get user info from AuthProvider
@@ -99,43 +100,54 @@ const PurchaseOrder = () => {
   };
 
   // Submit form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const netWeight = parsePackSize(formData.packSize);
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const payload = {
-      productId: formData.productId,
-      productQuantity: Number(formData.productQuantity),
-      batch: formData.batchNumber,
-      expireDate: new Date(formData.expireDate).toISOString(),
-      actualPrice: Number(formData.actualPrice),
-      tradePrice: Number(formData.tradePrice),
-    };
-
-    try {
-      await createPurchaseOrder(payload).unwrap();
-      alert("Purchase order created successfully!");
-      setFormData({
-        productId: "",
-        productName: "",
-        productShortCode: "",
-        packSize: "",
-        category: "",
-        productQuantity: "",
-        batchNumber: "",
-        expireDate: "",
-        actualPrice: "",
-        tradePrice: "",
-        addedByName: userInfo?.name || "",
-        addedByEmail: userInfo?.email || "",
-      });
-      setSelectedBrand("");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create purchase order.");
-    }
+  const payload = {
+    productId: formData.productId,
+    productQuantity: Number(formData.productQuantity),
+    batch: formData.batchNumber,
+    expireDate: new Date(formData.expireDate).toISOString(),
+    actualPrice: Number(formData.actualPrice),
+    tradePrice: Number(formData.tradePrice),
   };
 
+  try {
+    const res = await createPurchaseOrder(payload).unwrap();
+
+    // ✅ SUCCESS TOAST
+    toast.success(res?.message || "Purchase order created successfully");
+
+    // RESET FORM
+    setFormData({
+      productId: "",
+      productName: "",
+      productShortCode: "",
+      packSize: "",
+      category: "",
+      productQuantity: "",
+      batchNumber: "",
+      expireDate: "",
+      actualPrice: "",
+      tradePrice: "",
+      addedByName: userInfo?.name || "",
+      addedByEmail: userInfo?.email || "",
+    });
+
+    setSelectedBrand("");
+
+  } catch (err) {
+    console.error("Purchase Order Error:", err);
+
+    // ❌ ERROR TOAST
+    toast.error(
+      err?.data?.message ||
+      err?.data?.error ||
+      err?.error ||
+      "Failed to create purchase order"
+    );
+  }
+};
   if (authLoading) return <Loader />;
 
   return (

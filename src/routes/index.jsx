@@ -11,8 +11,8 @@ import VerifyEmail from "../pages/auth/VerifyEmail";
 import UserDashboard from "../pages/dashboard/UserDashboard";
 import AuthProvider from "../provider/AuthProvider";
 import ProtectedRoute from "../provider/PrivateRoute";
-import PurchaseOrder from "../pages/HQ/Admin/PurchaseOrder";
-import PurchaseOrderList from "../pages/HQ/Admin/PurchaseOrderList";
+
+import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
 // import ProfilePage from "../pages/profile/ProfilePage";
 import WarehouseRequest from "../pages/WareHouse/WarehouseRequest";
@@ -45,6 +45,7 @@ import InvoiceAndPayment from "../pages/Depot/InvoiceAndPayment";
 import DepotReceive from "../pages/Depot/DepotReceive";
 import DashboardSelector from "../component/DashboardSelector";
 import MPOPage from "../pages/dashboard/MPOPage";
+import PurchaseOrder from "../pages/HQ/Admin/Purchase/PurchaseOrder";
 
 // ✅ FIXED PATHS
 
