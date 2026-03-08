@@ -12,7 +12,7 @@ import UserDashboard from "../pages/dashboard/UserDashboard";
 import AuthProvider from "../provider/AuthProvider";
 import ProtectedRoute from "../provider/PrivateRoute";
 
-import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
+import PurchaseOrderList from "../pages/HQ/Admin/PurchaseOrderList";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
 // import ProfilePage from "../pages/profile/ProfilePage";
 import WarehouseRequest from "../pages/WareHouse/WarehouseRequest";

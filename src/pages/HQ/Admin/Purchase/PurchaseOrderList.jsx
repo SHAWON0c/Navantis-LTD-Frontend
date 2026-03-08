@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Loader from "../../../../component/Loader";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
 import { useGetPurchaseOrdersQuery } from "../../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
@@ -6,66 +7,80 @@ import FiltersAndSummaryPanel from "../../../../component/common/FiltersAndSumma
 import AdminPurchaseInvoice from "../../../../component/reports/AdminPrintPurchaseProductList";
 
 const PurchaseOrderList = () => {
-  // --- API query ---
-  const { data, isLoading, isError } = useGetPurchaseOrdersQuery(undefined, {
-    pollingInterval: 10000, // 🔹 optional auto-refresh every 10s
-  });
+  // ---------------- URL state ----------------
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // --- Pagination state ---
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
+  const currentPage = parseInt(searchParams.get("page")) || 1;
+  const productsPerPage = parseInt(searchParams.get("limit")) || 10;
+  const year = searchParams.get("year") || "";
+  const month = searchParams.get("month") || "";
+  const fromDate = searchParams.get("fromDate") || "";
+  const toDate = searchParams.get("toDate") || "";
+  const today = searchParams.get("today") || "";
 
-  // --- Filters state ---
+  // ---------------- Filters state ----------------
   const [filters, setFilters] = useState({
     searchTerm: "",
-    year: "",
-    month: "",
-    fromDate: "",
-    toDate: ""
+    year,
+    month,
+    fromDate,
+    toDate,
+    today
   });
+
+  // ---------------- API Query ----------------
+  const { data, isLoading, isError } = useGetPurchaseOrdersQuery({
+    page: currentPage,
+    limit: productsPerPage,
+    year,
+    month,
+    fromDate,
+    toDate,
+    today
+  }, { pollingInterval: 10000 });
+
+  // ---------------- Sync filters to URL ----------------
+  useEffect(() => {
+    setSearchParams({
+      page: 1,
+      limit: productsPerPage,
+      ...(filters.year && { year: filters.year }),
+      ...(filters.month && { month: filters.month }),
+      ...(filters.fromDate && { fromDate: filters.fromDate }),
+      ...(filters.toDate && { toDate: filters.toDate }),
+      ...(filters.today && { today: true }),
+    });
+  }, [filters, currentPage, productsPerPage, setSearchParams]);
 
   if (isLoading) return <Loader />;
   if (isError) return <p className="text-red-500 text-center">Failed to load purchase orders.</p>;
 
-  // --- Raw API Data ---
-  let purchaseOrders = data?.data || [];
+  const purchaseOrders = data?.data || [];
+  const totalPages = data?.totalPages || 1;
 
-  // ---------------- FILTERING ----------------
-  purchaseOrders = purchaseOrders.filter((order) => {
-    const orderDate = new Date(order.Date);
-    const orderYear = orderDate.getFullYear();
-    const orderMonth = orderDate.getMonth() + 1;
+  const totalUniqueProducts = data?.totalUniqueProducts ?? 0;
+  const totalUnit = data?.totalUnits ?? 0;
+  const totalTP = data?.totalTradePrice ?? 0;
 
-    const matchesSearch = order.Name.toLowerCase().includes(filters.searchTerm.toLowerCase());
-    const matchesYear = filters.year ? orderYear === Number(filters.year) : true;
-    const matchesMonth = filters.month ? orderMonth === Number(filters.month) : true;
-    const matchesFromDate = filters.fromDate ? orderDate >= new Date(filters.fromDate) : true;
-    const matchesToDate = filters.toDate ? orderDate <= new Date(filters.toDate) : true;
-
-    return matchesSearch && matchesYear && matchesMonth && matchesFromDate && matchesToDate;
+  const clearFilters = () => setFilters({
+    searchTerm: "",
+    year: "",
+    month: "",
+    fromDate: "",
+    toDate: "",
+    today: ""
   });
-
-  // ---------------- TOTALS ----------------
-  const totalUniqueProducts = data?.totalUniqueProducts ?? purchaseOrders.length;
-  const totalUnit = data?.totalUnits ?? purchaseOrders.reduce((sum, p) => sum + Number(p.Quantity || 0), 0);
-  const totalTP = data?.totalTradePrice ?? purchaseOrders.reduce((sum, p) => sum + Number(p.TotalPrice || 0), 0);
-
-  const clearFilters = () =>
-    setFilters({ searchTerm: "", year: "", month: "", fromDate: "", toDate: "" });
-
-  // ---------------- PAGINATION ----------------
-  const totalPages = Math.ceil(purchaseOrders.length / productsPerPage);
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const currentProducts = purchaseOrders.slice(startIndex, startIndex + productsPerPage);
 
   const changePage = (page) => {
     if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+    setSearchParams({
+      ...Object.fromEntries(searchParams.entries()),
+      page
+    });
   };
 
   return (
     <div className="mx-auto p-2">
-
       {/* Header */}
       <div className="bg-white text-gray-500 h-12 flex items-center px-6">
         <h2 className="text-base font-bold">NPL / Admin / Purchase Order List</h2>
@@ -89,7 +104,7 @@ const PurchaseOrderList = () => {
         }
       />
 
-      {/* TABLE */}
+      {/* Table */}
       <div className="overflow-x-auto mt-10">
         <table className="table-auto w-full text-left border-collapse">
           <thead>
@@ -108,9 +123,9 @@ const PurchaseOrderList = () => {
           </thead>
 
           <tbody>
-            {currentProducts.map((order, idx) => (
+            {purchaseOrders.map((order, idx) => (
               <tr key={order.productId + idx} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2 text-center">{startIndex + idx + 1}</td>
+                <td className="px-4 py-2 text-center">{(currentPage - 1) * productsPerPage + idx + 1}</td>
                 <td className="px-4 py-2">{order.Name}</td>
                 <td className="px-4 py-2">{order.PackSize}</td>
                 <td className="px-4 py-2">{order.Batch}</td>
@@ -126,7 +141,7 @@ const PurchaseOrderList = () => {
         </table>
       </div>
 
-      {/* PAGINATION */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-4">
           <button disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>
