@@ -45,6 +45,7 @@ import DashboardSelector from "../component/DashboardSelector";
 import MPOPage from "../pages/dashboard/MPOPage";
 import PurchaseOrder from "../pages/HQ/Admin/Purchase/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
+import DepotRequestsPage from "../pages/Depot/DepotRequestsPage";
 
 // ✅ FIXED PATHS
 
@@ -74,6 +75,7 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["md"]} />}>
           <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
           <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
+
         </Route>
 
         {/* Warehouse */}
@@ -84,6 +86,8 @@ export default function AppRoutes() {
           <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
           {/* <Route path="/admin/depot-request" element={<DepotProductRequest />} /> */}
           <Route path="/admin/expired-request" element={<DepotExpriedRequest />} />
+
+          <Route path="/admin/depot-request" element={<DepotRequestsPage></DepotRequestsPage>} ></Route>
 
 
           <Route path="/warehouse/receive" element={<WarehouseAddProduct />} />

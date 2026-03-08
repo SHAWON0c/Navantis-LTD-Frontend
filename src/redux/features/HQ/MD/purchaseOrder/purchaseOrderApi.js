@@ -57,26 +57,47 @@ export const purchaseOrderAPI = baseAPI.injectEndpoints({
     }),
 
     // ✅ Get all Purchase Orders
+    // getPurchaseOrders: builder.query({
+    //   query: ({ page = 1, limit = 10, year, month, fromDate, toDate, today } = {}) => {
+    //     // Build query params dynamically
+    //     const params = new URLSearchParams();
+    //     params.append("page", page);
+    //     params.append("limit", limit);
+
+    //     if (year) params.append("year", year);
+    //     if (month) params.append("month", month);
+    //     if (fromDate) params.append("fromDate", fromDate);
+    //     if (toDate) params.append("toDate", toDate);
+    //     if (today) params.append("today", true);
+
+    //     return {
+    //       url: `/purchase-orders?${params.toString()}`,
+    //       method: "GET",
+    //     };
+    //   },
+    //   providesTags: ["PurchaseOrders"],
+    // }),
+
+
     getPurchaseOrders: builder.query({
-      query: ({ page = 1, limit = 10, year, month, fromDate, toDate, today } = {}) => {
-        // Build query params dynamically
-        const params = new URLSearchParams();
-        params.append("page", page);
-        params.append("limit", limit);
+  query: ({ page = 1, limit = 10, year, month, fromDate, toDate, today } = {}) => {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("limit", limit);
 
-        if (year) params.append("year", year);
-        if (month) params.append("month", month);
-        if (fromDate) params.append("fromDate", fromDate);
-        if (toDate) params.append("toDate", toDate);
-        if (today) params.append("today", true);
+    if (year) params.append("year", year);
+    if (month) params.append("month", month);
+    if (fromDate) params.append("fromDate", fromDate);
+    if (toDate) params.append("toDate", toDate);
+    if (today) params.append("today", true);
 
-        return {
-          url: `/purchase-orders?${params.toString()}`,
-          method: "GET",
-        };
-      },
-      providesTags: ["PurchaseOrders"],
-    }),
+    return {
+      url: `/purchase-orders?${params.toString()}`,
+      method: "GET",
+    };
+  },
+  providesTags: ["PurchaseOrders"],
+}),
 
     // ✅ Get single Purchase Order by ID
     getPurchaseOrderById: builder.query({
