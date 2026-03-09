@@ -46,6 +46,7 @@ import MPOPage from "../pages/dashboard/MPOPage";
 import PurchaseOrder from "../pages/HQ/Admin/Purchase/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
 import DepotRequestsPage from "../pages/HQ/Admin/depo/DepotRequestsPage";
+import NotFoundPage from "../pages/notFound/NotFoundPage";
 
 
 // ✅ FIXED PATHS
@@ -67,9 +68,11 @@ export default function AppRoutes() {
 
       <Route element={<DashboardLayout />}>
 
+
+        <Route path="*" element={<NotFoundPage />} />
         {/* Default dashboard */}
-          <Route path="/dashboard" element={<DashboardSelector/>} />
-          <Route path="/profile" element={<UserProfile />} />
+        <Route path="/dashboard" element={<DashboardSelector />} />
+        <Route path="/profile" element={<UserProfile />} />
 
 
         {/* Admin */}
@@ -81,7 +84,7 @@ export default function AppRoutes() {
 
         {/* Warehouse */}
 
-        <Route element={<ProtectedRoute allowedRoles={["md" ,"wm"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["md", "wm"]} />}>
 
           <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
           <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
@@ -101,30 +104,30 @@ export default function AppRoutes() {
 
 
 
-       <Route element={<ProtectedRoute allowedRoles={["md" ,"wm" ,"mpo"]} />}>
-        <Route path="/depot/products" element={<DepotProductsList />} />
-        <Route path="/warehouse/damaged" element={<DamagedProducts />} />
-        <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
-        <Route path="/depot/stock-in" element={<DepotStockIn />} />
-        <Route path="/depot/stock-out" element={<DepotStockOut />} />
-        <Route path="/depot/order-delivery" element={<PendingOrders />} />
-        <Route path="/depot/dispatch-rider" element={<DispatchRidersPage />} />
-        <Route path="/depot/invoice-payment" element={<InvoiceAndPayment />} />
-        <Route path="/depot/receive" element={<DepotReceive />} />
+        <Route element={<ProtectedRoute allowedRoles={["md", "wm", "mpo"]} />}>
+          <Route path="/depot/products" element={<DepotProductsList />} />
+          <Route path="/warehouse/damaged" element={<DamagedProducts />} />
+          <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
+          <Route path="/depot/stock-in" element={<DepotStockIn />} />
+          <Route path="/depot/stock-out" element={<DepotStockOut />} />
+          <Route path="/depot/order-delivery" element={<PendingOrders />} />
+          <Route path="/depot/dispatch-rider" element={<DispatchRidersPage />} />
+          <Route path="/depot/invoice-payment" element={<InvoiceAndPayment />} />
+          <Route path="/depot/receive" element={<DepotReceive />} />
 
 
-        <Route path="/area" element={<AreaPage />} />
-        {/* <Route path="/territory" element={<TerritoryPage />} /> */}
-        <Route path="/territory-target" element={<TerritoryTarget />} />
-        <Route path="/territory/:id/set-target" element={<SetTerritoryTarget />} />
+          <Route path="/area" element={<AreaPage />} />
+          {/* <Route path="/territory" element={<TerritoryPage />} /> */}
+          <Route path="/territory-target" element={<TerritoryTarget />} />
+          <Route path="/territory/:id/set-target" element={<SetTerritoryTarget />} />
 
 
-        <Route path="/customer/list" element={<Customer />} />
-        <Route path="/customer/add" element={<CreateCustomer />} />  
+          <Route path="/customer/list" element={<Customer />} />
+          <Route path="/customer/add" element={<CreateCustomer />} />
 
-        <Route path="orders/place" element={<PlaceOrder />} />
+          <Route path="orders/place" element={<PlaceOrder />} />
 
-        <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
+          <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
         </Route>
 
       </Route>
