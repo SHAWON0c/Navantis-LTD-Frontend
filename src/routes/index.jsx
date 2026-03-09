@@ -23,7 +23,7 @@ import WarehouseStockOut from "../pages/WareHouse/warehouseStockOut";
 import DepotStockOut from "../pages/Depot/DepotStockOut";
 import WarehouseDamageRequest from "../pages/HQ/Admin/WarehouseDamageRequest";
 // import DepotProductRequest from "../pages/HQ/Admin/DepotProductRequest";
-import DepotExpriedRequest from "../pages/HQ/Admin/DepotExpriedRequest";
+// import DepotExpriedRequest from "../pages/HQ/Admin/DepotExpriedRequest";
 import DamagedProducts from "../pages/WareHouse/DamagedProducts";
 import DepotDelivery from "../pages/WareHouse/DepotDelivery";
 import AreaPage from "../pages/AreaPage";
@@ -89,7 +89,7 @@ export default function AppRoutes() {
           <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
           <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
           {/* <Route path="/admin/depot-request" element={<DepotProductRequest />} /> */}
-          <Route path="/admin/expired-request" element={<DepotExpriedRequest />} />
+
 
           <Route path="/admin/depot-request" element={<DepotRequestsPage></DepotRequestsPage>} ></Route>
 
@@ -104,7 +104,7 @@ export default function AppRoutes() {
 
 
 
-        <Route element={<ProtectedRoute allowedRoles={["md", "wm", "mpo"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["dm","amdin","md"]} />}>
           <Route path="/depot/products" element={<DepotProductsList />} />
           <Route path="/warehouse/damaged" element={<DamagedProducts />} />
           <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />

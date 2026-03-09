@@ -144,7 +144,7 @@ const WarehouseRequest = () => {
     <div className="mx-auto p-2">
       {/* Top Bar */}
       <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
+        <h2 className="text-base font-bold">NPL / Admin / Warehouse Receive requests</h2>
       </div>
 
       {/* Universal Summary Panel */}

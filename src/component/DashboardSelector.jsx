@@ -52,6 +52,7 @@ import HRDashboard from "../pages/dashboard/HRDashboard";
 import PMDDashboard from "../pages/dashboard/PMDDashboard";
 import { useAuth } from "../provider/AuthProvider";
 import UserDashboard from "../pages/dashboard/UserDashboard";
+import DMDashboard from "../pages/dashboard/DMDashboard";
 
 export default function DashboardSelector() {
 
@@ -87,7 +88,9 @@ export default function DashboardSelector() {
     zm: <ZonalDashboard key="zm" />,
     am: <AreaDashboard key="am" />,
     hr: <HRDashboard key="hr" />,
+    dm: <DMDashboard key="dm"/>,
     pmd: <PMDDashboard key="pmd" />,
+
     user: <UserDashboard key="user" />,
   };
 
