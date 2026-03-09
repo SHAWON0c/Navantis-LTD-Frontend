@@ -3,6 +3,7 @@ import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
 
 import FiltersAndSummaryPanel from "../../component/common/FiltersAndSummaryPanel";
 import { useGetDailyStockOutListQuery } from "../../redux/features/depot/depotStockApi";
+import Loader from "../../component/Loader";
 
 const DepotStockOut = () => {
   // --- API Data ---
@@ -21,7 +22,7 @@ const DepotStockOut = () => {
     toDate: ""
   });
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loader></Loader>
   if (isError) return <p className="text-red-500 text-center">Error loading stock-out data!</p>;
 
   // --- Raw API Data ---

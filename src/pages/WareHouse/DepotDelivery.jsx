@@ -176,6 +176,7 @@ import {
   useGetGroupedDepotRequestsQuery,
   useSendProductRequestTowarehouseMutation
 } from "../../redux/features/depot/depotStockApi";
+import Loader from "../../component/Loader";
 
 const DepotDelivery = () => {
   const { data, isLoading, refetch } =
@@ -256,7 +257,7 @@ const DepotDelivery = () => {
     }
   };
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (isLoading) return <Loader></Loader>
 
   return (
     <div className="mx-auto p-6">

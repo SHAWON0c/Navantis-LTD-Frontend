@@ -455,6 +455,7 @@ import {
   useSendProductRequestTowarehouseMutation,
 } from "../../../../redux/features/depot/depotStockApi";
 import UniversalSummaryPanel from "../../../../component/common/UniversalSummaryPanel";
+import Loader from "../../../../component/Loader";
 
 
 Modal.setAppElement("#root");
@@ -535,7 +536,7 @@ const DepotRequestsPage = () => {
     }
   };
 
-  if (isLoading) return <p className="text-center py-10">Loading depot requests...</p>;
+  if (isLoading) return <Loader></Loader>
   if (isError) return <p className="text-center py-10 text-red-500">Error fetching depot requests</p>;
 
   const groupedData = data?.data || {};
