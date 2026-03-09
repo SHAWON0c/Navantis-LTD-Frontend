@@ -45,7 +45,8 @@ import DashboardSelector from "../component/DashboardSelector";
 import MPOPage from "../pages/dashboard/MPOPage";
 import PurchaseOrder from "../pages/HQ/Admin/Purchase/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
-import DepotRequestsPage from "../pages/Depot/DepotRequestsPage";
+import DepotRequestsPage from "../pages/HQ/Admin/depo/DepotRequestsPage";
+
 
 // ✅ FIXED PATHS
 

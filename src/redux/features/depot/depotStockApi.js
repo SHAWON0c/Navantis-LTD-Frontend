@@ -4,32 +4,32 @@ export const depotStockAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
 
     // 📦 Depot Stock IN LIST
-// 🟢 Daily Stock-In List
-getDailyStockInList: builder.query({
-  query: (params) => ({
-    url: "/depot-products/daily-stockin/", // backend route for dailyStockIn controller
-    method: "GET",
-    params, // optional filters
-  }),
-}),
+    // 🟢 Daily Stock-In List
+    getDailyStockInList: builder.query({
+      query: (params) => ({
+        url: "/depot-products/daily-stockin/", // backend route for dailyStockIn controller
+        method: "GET",
+        params, // optional filters
+      }),
+    }),
 
-// 🟢 Daily Stock-Out List
-getDailyStockOutList: builder.query({
-  query: (params) => ({
-    url: "/depot-products/daily-stockout", // backend route for dailyStockOut controller
-    method: "GET",
-    params, // optional filters
-  }),
-}),
+    // 🟢 Daily Stock-Out List
+    getDailyStockOutList: builder.query({
+      query: (params) => ({
+        url: "/depot-products/daily-stockout", // backend route for dailyStockOut controller
+        method: "GET",
+        params, // optional filters
+      }),
+    }),
 
-// 🟢 ✅ Depot Receive Stock Report
-getDepotReceiveStock: builder.query({
-  query: (params) => ({
-    url: "/depot-products/receive-stock", // backend route
-    method: "GET",
-    params, // optional query params
-  }),
-}),
+    // 🟢 ✅ Depot Receive Stock Report
+    getDepotReceiveStock: builder.query({
+      query: (params) => ({
+        url: "/depot-products/receive-stock", // backend route
+        method: "GET",
+        params, // optional query params
+      }),
+    }),
 
     // 📦 Depot Product LIST
     getDepotProductList: builder.query({
@@ -110,6 +110,14 @@ getDepotReceiveStock: builder.query({
       }),
     }),
 
+    sendProductRequestTowarehouse: builder.mutation({
+      query: ({ requestId, payload }) => ({
+        url: `/depotRequests/${requestId}/status`,
+        method: "PATCH",
+        body: payload,
+      }),
+    }),
+
   }),
   overrideExisting: false,
 });
@@ -117,7 +125,7 @@ getDepotReceiveStock: builder.query({
 export const {
   // 📦 Depot stock
   useGetDailyStockInListQuery,
-  
+
   useGetDepotProductListQuery,
   useGetDailyStockOutListQuery,
   useDepotStockOutMutation,
@@ -138,4 +146,6 @@ export const {
 
 
   useGetDepotReceiveStockQuery,
+
+  useSendProductRequestTowarehouseMutation
 } = depotStockAPI;
