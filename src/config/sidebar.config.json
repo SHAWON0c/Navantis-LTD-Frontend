@@ -1,147 +1,84 @@
 [
   {
-    "key": "admin-purchase",
-    "label": "Admin Purchase Management",
-    "icon": "FileText",
+    "key": "admin",
+    "label": "Admin",
+    "icon": "Users",
     "children": [
       { "label": "Purchase Order", "path": "/admin/purchase-order", "icon": "FileText", "allowedRoles": ["md"] },
-      { "label": "Purchase List", "path": "/admin/purchase-list", "icon": "ClipboardList", "allowedRoles": ["md"] }
-    ]
-  },
-  {
-    "key": "admin-requests",
-    "label": "Admin Requests Management",
-    "icon": "Warehouse",
-    "children": [
+      { "label": "Purchase List", "path": "/admin/purchase-list", "icon": "ClipboardList", "allowedRoles": ["md"] },
       { "label": "Warehouse Request", "path": "/admin/warehouse-request", "icon": "Warehouse", "allowedRoles": ["md"] },
       { "label": "Damage Request", "path": "/admin/damage-request", "icon": "FileText", "allowedRoles": ["md"] },
       { "label": "Depot Request", "path": "/admin/depot-request", "icon": "Building2", "allowedRoles": ["md"] },
       { "label": "Expired Request", "path": "/admin/expired-request", "icon": "FileText", "allowedRoles": ["md"] },
       { "label": "Ex. Return Request", "path": "/admin/ex-return-request", "icon": "FileText", "allowedRoles": ["md"] },
       { "label": "Missing Products", "path": "/admin/missing-products", "icon": "ClipboardList", "allowedRoles": ["md"] },
-      { "label": "Price Update", "path": "/admin/price-update", "icon": "FileText", "allowedRoles": ["md"] }
-    ]
-  },
-  {
-    "key": "admin-product-expired",
-    "label": "Admin Product & Expired",
-    "icon": "FileText",
-    "children": [
+      { "label": "Price Update", "path": "/admin/price-update", "icon": "FileText", "allowedRoles": ["md"] },
       { "label": "Damaged & Expired", "path": "/admin/damaged-expired", "icon": "FileText", "allowedRoles": ["md"] },
-      { "label": "Expired Returns", "path": "/admin/expired-returns", "icon": "FileText", "allowedRoles": ["md"] }
-    ]
-  },
-  {
-    "key": "admin-user",
-    "label": "Admin User Management",
-    "icon": "UserCheck",
-    "children": [
+      { "label": "Expired Returns", "path": "/admin/expired-returns", "icon": "FileText", "allowedRoles": ["md"] },
       { "label": "Doctor", "path": "/admin/doctor", "icon": "Stethoscope", "allowedRoles": ["md"] },
       { "label": "Customer", "path": "/admin/customer", "icon": "UserCheck", "allowedRoles": ["md"] },
       { "label": "Update Customer", "path": "/admin/update-customer", "icon": "UserCheck", "allowedRoles": ["md"] }
     ]
   },
-    {
-      "key": "warehouse-receive",
-      "label": "WH Receive Management",
-      "icon": "FileText",
-      "children": [
-        { "label": "Receive New Products", "path": "/warehouse/receive", "icon": "FileText", "allowedRoles": ["md","wm"] },
-        { "label": "Depot Delivery", "path": "/warehouse/depot-delivery", "icon": "Building2", "allowedRoles": ["md","wm"] }
-      ]
-    },
-    {
-      "key": "warehouse-stock",
-      "label": "WH Stock Management",
-      "icon": "ClipboardList",
-      "children": [
-        { "label": "Products List", "path": "/warehouse/products", "icon": "ClipboardList", "allowedRoles": ["md","wm"] },
-        { "label": "Stock In", "path": "/warehouse/stock-in", "icon": "FileText", "allowedRoles": ["md","wm"] },
-        { "label": "Stock Out", "path": "/warehouse/stock-out", "icon": "FileText", "allowedRoles": ["md","wm"] }
-      ]
-    },
-    {
-      "key": "warehouse-damage",
-      "label": "WH Damage Management",
-      "icon": "AlertTriangle",
-      "children": [
-        { "label": "Damaged Products", "path": "/warehouse/damaged", "icon": "FileText", "allowedRoles": ["md","wm"] }
-      ]
-    },
-  
-
   {
-    "key": "depot-requests",
-    "label": "Depot Requests",
-    "icon": "FileText",
+    "key": "warehouse",
+    "label": "Warehouse",
+    "icon": "Warehouse",
+    "children": [
+      { "label": "Receive New Products", "path": "/warehouse/receive", "icon": "FileText", "allowedRoles": ["md"," wm"] },
+      { "label": "Depot Delivery", "path": "/warehouse/depot-delivery", "icon": "Building2", "allowedRoles": ["md","wm"] },
+      { "label": "Products List", "path": "/warehouse/products", "icon": "ClipboardList", "allowedRoles": ["md","wm"] },
+      { "label": "Stock In", "path": "/warehouse/stock-in", "icon": "FileText", "allowedRoles": ["md","wm"] },
+      { "label": "Stock Out", "path": "/warehouse/stock-out", "icon": "FileText", "allowedRoles": ["md","wm"] },
+      { "label": "Damaged Products", "path": "/warehouse/damaged", "icon": "FileText", "allowedRoles": ["md","wm"] }
+    ]
+  },
+  {
+    "key": "depot",
+    "label": "Depot",
+    "icon": "Building2",
     "children": [
       { "label": "Receive Request", "path": "/depot/receive-request", "icon": "FileText", "allowedRoles": ["md","dm"] },
-      { "label": "Receive Products", "path": "/depot/receive", "icon": "FileText", "allowedRoles": ["md","dm"] }
-    ]
-  },
-  {
-    "key": "depot-stock",
-    "label": "Depot Stock",
-    "icon": "ClipboardList",
-    "children": [
       { "label": "Products List", "path": "/depot/products", "icon": "ClipboardList", "allowedRoles": ["md","dm"] },
+      { "label": "Receive Products", "path": "/depot/receive", "icon": "FileText", "allowedRoles": ["md","dm"] },
       { "label": "Stock In", "path": "/depot/stock-in", "icon": "FileText", "allowedRoles": ["md","dm"] },
-      { "label": "Stock Out", "path": "/depot/stock-out", "icon": "FileText", "allowedRoles": ["md","dm"] }
-    ]
-  },
-  {
-    "key": "depot-sales",
-    "label": "Depot Sales & Returns",
-    "icon": "ShoppingCart",
-    "children": [
+      { "label": "Stock Out", "path": "/depot/stock-out", "icon": "FileText", "allowedRoles": ["md","dm"] },
       { "label": "Sales Returned", "path": "/depot/sales-returned", "icon": "FileText", "allowedRoles": ["md","dm"] },
       { "label": "Expired Products", "path": "/depot/expired", "icon": "FileText", "allowedRoles": ["md","dm"] },
-      { "label": "Ex. Return Status", "path": "/depot/ex-return-status", "icon": "FileText", "allowedRoles": ["md","dm"] }
-    ]
-  },
-  {
-    "key": "depot-delivery",
-    "label": "Depot Delivery",
-    "icon": "Truck",
-    "children": [
+      { "label": "Ex. Return Status", "path": "/depot/ex-return-status", "icon": "FileText", "allowedRoles": ["md","dm"] },
       { "label": "Dispatch Rider", "path": "/depot/dispatch-rider", "icon": "UserCheck", "allowedRoles": ["md","dm"] },
       { "label": "Order Delivery", "path": "/depot/order-delivery", "icon": "ClipboardList", "allowedRoles": ["md","dm"] },
+      { "label": "Invoice & Payment", "path": "/depot/invoice-payment", "icon": "FileText", "allowedRoles": ["md","dm"] },
       { "label": "Delivery Report", "path": "/depot/delivery-report", "icon": "FileBarChart", "allowedRoles": ["md","dm"] }
     ]
   },
-  {
-    "key": "depot-finance",
-    "label": "Depot Finance",
-    "icon": "DollarSign",
-    "children": [
-      { "label": "Invoice & Payment", "path": "/depot/invoice-payment", "icon": "FileText", "allowedRoles": ["md","dm"] }
-    ]
-  },
-  {
-    "key": "zm-am-mpo",
-    "label": "MPO Overview",
-    "icon": "Building2",
-    "children": [
-      { "label": "MPO List", "path": "/zm/mpo", "icon": "Building2", "allowedRoles": ["zm","am"] }
-    ]
-  },
-  {
-    "key": "zm-am-order",
-    "label": "Orders",
-    "icon": "Building2",
-    "children": [
-      { "label": "Orders Overview", "path": "/zm/orders", "icon": "Building2", "allowedRoles": ["zm","am"] },
-      { "label": "Delivery Report", "path": "/zm/delivery-report", "icon": "Building2", "allowedRoles": ["zm","am"] }
-    ]
-  },
-  {
-    "key": "zm-am-customers",
-    "label": "Customers",
-    "icon": "UserCheck",
-    "children": [
-      { "label": "Customer List", "path": "/zm/customers", "icon": "UserCheck", "allowedRoles": ["zm","am"] }
-    ]
-  },
+
+{
+  "key": "zm-am-mpo",
+  "label": "MPO Overview",
+  "icon": "Building2",
+  "children": [
+    { "label": "MPO List", "path": "/zm/mpo", "icon": "Building2", "allowedRoles": ["zm","am"] }
+  ]
+},
+
+{
+  "key": "zm-am-order",
+  "label": "Order",
+  "icon": "Building2",
+  "children": [
+    { "label": "Orders Overview", "path": "/zm/orders", "icon": "Building2", "allowedRoles": ["zm","am"] },
+    { "label": "Delivery Report", "path": "/zm/delivery-report", "icon": "Building2", "allowedRoles": ["zm","am"] }
+  ]
+},
+{
+  "key": "zm-am-customers",
+  "label": "Customers",
+  "icon": "UserCheck",
+  "children": [
+    { "label": "Customer List", "path": "/zm/customers", "icon": "UserCheck", "allowedRoles": ["zm","am"] }
+  ]
+},
 
   {
     "key": "institute",

@@ -152,6 +152,25 @@ export const orderAPI = baseAPI.injectEndpoints({
       }),
       providesTags: ["Orders"],
     }),
+
+
+
+    getMpoPendingOrders: builder.query({
+      query: () => ({
+        url: "/orders/mpo-orders/pending",
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
+    }),
+
+    // MPO DELIVERED ORDERS
+    getMpoDeliveredOrders: builder.query({
+      query: () => ({
+        url: "/orders/mpo-orders/delivered",
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -164,4 +183,6 @@ export const {
   useDeliverOrderMutation,
   useGetOrderStatusInfoQuery,
   useLazySearchOrderQuery, // ✅ lazy search hook for Quick Pay
+    useGetMpoPendingOrdersQuery,
+  useGetMpoDeliveredOrdersQuery,
 } = orderAPI;

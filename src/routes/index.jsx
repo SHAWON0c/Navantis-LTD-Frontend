@@ -47,6 +47,7 @@ import PurchaseOrder from "../pages/HQ/Admin/Purchase/PurchaseOrder";
 import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
 import DepotRequestsPage from "../pages/HQ/Admin/depo/DepotRequestsPage";
 import NotFoundPage from "../pages/notFound/NotFoundPage";
+import MyOrders from "../pages/mpo/order/MyOrders";
 
 
 // ✅ FIXED PATHS
@@ -104,13 +105,14 @@ export default function AppRoutes() {
 
 
 
-        <Route element={<ProtectedRoute allowedRoles={["dm","amdin","md"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["dm", "amdin", "md"]} />}>
           <Route path="/depot/products" element={<DepotProductsList />} />
           <Route path="/warehouse/damaged" element={<DamagedProducts />} />
           <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
           <Route path="/depot/stock-in" element={<DepotStockIn />} />
           <Route path="/depot/stock-out" element={<DepotStockOut />} />
           <Route path="/depot/order-delivery" element={<PendingOrders />} />
+                <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
           <Route path="/depot/dispatch-rider" element={<DispatchRidersPage />} />
           <Route path="/depot/invoice-payment" element={<InvoiceAndPayment />} />
           <Route path="/depot/receive" element={<DepotReceive />} />
@@ -120,15 +122,18 @@ export default function AppRoutes() {
           {/* <Route path="/territory" element={<TerritoryPage />} /> */}
           <Route path="/territory-target" element={<TerritoryTarget />} />
           <Route path="/territory/:id/set-target" element={<SetTerritoryTarget />} />
+        </Route>
 
-
+        <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"mpo"]} />}>
           <Route path="/customer/list" element={<Customer />} />
           <Route path="/customer/add" element={<CreateCustomer />} />
 
           <Route path="orders/place" element={<PlaceOrder />} />
+          <Route path="/orders/my-orders" element={<MyOrders/>} />
 
-          <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
+    
         </Route>
+
 
       </Route>
 
