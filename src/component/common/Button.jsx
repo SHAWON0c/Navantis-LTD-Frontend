@@ -1,5 +1,4 @@
 import React from 'react';
-import { MdOutlineArrowForward } from 'react-icons/md';
 
 const Button = ({
   children,
@@ -8,7 +7,6 @@ const Button = ({
   disabled = false,
   loading = false,
   icon,
-  iconPosition = 'left',
   onClick,
   type = 'button',
   className = '',
@@ -17,12 +15,11 @@ const Button = ({
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantClasses = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-soft',
-    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 shadow-soft',
-    outline: 'border border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
-    ghost: 'text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
-    danger: 'bg-error text-white hover:bg-red-700 focus:ring-red-500 shadow-soft',
-    success: 'bg-success text-white hover:bg-green-700 focus:ring-green-500 shadow-soft',
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
+    outline: 'border border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
+    ghost: 'text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   };
 
   const sizeClasses = {
@@ -33,15 +30,6 @@ const Button = ({
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
-  const renderIcon = () => {
-    if (loading) return <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />;
-    if (icon) {
-      const IconComponent = icon;
-      return <IconComponent className={`mr-2 ${iconPosition === 'right' ? 'order-last ml-2 mr-0' : ''}`} />;
-    }
-    return null;
-  };
-
   return (
     <button
       type={type}
@@ -50,7 +38,7 @@ const Button = ({
       onClick={onClick}
       {...props}
     >
-      {renderIcon()}
+      {icon && <span className="mr-2">{icon}</span>}
       {children}
     </button>
   );

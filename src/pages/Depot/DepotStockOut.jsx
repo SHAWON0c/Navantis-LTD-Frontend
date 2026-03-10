@@ -81,7 +81,7 @@ const DepotStockOut = () => {
     { key: 'productShortCode', label: 'Short Code', sortable: true },
     { key: 'packSize', label: 'Pack Size', sortable: true },
     { key: 'category', label: 'Category', sortable: true },
-    { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `₹${Number(value || 0).toLocaleString()}` },
     { key: 'batch', label: 'Batch', sortable: true },
     { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
     { key: 'quantityOut', label: 'Quantity Out', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
