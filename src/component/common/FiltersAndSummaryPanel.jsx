@@ -16,7 +16,7 @@ const FiltersAndSummaryPanel = ({ id, filters, setFilters, totals, onClear, onPr
       {/* ================= FILTERS SECTION ================= */}
       <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
         {/* Filter Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-5 py-4">
+        <div className="bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 px-5 py-4">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="w-full flex items-center justify-between text-white hover:opacity-90 transition-opacity gap-3"

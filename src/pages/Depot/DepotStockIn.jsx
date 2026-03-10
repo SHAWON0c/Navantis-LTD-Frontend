@@ -93,7 +93,7 @@ const DepotStockIn = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Header */}
-      <Card className="mb-6">
+      {/* <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}>
@@ -108,7 +108,7 @@ const DepotStockIn = () => {
             Total Records: {stockList.length}
           </div>
         </div>
-      </Card>
+      </Card> */}
 
       {/* Filters + Summary */}
       <div className="mb-6">
