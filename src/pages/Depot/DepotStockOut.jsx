@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
-
 import FiltersAndSummaryPanel from "../../component/common/FiltersAndSummaryPanel";
 import { useGetDailyStockOutListQuery } from "../../redux/features/depot/depotStockApi";
 import Loader from "../../component/Loader";
+import Card from "../../component/common/Card";
+import Table from "../../component/common/Table";
+import Button from "../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
 
 const DepotStockOut = () => {
   // --- API Data ---
@@ -22,8 +25,17 @@ const DepotStockOut = () => {
     toDate: ""
   });
 
-  if (isLoading) return <Loader></Loader>
-  if (isError) return <p className="text-red-500 text-center">Error loading stock-out data!</p>;
+  if (isLoading) return <Loader />;
+  if (isError) return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <Card className="text-center">
+        <p className="text-error text-lg">Failed to load depot stock out data.</p>
+        <Button variant="primary" className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </Card>
+    </div>
+  );
 
   // --- Raw API Data ---
   let stockList = apiData?.data || [];
@@ -61,97 +73,121 @@ const DepotStockOut = () => {
     setCurrentPage(page);
   };
 
+  // Table columns configuration
+  const columns = [
+    { key: 'slNo', label: 'Sl. No.', sortable: false, render: (value, row, index) => startIndex + index + 1 },
+    { key: 'productName', label: 'Product Name', sortable: true },
+    { key: 'brand', label: 'Brand', sortable: true },
+    { key: 'productShortCode', label: 'Short Code', sortable: true },
+    { key: 'packSize', label: 'Pack Size', sortable: true },
+    { key: 'category', label: 'Category', sortable: true },
+    { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'batch', label: 'Batch', sortable: true },
+    { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'quantityOut', label: 'Quantity Out', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'stockAvailableBefore', label: 'Stock Before', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'stockAvailableAfter', label: 'Stock After', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'stockOutDate', label: 'Stock Out Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+  ];
+
   return (
-    <div className="mx-auto p-2">
-      <h1 className="text-xl font-semibold mb-4">Daily Stock Out</h1>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}>
+              Back
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Depot Stock Out</h1>
+              <p className="text-neutral-600 text-sm">Manage outgoing stock inventory</p>
+            </div>
+          </div>
+          <div className="text-sm text-neutral-500">
+            Total Records: {stockList.length}
+          </div>
+        </div>
+      </Card>
 
       {/* Filters + Summary */}
-      <FiltersAndSummaryPanel
-        filters={filters}
-        setFilters={setFilters}
-        totals={{ totalUniqueProducts, totalUnit, totalTP }}
-        onClear={clearFilters}
-        onPrint={() =>
-          console.log("Print stock-out report", {
-            stockList,
-            totalUniqueProducts,
-            totalUnit,
-            totalTP,
-            fromDate: filters.fromDate,
-            toDate: filters.toDate
-          })
-        }
-      />
-
-      {/* Table */}
-      <div className="overflow-x-auto mt-6">
-        <table className="table-auto w-full border border-gray-300 text-left">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 border">Sl. No.</th>
-              <th className="px-4 py-2 border">Product Name</th>
-              <th className="px-4 py-2 border">Brand</th>
-              <th className="px-4 py-2 border">Short Code</th>
-              <th className="px-4 py-2 border">Pack Size</th>
-              <th className="px-4 py-2 border">Category</th>
-              <th className="px-4 py-2 border">Actual Price</th>
-              <th className="px-4 py-2 border">Batch</th>
-              <th className="px-4 py-2 border">Expire Date</th>
-              <th className="px-4 py-2 border">Quantity Out</th>
-              <th className="px-4 py-2 border">Stock Before</th>
-              <th className="px-4 py-2 border">Stock After</th>
-              <th className="px-4 py-2 border">Stock Out Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((item, idx) => (
-              <tr key={item._id || startIndex + idx} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2 border text-center">{startIndex + idx + 1}</td>
-                <td className="px-4 py-2 border">{item.productName}</td>
-                <td className="px-4 py-2 border">{item.brand}</td>
-                <td className="px-4 py-2 border">{item.productShortCode}</td>
-                <td className="px-4 py-2 border">{item.packSize}</td>
-                <td className="px-4 py-2 border">{item.category}</td>
-                <td className="px-4 py-2 border text-right">{item.actualPrice?.toLocaleString()}</td>
-                <td className="px-4 py-2 border">{item.batch}</td>
-                <td className="px-4 py-2 border text-center">{new Date(item.expireDate).toLocaleDateString()}</td>
-                <td className="px-4 py-2 border text-center">{item.quantityOut}</td>
-                <td className="px-4 py-2 border text-center">{item.stockAvailableBefore}</td>
-                <td className="px-4 py-2 border text-center">{item.stockAvailableAfter}</td>
-                <td className="px-4 py-2 border">{new Date(item.stockOutDate).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="mb-6">
+        <FiltersAndSummaryPanel
+          filters={filters}
+          setFilters={setFilters}
+          totals={{ totalUniqueProducts, totalUnit, totalTP }}
+          onClear={clearFilters}
+          onPrint={() =>
+            console.log("Print stock-out report", {
+              stockList,
+              totalUniqueProducts,
+              totalUnit,
+              totalTP,
+              fromDate: filters.fromDate,
+              toDate: filters.toDate
+            })
+          }
+        />
       </div>
+
+      {/* Data Table */}
+      <Card title="Stock Out Records" subtitle={`Showing ${currentItems.length} of ${stockList.length} records`}>
+        <Table
+          columns={columns}
+          data={currentItems}
+          sortable
+          striped
+          hover
+        />
+      </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-4">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => changePage(currentPage - 1)}
-          >
-            <BsArrowLeftSquareFill className="w-6 h-6" />
-          </button>
+        <Card className="mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-neutral-600">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+                icon={BsArrowLeftSquareFill}
+              >
+                Previous
+              </Button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => changePage(page)}
-              className={`px-3 py-1 rounded ${currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-            >
-              {page}
-            </button>
-          ))}
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "primary" : "outline"}
+                      size="small"
+                      onClick={() => changePage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => changePage(currentPage + 1)}
-          >
-            <BsArrowRightSquareFill className="w-6 h-6" />
-          </button>
-        </div>
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                icon={BsArrowRightSquareFill}
+                iconPosition="right"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );

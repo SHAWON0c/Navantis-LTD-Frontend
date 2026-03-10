@@ -358,6 +358,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Loader from "../../../../component/Loader";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
+import { MdDescription } from "react-icons/md";
 import { useGetPurchaseOrdersQuery } from "../../../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
 import FiltersAndSummaryPanel from "../../../../component/common/FiltersAndSummaryPanel";
 import AdminPurchaseInvoice from "../../../../component/reports/AdminPrintPurchaseProductList";
@@ -530,7 +531,8 @@ const handlePrint = async (all = false) => {
   return (
     <div className="mx-auto p-2">
       {/* Header */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
+      <div className="bg-white text-gray-600 h-12 flex items-center px-6">
+        <MdDescription className="text-2xl text-blue-600 mr-2" />
         <h2 className="text-base font-bold">NPL / Admin / Purchase Order List</h2>
       </div>
 
@@ -544,10 +546,10 @@ const handlePrint = async (all = false) => {
       />
 
       {/* Table */}
-      <div className="overflow-x-auto mt-10">
+      <div className="overflow-x-auto mt-10 bg-white shadow-md rounded-lg border">
         <table className="table-auto w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-100">
+            <tr className="bg-gray-200 text-gray-700 uppercase text-xs">
               <th className="px-4 py-2 text-center">Sl. No.</th>
               <th className="px-4 py-2">Product Name</th>
               <th className="px-4 py-2">Pack Size</th>

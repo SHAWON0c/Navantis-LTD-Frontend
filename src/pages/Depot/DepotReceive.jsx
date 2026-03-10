@@ -3,7 +3,10 @@ import Loader from "../../component/Loader";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
 import FiltersAndSummaryPanel from "../../component/common/FiltersAndSummaryPanel";
 import { useGetDepotReceiveStockQuery } from "../../redux/features/depot/depotStockApi";
-
+import Card from "../../component/common/Card";
+import Table from "../../component/common/Table";
+import Button from "../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
 
 const DepotReceive = () => {
   // --- API query ---
@@ -23,7 +26,16 @@ const DepotReceive = () => {
   });
 
   if (isLoading) return <Loader />;
-  if (isError) return <p className="text-red-500 text-center">Failed to load depot received stock.</p>;
+  if (isError) return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <Card className="text-center">
+        <p className="text-error text-lg">Failed to load depot received stock data.</p>
+        <Button variant="primary" className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </Card>
+    </div>
+  );
 
   // --- Raw API Data ---
   let stockList = apiData?.data || [];
@@ -61,89 +73,118 @@ const DepotReceive = () => {
     setCurrentPage(page);
   };
 
+  // Table columns configuration
+  const columns = [
+    { key: 'slNo', label: 'Sl. No.', sortable: false, render: (value, row, index) => startIndex + index + 1 },
+    { key: 'name', label: 'Product Name', sortable: true },
+    { key: 'packSize', label: 'Pack Size', sortable: true },
+    { key: 'batch', label: 'Batch', sortable: true },
+    { key: 'quantity', label: 'Quantity', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'pricePerUnit', label: 'Price/Unit', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'totalPrice', label: 'Total Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'stockInDate', label: 'Stock In Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+  ];
+
   return (
-    <div className="mx-auto p-2">
+    <div className="min-h-screen bg-neutral-50">
       {/* Header */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">Depot / Admin / Received Stock</h2>
-      </div>
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}>
+              Back
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Depot Received Stock</h1>
+              <p className="text-neutral-600 text-sm">Manage depot incoming stock inventory</p>
+            </div>
+          </div>
+          <div className="text-sm text-neutral-500">
+            Total Records: {stockList.length}
+          </div>
+        </div>
+      </Card>
 
       {/* Filters + Summary */}
-      <FiltersAndSummaryPanel
-        filters={filters}
-        setFilters={setFilters}
-        totals={{ totalUniqueProducts, totalUnit, totalTP }}
-        onClear={clearFilters}
-        onPrint={() =>
-          console.log("Print logic here", {
-            stockList,
-            totalUniqueProducts,
-            totalUnit,
-            totalTP,
-            fromDate: filters.fromDate,
-            toDate: filters.toDate
-          })
-        }
-      />
-
-      {/* Table */}
-      <div className="overflow-x-auto mt-10">
-        <table className="table-auto w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-center">Sl. No.</th>
-              <th className="px-4 py-2">Product Name</th>
-              <th className="px-4 py-2">Pack Size</th>
-              <th className="px-4 py-2">Batch</th>
-              <th className="px-4 py-2 text-center">Quantity</th>
-              <th className="px-4 py-2 text-right">Price/Unit</th>
-              <th className="px-4 py-2 text-right">Actual Price</th>
-              <th className="px-4 py-2 text-right">Total Price</th>
-              <th className="px-4 py-2 text-center">Expire Date</th>
-              <th className="px-4 py-2 text-center">Stock In Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {currentItems.map((item, idx) => (
-              <tr key={item._id || startIndex + idx} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2 text-center">{startIndex + idx + 1}</td>
-                <td className="px-4 py-2">{item.name}</td>
-                <td className="px-4 py-2">{item.packSize}</td>
-                <td className="px-4 py-2">{item.batch}</td>
-                <td className="px-4 py-2 text-center">{item.quantity}</td>
-                <td className="px-4 py-2 text-right">{item.pricePerUnit?.toLocaleString()}</td>
-                <td className="px-4 py-2 text-right">{item.actualPrice?.toLocaleString()}</td>
-                <td className="px-4 py-2 text-right">{item.totalPrice?.toLocaleString()}</td>
-                <td className="px-4 py-2 text-center">{new Date(item.expireDate).toLocaleDateString()}</td>
-                <td className="px-4 py-2 text-center">{new Date(item.stockInDate).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="mb-6">
+        <FiltersAndSummaryPanel
+          filters={filters}
+          setFilters={setFilters}
+          totals={{ totalUniqueProducts, totalUnit, totalTP }}
+          onClear={clearFilters}
+          onPrint={() =>
+            console.log("Print logic here", {
+              stockList,
+              totalUniqueProducts,
+              totalUnit,
+              totalTP,
+              fromDate: filters.fromDate,
+              toDate: filters.toDate
+            })
+          }
+        />
       </div>
+
+      {/* Data Table */}
+      <Card title="Depot Received Stock Records" subtitle={`Showing ${currentItems.length} of ${stockList.length} records`}>
+        <Table
+          columns={columns}
+          data={currentItems}
+          sortable
+          striped
+          hover
+        />
+      </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-4">
-          <button disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>
-            <BsArrowLeftSquareFill className="w-6 h-6" />
-          </button>
+        <Card className="mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-neutral-600">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+                icon={BsArrowLeftSquareFill}
+              >
+                Previous
+              </Button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => changePage(page)}
-              className={`px-3 py-1 rounded ${currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-            >
-              {page}
-            </button>
-          ))}
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "primary" : "outline"}
+                      size="small"
+                      onClick={() => changePage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
 
-          <button disabled={currentPage === totalPages} onClick={() => changePage(currentPage + 1)}>
-            <BsArrowRightSquareFill className="w-6 h-6" />
-          </button>
-        </div>
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                icon={BsArrowRightSquareFill}
+                iconPosition="right"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );

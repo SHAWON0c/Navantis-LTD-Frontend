@@ -23,13 +23,13 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
 
   if (loading || !user) {
     return (
-      <aside className={`h-full w-full bg-[#0F213D]`}>
+      <aside className={`h-full w-full bg-primary-800`}>
         <SidebarLogo isOpen={isOpen} />
         <nav className="p-2 space-y-2">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-4 py-2 rounded-md bg-gray-700 animate-pulse"
+              className="flex items-center gap-3 px-4 py-2 rounded-md bg-red-700 animate-pulse"
             >
               <div className="w-5 h-5 bg-gray-500 rounded-full" />
               {isOpen && <div className="h-4 bg-gray-600 rounded flex-1" />}
@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
 
   return (
     <aside
-      className={`h-full bg-[#0F213D] text-white flex flex-col transition-all duration-300`}
+      className={`h-full bg-black text-white flex flex-col transition-all duration-300`}
     >
       <SidebarLogo isOpen={isOpen} setSidebarOpen={setSidebarOpen} />
 

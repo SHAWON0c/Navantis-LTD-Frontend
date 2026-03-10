@@ -8,6 +8,10 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import Card from "../component/common/Card";
+import Table from "../component/common/Table";
+import Button from "../component/common/Button";
+import { MdTrendingUp, MdPeople, MdShoppingCart, MdLocalShipping } from "react-icons/md";
 
 export default function Dashboard() {
   const [kpi] = useState({
@@ -18,8 +22,8 @@ export default function Dashboard() {
     totalRevenue: 540000,
     pendingOrders: 12,
     employeesOnLeave: 5,
-    totalMaintenanceCost: 35000, // NEW
-    monthsRevenue: 95000, // NEW
+    totalMaintenanceCost: 35000,
+    monthsRevenue: 95000,
   });
 
   const [salesData] = useState([
@@ -62,120 +66,130 @@ export default function Dashboard() {
     { name: "Ibuprofen", brand: "GSK", stock: 200, expiry: "2025-12-31", sales: 100 },
   ]);
 
+  const doctorsColumns = [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'specialty', label: 'Specialty', sortable: true },
+    { key: 'revenue', label: 'Revenue ($)', sortable: true, render: (value) => `$${value.toLocaleString()}` },
+  ];
+
+  const productColumns = [
+    { key: 'name', label: 'Product', sortable: true },
+    { key: 'brand', label: 'Brand', sortable: true },
+    { key: 'stock', label: 'Stock', sortable: true },
+    { key: 'expiry', label: 'Expiry', sortable: true },
+    { key: 'sales', label: 'Sales', sortable: true },
+  ];
+
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 p-4 space-y-4">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-        Managing Director Dashboard
-      </h2>
+    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          Managing Director Dashboard
+        </h1>
+        <Button variant="primary" icon={MdTrendingUp}>
+          View Reports
+        </Button>
+      </div>
 
       {/* === KPI CARDS === */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {Object.entries(kpi).map(([key, value], i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 p-4 rounded shadow text-center">
-            <div className="text-gray-500 dark:text-gray-400 text-sm">
-              {key.replace(/([A-Z])/g, ' $1')}
+          <Card key={i} className="text-center">
+            <div className="text-neutral-600 dark:text-neutral-400 text-sm uppercase tracking-wide">
+              {key.replace(/([A-Z])/g, ' $1').trim()}
             </div>
-            <div className="text-xl font-bold mt-1">
+            <div className="text-2xl font-bold text-primary-600 mt-2">
               {typeof value === "number" && value > 999 ? `$${value.toLocaleString()}` : value}
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* === SALES TREND === */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-        <h3 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">
-          Monthly Sales vs Previous
-        </h3>
-        <ResponsiveContainer width="100%" height={200}>
+      <Card title="Monthly Sales Trend" className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={salesData}>
-            <XAxis dataKey="month" stroke="#8884d8" />
-            <YAxis stroke="#8884d8" />
-            <Tooltip />
+            <XAxis dataKey="month" stroke="#6b7280" />
+            <YAxis stroke="#6b7280" />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#ffffff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+              }}
+            />
             <Legend wrapperStyle={{ fontSize: 12 }} />
-            <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={2} name="Current" />
-            <Line type="monotone" dataKey="prevRevenue" stroke="#10b981" strokeWidth={2} name="Previous" />
+            <Line type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={3} name="Current Year" />
+            <Line type="monotone" dataKey="prevRevenue" stroke="#0ea5e9" strokeWidth={2} name="Previous Year" />
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </Card>
 
-      {/* === WAREHOUSE MINI CARDS === */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* === WAREHOUSE OVERVIEW === */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {warehouses.map((w, i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 p-3 rounded shadow text-sm">
-            <div className="font-semibold text-gray-700 dark:text-gray-200">{w.name}</div>
-            <div className="flex justify-between mt-1"><span>Stock:</span><span>{w.stock}</span></div>
-            <div className="flex justify-between"><span>Today:</span><span>{w.deliveriesToday}</span></div>
-          </div>
+          <Card key={i} title={w.name} className="text-center">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-neutral-600">Total Stock</span>
+                <span className="font-semibold text-primary-600">{w.stock.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-neutral-600">Deliveries Today</span>
+                <span className="font-semibold text-secondary-600">{w.deliveriesToday}</span>
+              </div>
+            </div>
+          </Card>
         ))}
       </div>
 
       {/* === FIELD FORCE PERFORMANCE === */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {fieldForce.map((f, i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 p-3 rounded shadow text-sm">
-            <div className="font-semibold text-gray-700 dark:text-gray-200">{f.name}</div>
-            <div className="flex justify-between mt-1"><span>Visits:</span><span>{f.visits}</span></div>
-            <div className="flex justify-between"><span>Revenue:</span><span>${f.revenue}</span></div>
-            <div className="flex justify-between">
-              <span>Performance:</span>
-              <span className={`font-bold ${f.performance>80?'text-green-500':f.performance>60?'text-yellow-500':'text-red-500'}`}>
-                {f.performance}%
-              </span>
+      <Card title="Field Force Performance" subtitle="Top performers this month">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {fieldForce.map((f, i) => (
+            <div key={i} className="bg-neutral-50 dark:bg-neutral-800 p-4 rounded-lg">
+              <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">{f.name}</h4>
+              <div className="space-y-1 mt-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600">Visits</span>
+                  <span className="font-medium">{f.visits}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600">Revenue</span>
+                  <span className="font-medium">${f.revenue.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-600">Performance</span>
+                  <span className={`font-bold ${
+                    f.performance > 80 ? 'text-success' :
+                    f.performance > 60 ? 'text-warning' : 'text-error'
+                  }`}>
+                    {f.performance}%
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </Card>
 
       {/* === DOCTORS PERFORMANCE TABLE === */}
-      <div className="bg-white dark:bg-gray-800 p-3 rounded shadow overflow-auto text-sm">
-        <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Doctors Performance</h3>
-        <table className="w-full text-left">
-          <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-            <tr>
-              <th className="px-2 py-1">Name</th>
-              <th className="px-2 py-1">Specialty</th>
-              <th className="px-2 py-1">Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {doctorsPerformance.map((d,i)=>(
-              <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
-                <td className="px-2 py-1">{d.name}</td>
-                <td className="px-2 py-1">{d.specialty}</td>
-                <td className="px-2 py-1">${d.revenue}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Card title="Doctors Performance" subtitle="Revenue by specialty">
+        <Table
+          columns={doctorsColumns}
+          data={doctorsPerformance}
+          sortable
+        />
+      </Card>
 
       {/* === PRODUCTS STOCK TABLE === */}
-      <div className="bg-white dark:bg-gray-800 p-3 rounded shadow overflow-auto text-sm">
-        <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Products Stock</h3>
-        <table className="w-full text-left">
-          <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-            <tr>
-              <th className="px-2 py-1">Product</th>
-              <th className="px-2 py-1">Brand</th>
-              <th className="px-2 py-1">Stock</th>
-              <th className="px-2 py-1">Expiry</th>
-              <th className="px-2 py-1">Sales</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p,i)=>(
-              <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
-                <td className="px-2 py-1">{p.name}</td>
-                <td className="px-2 py-1">{p.brand}</td>
-                <td className="px-2 py-1">{p.stock}</td>
-                <td className="px-2 py-1">{p.expiry}</td>
-                <td className="px-2 py-1">{p.sales}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Card title="Product Inventory" subtitle="Current stock levels and sales">
+        <Table
+          columns={productColumns}
+          data={products}
+          sortable
+        />
+      </Card>
     </div>
   );
 }

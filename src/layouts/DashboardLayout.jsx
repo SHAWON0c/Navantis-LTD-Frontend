@@ -30,7 +30,7 @@ export default function DashboardLayout() {
     <div className="flex h-screen w-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-[#0F213D] z-50 transition-all duration-300
+        className={`fixed top-0 left-0 h-full bg-primary-800 z-50 transition-all duration-300
           ${
             sidebarOpen
               ? "translate-x-0 w-64 md:w-64"

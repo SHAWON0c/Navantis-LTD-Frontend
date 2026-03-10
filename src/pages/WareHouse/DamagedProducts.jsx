@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
-
+import Loader from "../../component/Loader";
 import FiltersAndSummaryPanel from "../../component/common/FiltersAndSummaryPanel";
 import { useGetAllDamageReportsQuery } from "../../redux/features/wareHouse/warehouseDamageApi";
-// import DamageDetailsModal from "../../component/modals/DamageDetailsModal";
-// import DamageRequestsModal from "../../component/modals/DamageRequestsModal";
+import Card from "../../component/common/Card";
+import Table from "../../component/common/Table";
+import Button from "../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
 
 const DamagedProducts = () => {
   // --- API Data ---
@@ -32,6 +34,18 @@ const DamagedProducts = () => {
     setProductsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
+
+  if (isLoading) return <Loader />;
+  if (isError) return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <Card className="text-center">
+        <p className="text-error text-lg">Failed to load damaged products data.</p>
+        <Button variant="primary" className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </Card>
+    </div>
+  );
 
   let damagedList = data?.data || [];
 
@@ -72,126 +86,158 @@ const DamagedProducts = () => {
     setCurrentPage(page);
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading data.</p>;
+  // Table columns configuration
+  const columns = [
+    { key: 'slNo', label: 'Sl. No.', sortable: false, render: (value, row, index) => startIndex + index + 1 },
+    { key: 'productName', label: 'Product Name', sortable: true },
+    { key: 'batch', label: 'Batch', sortable: true },
+    { key: 'receivedQty', label: 'Received Qty', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'damageQty', label: 'Damage Qty', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'remainingStock', label: 'Remaining Stock', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
+    { key: 'createdAt', label: 'Damage Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'addedBy', label: 'Added By', sortable: false, render: (value) => value?.name || 'N/A' },
+    {
+      key: 'actions',
+      label: 'Action',
+      sortable: false,
+      render: (value, row) => (
+        <Button
+          variant="primary"
+          size="small"
+          onClick={() => {
+            setDetailsModalOpen(true);
+            setSelectedProduct(row);
+          }}
+          disabled
+        >
+          Details
+        </Button>
+      )
+    },
+  ];
 
   return (
-    <div className="mx-auto p-2">
-
-      {/* Page Header */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6 justify-between border-b border-gray-200">
-        <h2 className="text-base font-bold">NPL / Admin / Damaged Products</h2>
-        <button
-          onClick={() => setDamageRequestsOpen(true)}
-          className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 transition"
-        >
-          pending Damage Requests
-        </button>
-      </div>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}>
+              Back
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Damaged Products</h1>
+              <p className="text-neutral-600 text-sm">Manage damaged product reports and inventory</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-neutral-500">
+              Total Records: {damagedList.length}
+            </div>
+            <Button
+              variant="danger"
+              size="small"
+              onClick={() => setDamageRequestsOpen(true)}
+            >
+              Pending Damage Requests
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Filters + Summary */}
-      <FiltersAndSummaryPanel
-        filters={filters}
-        setFilters={setFilters}
-        totals={{ totalUniqueProducts, totalUnit }}
-        onClear={clearFilters}
-      />
-
-      {/* Items per page */}
-      <div className="mt-5 md:mt-0 flex items-center gap-2">
-        <label htmlFor="productsPerPage">Show</label>
-        <select
-          id="productsPerPage"
-          value={productsPerPage}
-          onChange={handleProductsPerPageChange}
-          className="border border-gray-500 rounded p-1 cursor-pointer"
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
-        <span>products per page</span>
+      <div className="mb-6">
+        <FiltersAndSummaryPanel
+          filters={filters}
+          setFilters={setFilters}
+          totals={{ totalUniqueProducts, totalUnit }}
+          onClear={clearFilters}
+        />
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto mt-6">
-        <table className="table-auto w-full border border-gray-300 text-left">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 border">Sl. No.</th>
-              <th className="px-4 py-2 border">Product Name</th>
-              <th className="px-4 py-2 border">Batch</th>
-              <th className="px-4 py-2 border">Received Qty</th>
-              <th className="px-4 py-2 border">Damage Qty</th>
-              <th className="px-4 py-2 border">Remaining Stock</th>
-              <th className="px-4 py-2 border">Damage Date</th>
-              <th className="px-4 py-2 border">Added By</th>
-              <th className="px-4 py-2 border text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentProducts.map((item, idx) => (
-              <tr key={item.id} className="border-b">
-                <td className="px-4 py-2 border text-center">{startIndex + idx + 1}</td>
-                <td className="px-4 py-2 border">{item.productName}</td>
-                <td className="px-4 py-2 border">{item.batch}</td>
-                <td className="px-4 py-2 border text-center">{item.receivedQty}</td>
-                <td className="px-4 py-2 border text-center">{item.damageQty}</td>
-                <td className="px-4 py-2 border text-center">{item.remainingStock}</td>
-                <td className="px-4 py-2 border">{new Date(item.createdAt).toLocaleDateString()}</td>
-                <td className="px-4 py-2 border">{item.addedBy.name}</td>
-                <td className="px-4 py-2 border text-center">
-                  <button
-                    onClick={() => {
-                      setDetailsModalOpen(true);
-                      setSelectedProduct(item);
-                    }}
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
-                  >
-                    Details
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Items per page selector */}
+      <Card className="mb-6">
+        <div className="flex items-center gap-2">
+          <label htmlFor="productsPerPage" className="text-sm font-medium text-neutral-700">Show</label>
+          <select
+            id="productsPerPage"
+            value={productsPerPage}
+            onChange={handleProductsPerPageChange}
+            className="border border-neutral-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+          <span className="text-sm text-neutral-600">products per page</span>
+        </div>
+      </Card>
+
+      {/* Data Table */}
+      <Card title="Damaged Products Records" subtitle={`Showing ${currentProducts.length} of ${damagedList.length} records`}>
+        <Table
+          columns={columns}
+          data={currentProducts}
+          sortable
+          striped
+          hover
+        />
+      </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-4">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => changePage(currentPage - 1)}
-            className="disabled:opacity-50 hover:text-blue-700 transition"
-          >
-            <BsArrowLeftSquareFill className="w-6 h-6" />
-          </button>
+        <Card className="mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-neutral-600">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+                icon={BsArrowLeftSquareFill}
+              >
+                Previous
+              </Button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => changePage(page)}
-              className={`px-3 py-1 rounded ${currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-            >
-              {page}
-            </button>
-          ))}
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "primary" : "outline"}
+                      size="small"
+                      onClick={() => changePage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => changePage(currentPage + 1)}
-            className="disabled:opacity-50 hover:text-blue-700 transition"
-          >
-            <BsArrowRightSquareFill className="w-6 h-6" />
-          </button>
-        </div>
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                icon={BsArrowRightSquareFill}
+                iconPosition="right"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
 
       {/* Modals */}
-      {isDetailsModalOpen && (
+      {/* Modals will be implemented when the modal components are available */}
+      {/* {isDetailsModalOpen && (
         <DamageDetailsModal
           isOpen={isDetailsModalOpen}
           onClose={() => setDetailsModalOpen(false)}
@@ -204,7 +250,7 @@ const DamagedProducts = () => {
           isOpen={isDamageRequestsOpen}
           onClose={() => setDamageRequestsOpen(false)}
         />
-      )}
+      )} */}
     </div>
   );
 };
