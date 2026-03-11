@@ -1,129 +1,22 @@
-// import React from "react";
-// import WarehouseDamageRequestCard from "../../WareHouse/WarehouseDamageRequestCard";
-// import { useGetDamageRequestsQuery } from "../../../redux/features/wareHouse/warehouseDamageApi";
-
-// const WarehouseDamageRequest = () => {
-//   // ✅ Fetch all damage requests
-//   const { data: whReceiveRequests, isLoading, refetch } = useGetDamageRequestsQuery();
-
-//   if (isLoading) {
-//     return <p className="text-center mt-10">Loading warehouse damage requests...</p>;
-//   }
-
-//   // ✅ Use array inside `data`
-//   const filteredProducts = whReceiveRequests?.data || [];
-
-//   // ✅ Use totals from API directly
-//   const totalProducts = whReceiveRequests?.totalProducts || 0;
-//   const totalReceivedQty = whReceiveRequests?.totalReceivedQty || 0;
-//   const totalDamageQty = whReceiveRequests?.totalDamageQty || 0;
-//   const totalRemainingStock = whReceiveRequests?.totalRemainingStock || 0;
-
-//   return (
-//     <div className="mx-auto p-2">
-//       {/* Top Bar */}
-//       <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-//         <h2 className="text-base font-bold">NPL / Admin / Warehouse Damage Requests</h2>
-//       </div>
-
-//       {/* Main Content */}
-//       <div className="space-y-6 mt-4">
-//         <div className="bg-white pb-1 rounded-lg">
-//           {/* Summary */}
-//           <div className="m-0 p-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
-//             <p className="text-md text-gray-700 text-center mb-4 font-medium">
-//               Warehouse Damage Summary
-//             </p>
-
-//             <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
-//               <p className="text-sm">
-//                 Total Products: <span className="font-medium text-blue-700">{totalProducts}</span>
-//               </p>
-//               <p className="text-sm">
-//                 Total Received Qty: <span className="font-medium text-blue-700">{totalReceivedQty}</span>
-//               </p>
-//               <p className="text-sm">
-//                 Total Damage Qty: <span className="font-medium text-red-500">{totalDamageQty}</span>
-//               </p>
-//               <p className="text-sm">
-//                 Total Remaining Stock: <span className="font-medium text-blue-700">{totalRemainingStock}</span>
-//               </p>
-//             </div>
-//           </div>
-
-//           {/* Table */}
-//           <div className="p-6">
-//             <div className="overflow-x-auto mb-3">
-//               <table className="table w-full border-collapse">
-//                 <thead>
-//                   <tr className="bg-gray-100">
-//                     <th className="text-center">Sl. No.</th>
-//                     <th>Name</th>
-//                     <th className="text-center">Batch</th>
-//                     <th className="text-center">Exp.</th>
-//                     <th className="text-center">Received Qty</th>
-//                     <th className="text-center text-red-500">Damage Qty</th>
-//                     <th className="text-center">Remaining Stock</th>
-//                     <th className="text-center">Details</th>
-//                     <th className="text-center">Approve</th>
-//                     <th className="text-center">Deny</th>
-//                   </tr>
-//                 </thead>
-//                 <tbody>
-//                   {filteredProducts.length > 0 ? (
-//                     filteredProducts.map((product, idx) => (
-//                       <WarehouseDamageRequestCard
-//                         key={product._id} // use backend _id
-//                         idx={idx + 1}
-//                         product={product}
-//                         refetch={refetch}
-//                       />
-//                     ))
-//                   ) : (
-//                     <tr>
-//                       <td colSpan={10} className="text-center py-4 text-gray-500">
-//                         No damage requests found
-//                       </td>
-//                     </tr>
-//                   )}
-//                 </tbody>
-//               </table>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default WarehouseDamageRequest;
-
-
-
 import React from "react";
 import WarehouseDamageRequestCard from "../../WareHouse/WarehouseDamageRequestCard";
 import { useGetDamageRequestsQuery } from "../../../redux/features/wareHouse/warehouseDamageApi";
-
-
+import Card from "../../../component/common/Card";
 import UniversalSummaryPanel from "../../../component/common/UniversalSummaryPanel";
 import Loader from "../../../component/Loader";
 
 const WarehouseDamageRequest = () => {
-  // Fetch all damage requests
   const { data: whReceiveRequests, isLoading, refetch } = useGetDamageRequestsQuery();
 
   if (isLoading) return <Loader />;
 
-  // Extract data safely
   const filteredProducts = whReceiveRequests?.data || [];
-  const {
-    totalProducts = 0,
-    totalReceivedQty = 0,
-    totalDamageQty = 0,
-    totalRemainingStock = 0,
-  } = whReceiveRequests || {};
 
-  // Prepare totals object for UniversalSummaryPanel
+  const totalProducts = whReceiveRequests?.totalProducts || 0;
+  const totalReceivedQty = whReceiveRequests?.totalReceivedQty || 0;
+  const totalDamageQty = whReceiveRequests?.totalDamageQty || 0;
+  const totalRemainingStock = whReceiveRequests?.totalRemainingStock || 0;
+
   const totals = {
     "Total Products": totalProducts,
     "Total Received Qty": totalReceivedQty,
@@ -132,55 +25,66 @@ const WarehouseDamageRequest = () => {
   };
 
   return (
-    <div className="mx-auto p-2">
-      {/* Top Bar */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">NPL / Admin / Warehouse Damage Requests</h2>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Warehouse Damage Requests</h1>
+              <p className="text-neutral-600 text-sm">Manage warehouse damage reports and requests</p>
+            </div>
+          </div>
+          <div className="text-sm text-neutral-500">
+            Total Requests: {filteredProducts.length}
+          </div>
+        </div>
+      </Card>
+
+      {/* Summary Panel */}
+      <div className="mb-6">
+        <UniversalSummaryPanel totals={totals} />
       </div>
 
-      {/* Universal Summary Panel */}
-      <UniversalSummaryPanel totals={totals} />
-
-      {/* Table */}
-      <div className="space-y-6 mt-4 bg-white pb-1 rounded-lg p-6">
-        <div className="overflow-x-auto mb-3">
-          <table className="table w-full border-collapse">
+      {/* Data Table */}
+      <Card title="Damage Requests" subtitle={`Showing ${filteredProducts.length} request(s)`}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="text-center">Sl. No.</th>
-                <th>Name</th>
-                <th className="text-center">Batch</th>
-                <th className="text-center">Exp.</th>
-                <th className="text-center">Received Qty</th>
-                <th className="text-center text-red-500">Damage Qty</th>
-                <th className="text-center">Remaining Stock</th>
-                <th className="text-center">Details</th>
-                <th className="text-center">Approve</th>
-                <th className="text-center">Deny</th>
+              <tr className="bg-gray-100 border-b border-gray-200">
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Received Qty</th>
+                <th className="text-center py-3 px-4 font-semibold text-red-700">Damage Qty</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Remaining Stock</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Details</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Approve</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Deny</th>
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product, idx) => (
-                  <WarehouseDamageRequestCard
-                    idx={idx + 1}
-                    key={product._id}
-                    product={product}
-                    summary={totals} // pass totals if card needs them
-                    refetch={refetch}
-                  />
-                ))
-              ) : (
+              {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-4 text-gray-500">
+                  <td colSpan="10" className="text-center py-8 text-gray-500">
                     No damage requests found
                   </td>
                 </tr>
+              ) : (
+                filteredProducts.map((product, idx) => (
+                  <WarehouseDamageRequestCard
+                    key={product._id}
+                    idx={idx + 1}
+                    product={product}
+                    refetch={refetch}
+                  />
+                ))
               )}
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

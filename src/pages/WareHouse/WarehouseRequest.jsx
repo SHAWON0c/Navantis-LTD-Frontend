@@ -109,7 +109,7 @@ import Loader from "../../component/Loader";
 import { useGetWarehouseReceiveRequestQuery } from "../../redux/features/wareHouse/warehouseReceiveApi";
 import WarehouseRequestProductCard from "./WarehouseRequestProductCard";
 import UniversalSummaryPanel from "../../component/common/UniversalSummaryPanel";
-// ✅ import the universal panel
+import Card from "../../component/common/Card";
 
 const WarehouseRequest = () => {
   // Fetch pending warehouse receive requests
@@ -141,46 +141,66 @@ const WarehouseRequest = () => {
   };
 
   return (
-    <div className="mx-auto p-2">
-      {/* Top Bar */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">NPL / Admin / Warehouse Receive requests</h2>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Warehouse Receive Requests</h1>
+              <p className="text-neutral-600 text-sm">Manage warehouse product receive requests</p>
+            </div>
+          </div>
+          <div className="text-sm text-neutral-500">
+            Total Requests: {filteredProducts.length}
+          </div>
+        </div>
+      </Card>
+
+      {/* Summary Panel */}
+      <div className="mb-6">
+        <UniversalSummaryPanel totals={totals} />
       </div>
 
-      {/* Universal Summary Panel */}
-      <UniversalSummaryPanel totals={totals} />
-
-      {/* Table */}
-      <div className="space-y-6 mt-4 bg-white pb-1 rounded-lg p-6">
-        <div className="overflow-x-auto mb-3">
-          <table className="table">
+      {/* Data Table */}
+      <Card title="Warehouse Requests" subtitle={`Showing ${filteredProducts.length} request(s)`}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr>
-                <th className="text-center">Sl. No.</th>
-                <th>Name / Details</th>
-                <th className="text-center">Batch</th>
-                <th className="text-center">Exp.</th>
-                <th className="text-center">Order Quantity</th>
-                <th className="text-center">Stock Quantity</th>
-                <th className="text-center">Missing Quantity</th>
-                <th className="text-center">Details</th>
-                <th className="text-center">Approve</th>
-                <th className="text-center">Deny</th>
+              <tr className="bg-gray-100 border-b border-gray-200">
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Order Qty</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Stock Qty</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Missing Qty</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Details</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Approve</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Deny</th>
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product, idx) => (
-                <WarehouseRequestProductCard
-                  idx={idx + 1}
-                  key={product.warehouseReceiveId} // ✅ unique key
-                  product={product}
-                  summary={totals} // pass the same totals dynamically if needed
-                />
-              ))}
+              {filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan="10" className="text-center py-8 text-gray-500">
+                    No pending requests found
+                  </td>
+                </tr>
+              ) : (
+                filteredProducts.map((product, idx) => (
+                  <WarehouseRequestProductCard
+                    idx={idx + 1}
+                    key={product.warehouseReceiveId}
+                    product={product}
+                    summary={totals}
+                  />
+                ))
+              )}
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

@@ -5,6 +5,9 @@ import { useGetWarehouseProductListQuery } from "../../redux/features/wareHouse/
 import SummaryPanel from "../../component/common/SummaryPanel";
 import WarehouseProductCard from "../../component/common/WarehouseProductCard";
 import PrintWarehouseStockList from "../../component/reports/PrintWarehouseStockList";
+import Card from "../../component/common/Card";
+import Button from "../../component/common/Button";
+import Loader from "../../component/Loader";
 
 const WarehouseProductsList = () => {
   // --- API Data ---
@@ -19,7 +22,7 @@ const WarehouseProductsList = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedWarehouseReceiveId, setSelectedWarehouseReceiveId] = useState(null);
 
-  if (isLoading) return <p className="text-center py-10">Loading...</p>;
+  if (isLoading) return <Loader />;
 
   // --- Use backend data directly ---
   const whProducts = data?.data || [];
@@ -50,7 +53,6 @@ const WarehouseProductsList = () => {
     }
   };
 
-  // --- Print handler ---
   const handlePrint = () => {
     PrintWarehouseStockList({
       products: whProducts,
@@ -62,139 +64,154 @@ const WarehouseProductsList = () => {
     });
   };
 
-
   return (
-    <div className="mx-auto p-2 bg-white">
+    <div className="min-h-screen bg-neutral-50">
       {/* Header */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6 justify-between border-b border-gray-200">
-        <h2 className="text-base font-bold">NPL / Admin / Warehouse Products</h2>
-        <div className="overflow-hidden w-[80%] h-full relative flex items-center">
-          <div className="absolute whitespace-nowrap animate-slide text-red-600 font-semibold">
-            🚨 নতুন নোটিফিকেশন: প্রোডাক্ট XYZ-এর স্টক সংকটের পর্যায়ে পৌঁছেছে! ⚠️
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Warehouse Products</h1>
+              <p className="text-neutral-600 text-sm">Manage warehouse product inventory</p>
+            </div>
+          </div>
+          <div className="text-sm text-neutral-500">
+            Total Records: {filteredProducts.length}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Summary Panel */}
-      <div className="m-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
-        <SummaryPanel
-          totals={{
-            totalUniqueProducts,
-            totalUnit: totalUnits,
-            totalTP: totalTradePrice,
-            selectedWarehouseProductId: selectedProductId,
-            warehouseReceiveId: selectedWarehouseReceiveId
-          }}
-          onPrint={handlePrint}
-        />
-      </div>
-
-      {/* Controls */}
-      <div className="px-6 pb-6 flex justify-between items-center">
-        <select
-          value={productsPerPage}
-          onChange={(e) => {
-            setProductsPerPage(Number(e.target.value));
-            setCurrentPage(1);
-          }}
-          className="border border-gray-500 rounded p-1"
-        >
-          {[5, 10, 15, 20, 50].map(v => (
-            <option key={v} value={v}>{v}</option>
-          ))}
-        </select>
-
-        <div className="flex">
-          <div className="border border-gray-500 border-r-0 p-3 rounded-l-full">
-            <ImSearch />
-          </div>
-          <input
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
+      <div className="mb-6">
+        <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
+          <SummaryPanel
+            totals={{
+              totalUniqueProducts,
+              totalUnit: totalUnits,
+              totalTP: totalTradePrice,
+              selectedWarehouseProductId: selectedProductId,
+              warehouseReceiveId: selectedWarehouseReceiveId
             }}
-            placeholder="Search products"
-            className="border border-gray-500 border-l-0 px-3 rounded-r-full"
+            onPrint={handlePrint}
           />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto px-6 mt-4">
-        <table className="table-auto w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100  border-gray-400">
-              <th className="text-center py-2 px-4">✔</th>
-              <th className="text-center py-2 px-4">Sl</th>
-              <th className="text-left py-2 px-4">Name</th>
-              <th className="text-center py-2 px-4">Pack Size</th>
-              <th className="text-center py-2 px-4">Batch</th>
-              <th className="text-center py-2 px-4">Exp.</th>
-              <th className="text-center py-2 px-4">Qty</th>
-              <th className="text-right py-2 px-4">Price</th>
-              <th className="text-right py-2 px-4">Total</th>
-              <th className="text-center py-2 px-4">Action</th>
-            </tr>
-          </thead>
+      {/* Data Table */}
+      <Card title="Warehouse Products" subtitle={`Showing ${currentProducts.length} of ${filteredProducts.length} records`}>
+        <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium">Show</label>
+            <select
+              value={productsPerPage}
+              onChange={(e) => {
+                setProductsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border border-gray-300 rounded px-2 py-1 text-sm"
+            >
+              {[5, 10, 15, 20, 50].map(v => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+            <span className="text-sm font-medium">products per page</span>
+          </div>
 
-          <tbody>
-            {currentProducts.map((product, idx) => (
-              <WarehouseProductCard
-                key={product._id}
-                idx={startIndex + idx + 1} // Serial number
-                product={product}
-                checked={selectedProductId === product._id}
-                onToggle={() => toggleProduct(product)}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+            <div className="border-r border-gray-300 p-2 bg-gray-50 flex items-center">
+              <ImSearch className="text-gray-500" />
+            </div>
+            <input
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search products"
+              className="px-3 py-2 flex-1 focus:outline-none text-sm"
+            />
+          </div>
+        </div>
 
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-gray-100 border-b border-gray-200">
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">✔</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Pack Size</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Qty</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700">Price/Unit</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700">Total</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentProducts.map((product, idx) => (
+                <WarehouseProductCard
+                  key={product._id}
+                  idx={startIndex + idx + 1}
+                  product={product}
+                  checked={selectedProductId === product._id}
+                  onToggle={() => toggleProduct(product)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-1 mt-4 flex-wrap">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => changePage(currentPage - 1)}
-            className="disabled:opacity-50 hover:text-blue-700 transition-all"
-          >
-            <BsArrowLeftSquareFill className='w-6 h-6' />
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter(page => page === 1 || page === totalPages || Math.abs(currentPage - page) <= 1)
-            .reduce((acc, page, index, array) => {
-              if (index > 0 && page - array[index - 1] > 1) acc.push('...');
-              acc.push(page);
-              return acc;
-            }, [])
-            .map((page, index) => (
-              <button
-                key={index}
-                disabled={page === '...'}
-                onClick={() => page !== '...' && changePage(page)}
-                className={`mx-1 h-6 flex items-center justify-center text-xs font-bold border
-                  ${currentPage === page ? 'bg-[#3B82F6] text-white border-green-900' : 'border-gray-400 hover:bg-blue-100'}
-                  ${page === '...' ? 'cursor-default text-gray-500 border-none' : ''}
-                  ${String(page).length === 1 ? 'w-6 px-2 rounded-md' : 'px-2 rounded-md'}
-                `}
+        <Card className="mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-neutral-600">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+                icon={BsArrowLeftSquareFill}
               >
-                {page}
-              </button>
-            ))
-          }
+                Previous
+              </Button>
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => changePage(currentPage + 1)}
-            className="disabled:opacity-50 hover:text-blue-700 transition-all"
-          >
-            <BsArrowRightSquareFill className='w-6 h-6' />
-          </button>
-        </div>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "primary" : "outline"}
+                      size="small"
+                      onClick={() => changePage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                icon={BsArrowRightSquareFill}
+                iconPosition="right"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );

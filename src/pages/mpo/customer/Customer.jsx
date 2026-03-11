@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useGetCustomersByStatusQuery } from "../../../redux/features/customer/customerApi";
 import { BsArrowLeftSquareFill, BsArrowRightSquareFill } from "react-icons/bs";
 import { ImSearch } from "react-icons/im";
+import Card from "../../../component/common/Card";
+import Button from "../../../component/common/Button";
+import Loader from "../../../component/Loader";
 
 
 const Customer = () => {
@@ -39,106 +42,149 @@ const Customer = () => {
     setCurrentPage(1);
   };
 
-  if (isLoading) return <p className="text-center py-10">Loading...</p>;
-  if (isError) return <p className="text-center py-10">Failed to load customers</p>;
+  if (isLoading) return <Loader />;
+  if (isError) return (
+    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <Card className="text-center">
+        <p className="text-error text-lg">Failed to load customers.</p>
+        <Button variant="primary" className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </Card>
+    </div>
+  );
 
   return (
-    <div className="bg-white pb-6">
-      <div>
-        <h1 className="px-6 py-3 font-bold">Customers List</h1>
-        <hr className="border border-gray-500 mb-5" />
-      </div>
-
-      {/* Controls */}
-      <div className="px-6 mb-5 flex flex-col-reverse md:flex-row justify-between items-center">
-        <div className="space-x-2 mt-5 md:mt-0">
-          <button
-            className={`px-4 py-2 rounded ${
-              statusFilter === "active" ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setStatusFilter("active")}
-          >
-            Active Customers
-          </button>
-          <button
-            className={`px-4 py-2 rounded ${
-              statusFilter === "pending" ? "bg-red-500 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setStatusFilter("pending")}
-          >
-            Pending Customers
-          </button>
-        </div>
-
-        <div className="flex items-center">
-          <div className="border border-gray-500 border-r-0 p-2 rounded-l-full">
-            <ImSearch />
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">Customers</h1>
+              <p className="text-neutral-600 text-sm">Manage customer information and status</p>
+            </div>
           </div>
-          <input
-            type="text"
-            placeholder="Search by name or ID"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="border border-gray-500 border-l-0 px-3 py-1 rounded-r-full focus:outline-none"
-          />
+          <div className="text-sm text-neutral-500">
+            Total Records: {filteredCustomers.length}
+          </div>
         </div>
-      </div>
+      </Card>
 
-      {/* Table */}
-      <div className="overflow-x-auto px-6">
-        <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100 border-gray-400">
-              <th className="py-2 px-4 text-center">Sl</th>
-              <th className="py-2 px-4 text-center">Customer ID</th>
-              <th className="py-2 px-4 text-left">Customer Name</th>
-              <th className="py-2 px-4 text-left">Address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentCustomers.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="text-center py-4">
-                  No customers found
-                </td>
+      {/* Data Table */}
+      <Card title="Customers List" subtitle={`Showing ${currentCustomers.length} of ${filteredCustomers.length} records`}>
+        <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex gap-2">
+            <Button
+              variant={statusFilter === "active" ? "primary" : "outline"}
+              size="small"
+              onClick={() => setStatusFilter("active")}
+            >
+              Active
+            </Button>
+            <Button
+              variant={statusFilter === "pending" ? "danger" : "outline"}
+              size="small"
+              onClick={() => setStatusFilter("pending")}
+            >
+              Pending
+            </Button>
+          </div>
+
+          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+            <div className="border-r border-gray-300 p-2 bg-gray-50 flex items-center">
+              <ImSearch className="text-gray-500" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name or ID"
+              value={searchTerm}
+              onChange={handleSearch}
+              className="px-3 py-2 flex-1 focus:outline-none text-sm"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-gray-100 border-b border-gray-200">
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl</th>
+                <th className="text-center py-3 px-4 font-semibold text-gray-700">Customer ID</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-700">Customer Name</th>
+                <th className="text-left py-3 px-4 font-semibold text-gray-700">Address</th>
               </tr>
-            ) : (
-              currentCustomers.map((c, idx) => (
-                <tr key={c._id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 text-center">{startIndex + idx + 1}</td>
-                  <td className="py-2 px-4 text-center">{c.customerId}</td>
-                  <td className="py-2 px-4">{c.customerName}</td>
-                  <td className="py-2 px-4">{c.address}</td>
+            </thead>
+            <tbody>
+              {currentCustomers.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-8 text-gray-500">
+                    No customers found
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                currentCustomers.map((c, idx) => (
+                  <tr key={c._id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <td className="text-center py-3 px-4">{startIndex + idx + 1}</td>
+                    <td className="text-center py-3 px-4">{c.customerId}</td>
+                    <td className="text-left py-3 px-4">{c.customerName}</td>
+                    <td className="text-left py-3 px-4">{c.address}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-1 mt-4 flex-wrap px-6">
-          <button disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>
-            <BsArrowLeftSquareFill className="w-6 h-6" />
-          </button>
+        <Card className="mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-neutral-600">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+                icon={BsArrowLeftSquareFill}
+              >
+                Previous
+              </Button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => changePage(page)}
-              className={`mx-1 px-2 h-6 text-xs font-bold border rounded-md ${
-                currentPage === page ? "bg-blue-600 text-white" : "border-gray-400"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "primary" : "outline"}
+                      size="small"
+                      onClick={() => changePage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
 
-          <button disabled={currentPage === totalPages} onClick={() => changePage(currentPage + 1)}>
-            <BsArrowRightSquareFill className="w-6 h-6" />
-          </button>
-        </div>
+              <Button
+                variant="outline"
+                size="small"
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                icon={BsArrowRightSquareFill}
+                iconPosition="right"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );

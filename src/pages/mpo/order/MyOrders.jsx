@@ -4,6 +4,8 @@ import {
   useGetMpoDeliveredOrdersQuery,
 } from "../../../redux/features/orders/orderApi";
 import Loader from "../../../component/Loader";
+import Card from "../../../component/common/Card";
+import Button from "../../../component/common/Button";
 
 export default function MyOrders() {
   const [status, setStatus] = useState("pending");
@@ -51,134 +53,160 @@ export default function MyOrders() {
   };
 
   return (
-    <div className="p-4">
-      {/* Tabs */}
-      <div className="flex gap-3 mb-4">
-        <button
-          className={`px-4 py-2 rounded-lg font-semibold ${
-            status === "pending" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
-          }`}
-          onClick={() => setStatus("pending")}
-        >
-          Pending
-        </button>
-
-        <button
-          className={`px-4 py-2 rounded-lg font-semibold ${
-            status === "delivered" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700"
-          }`}
-          onClick={() => setStatus("delivered")}
-        >
-          Delivered
-        </button>
-      </div>
-
-      {/* Loading */}
-      {isLoading ? (
-       <Loader></Loader>
-      ) : orders.length === 0 ? (
-        <p className="text-center py-8 text-gray-500">No orders found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full border border-gray-300 text-sm md:text-base">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-3 py-2">SL No</th>
-                <th className="border px-3 py-2">Customer Name / ID</th>
-                <th className="border px-3 py-2">MarketPoint</th>
-                <th className="border px-3 py-2">Territory</th>
-                <th className="border px-3 py-2">Order Date</th>
-                <th className="border px-3 py-2">Product</th>
-                <th className="border px-3 py-2">Quantity</th>
-                {status === "delivered" && (
-                  <th className="border px-3 py-2">Selected Batches</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, idx) =>
-                order.products.map((prod, pIdx) => (
-                  <tr key={`${order._id}-${prod.productId}`}>
-                    {pIdx === 0 && (
-                      <>
-                        <td className="border px-3 py-2" rowSpan={order.products.length}>
-                          {idx + 1}
-                        </td>
-                        <td className="border px-3 py-2" rowSpan={order.products.length}>
-                          {order.customerName || "-"} / {order.customerNumericId || "-"}
-                        </td>
-                        <td className="border px-3 py-2" rowSpan={order.products.length}>
-                          {order.marketPointName || "-"}
-                        </td>
-                        <td className="border px-3 py-2" rowSpan={order.products.length}>
-                          {order.territoryName || "-"}
-                        </td>
-                        <td className="border px-3 py-2" rowSpan={order.products.length}>
-                          {new Date(order.orderDate).toLocaleDateString()}
-                        </td>
-                      </>
-                    )}
-                    <td className="border px-3 py-2">{prod.productName}</td>
-                    <td className="border px-3 py-2">{prod.quantity}</td>
-                    {status === "delivered" && (
-                      <td className="border px-3 py-2">
-                        {prod.selectedBatches?.length > 0 ? (
-                          <button
-                            className="bg-yellow-500 text-white px-2 py-1 rounded text-xs md:text-sm"
-                            onClick={() => handleBatchesClick(prod.selectedBatches)}
-                          >
-                            View Batches
-                          </button>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                    )}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900">My Orders</h1>
+              <p className="text-neutral-600 text-sm">View and manage your orders</p>
+            </div>
+          </div>
+          <div className="text-sm text-neutral-500">
+            Total Orders: {orders.length}
+          </div>
         </div>
+      </Card>
+
+      {/* Status Tabs */}
+      <Card className="mb-6">
+        <div className="flex gap-3">
+          <Button
+            variant={status === "pending" ? "primary" : "outline"}
+            size="small"
+            onClick={() => setStatus("pending")}
+          >
+            Pending Orders
+          </Button>
+          <Button
+            variant={status === "delivered" ? "primary" : "outline"}
+            size="small"
+            onClick={() => setStatus("delivered")}
+          >
+            Delivered Orders
+          </Button>
+        </div>
+      </Card>
+
+      {/* Data Table */}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Card title={status === "pending" ? "Pending Orders" : "Delivered Orders"} subtitle={`Showing ${orders.length} order(s)`}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  <th className="text-center py-3 px-4 font-semibold text-gray-700">SL No</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Customer Name / ID</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">MarketPoint</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Territory</th>
+                  <th className="text-center py-3 px-4 font-semibold text-gray-700">Order Date</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Product</th>
+                  <th className="text-center py-3 px-4 font-semibold text-gray-700">Quantity</th>
+                  {status === "delivered" && (
+                    <th className="text-center py-3 px-4 font-semibold text-gray-700">Batches</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={status === "delivered" ? 8 : 7} className="text-center py-8 text-gray-500">
+                      No orders found
+                    </td>
+                  </tr>
+                ) : (
+                  orders.map((order, idx) =>
+                    order.products.map((prod, pIdx) => (
+                      <tr key={`${order._id}-${prod.productId}`} className="border-b border-gray-200 hover:bg-gray-50">
+                        {pIdx === 0 && (
+                          <>
+                            <td className="text-center py-3 px-4" rowSpan={order.products.length}>
+                              {idx + 1}
+                            </td>
+                            <td className="text-left py-3 px-4" rowSpan={order.products.length}>
+                              {order.customerName || "-"} / {order.customerNumericId || "-"}
+                            </td>
+                            <td className="text-left py-3 px-4" rowSpan={order.products.length}>
+                              {order.marketPointName || "-"}
+                            </td>
+                            <td className="text-left py-3 px-4" rowSpan={order.products.length}>
+                              {order.territoryName || "-"}
+                            </td>
+                            <td className="text-center py-3 px-4" rowSpan={order.products.length}>
+                              {new Date(order.orderDate).toLocaleDateString()}
+                            </td>
+                          </>
+                        )}
+                        <td className="text-left py-3 px-4">{prod.productName}</td>
+                        <td className="text-center py-3 px-4">{prod.quantity}</td>
+                        {status === "delivered" && (
+                          <td className="text-center py-3 px-4">
+                            {prod.selectedBatches?.length > 0 ? (
+                              <Button
+                                variant="primary"
+                                size="small"
+                                onClick={() => handleBatchesClick(prod.selectedBatches)}
+                              >
+                                View Batches
+                              </Button>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
 
       {/* Batch Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-2">
-          <div className="bg-white w-full max-w-md rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-3">Selected Batches</h2>
-            <div className="overflow-x-auto max-h-60">
-              <table className="w-full border border-gray-300 text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="border px-2 py-1">Batch No</th>
-                    <th className="border px-2 py-1">Expire Date</th>
-                    <th className="border px-2 py-1">Quantity</th>
-                    <th className="border px-2 py-1">Expired</th>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+          <Card className="w-full max-w-2xl">
+            <h2 className="text-xl font-semibold mb-4">Selected Batches</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="bg-gray-100 border-b border-gray-200">
+                    <th className="text-left py-2 px-4 font-semibold">Batch No</th>
+                    <th className="text-center py-2 px-4 font-semibold">Expire Date</th>
+                    <th className="text-center py-2 px-4 font-semibold">Quantity</th>
+                    <th className="text-center py-2 px-4 font-semibold">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedBatches.map((b) => (
-                    <tr key={b._id}>
-                      <td className="border px-2 py-1">{b.batchNo}</td>
-                      <td className="border px-2 py-1">
-                        {new Date(b.expireDate).toLocaleDateString()}
+                    <tr key={b._id} className="border-b border-gray-200">
+                      <td className="text-left py-3 px-4">{b.batchNo}</td>
+                      <td className="text-center py-3 px-4">{new Date(b.expireDate).toLocaleDateString()}</td>
+                      <td className="text-center py-3 px-4">{b.quantity}</td>
+                      <td className="text-center py-3 px-4">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${b.isExpired ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                          {b.isExpired ? "Expired" : "Valid"}
+                        </span>
                       </td>
-                      <td className="border px-2 py-1">{b.quantity}</td>
-                      <td className="border px-2 py-1">{b.isExpired ? "Yes" : "No"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
-            <button
-              className="mt-4 w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              onClick={() => setShowModal(false)}
-            >
-              Close
-            </button>
-          </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button
+                variant="danger"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </Card>
         </div>
       )}
     </div>

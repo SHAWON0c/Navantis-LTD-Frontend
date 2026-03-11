@@ -39,7 +39,7 @@ const UniversalSummaryPanel = ({ totals }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 mt-4 mb-6">
       {entries.map(([label, value], idx) => {
         const colorClass = getColorClass(label);
         const emoji = getIconEmoji(label);
@@ -47,13 +47,13 @@ const UniversalSummaryPanel = ({ totals }) => {
         return (
           <div
             key={idx}
-            className={`bg-gradient-to-br ${colorClass} rounded-xl shadow-md border p-4 hover:shadow-lg transition-all duration-300 group`}
+            className={`bg-gradient-to-br ${colorClass} rounded-lg shadow-sm border p-3 hover:shadow-md transition-all duration-300 group`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">{label}</p>
-              <div className="px-2 py-1 bg-white/50 rounded-md text-lg">{emoji}</div>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold text-gray-700 uppercase tracking-widest flex-1">{label}</p>
+              <div className="px-1.5 py-0.5 bg-white/60 rounded text-base ml-1 flex-shrink-0">{emoji}</div>
             </div>
-            <p className={`text-2xl lg:text-3xl font-bold ${colorClass.split(' ')[2]} group-hover:opacity-80 transition-opacity`}>
+            <p className={`text-xl font-bold ${colorClass.split(' ')[2]} group-hover:opacity-80 transition-opacity`}>
               {typeof value === 'number' ? value.toLocaleString('en-IN') : value}
             </p>
           </div>
