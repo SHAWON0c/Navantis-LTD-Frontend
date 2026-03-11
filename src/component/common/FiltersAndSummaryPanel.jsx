@@ -288,7 +288,7 @@ const FiltersAndSummaryPanel = ({
             </button>
 
             {/* Clear */}
-            <button onClick={onClear} className="p-2 bg-gray-100 rounded-md">
+            <button onClick={onClear} className="p-2 bg-red-400 rounded-md">
               <MdClear />
             </button>
           </div>

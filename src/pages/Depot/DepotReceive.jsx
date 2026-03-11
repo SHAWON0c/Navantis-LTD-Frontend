@@ -81,9 +81,9 @@ const DepotReceive = () => {
     { key: 'packSize', label: 'Pack Size', sortable: true },
     { key: 'batch', label: 'Batch', sortable: true },
     { key: 'quantity', label: 'Quantity', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
-    { key: 'pricePerUnit', label: 'Price/Unit', sortable: true, render: (value) => `₹${Number(value || 0).toLocaleString()}` },
-    { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `₹${Number(value || 0).toLocaleString()}` },
-    { key: 'totalPrice', label: 'Total Price', sortable: true, render: (value) => `₹${Number(value || 0).toLocaleString()}` },
+    { key: 'pricePerUnit', label: 'Price/Unit', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'totalPrice', label: 'Total Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
     { key: 'stockInDate', label: 'Stock In Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
   ];

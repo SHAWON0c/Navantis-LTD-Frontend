@@ -503,8 +503,8 @@ const PurchaseOrderList = () => {
                   <td className="text-left py-3 px-4">{order.Batch}</td>
                   <td className="text-center py-3 px-4">{Number(order.Quantity || 0).toLocaleString()}</td>
                   <td className="text-center py-3 px-4">{new Date(order.Expire).toLocaleDateString()}</td>
-                  <td className="text-right py-3 px-4">₹{Number(order?.PriceUnitTP || 0).toLocaleString()}</td>
-                  <td className="text-right py-3 px-4">₹{Number(order?.TotalPrice || 0).toLocaleString()}</td>
+                  <td className="text-right py-3 px-4">৳{Number(order?.PriceUnitTP || 0).toLocaleString()}</td>
+                  <td className="text-right py-3 px-4">৳{Number(order?.TotalPrice || 0).toLocaleString()}</td>
                   <td className="text-center py-3 px-4">{order.warehouseStatus}</td>
                   <td className="text-left py-3 px-4">{new Date(order.Date).toLocaleDateString()}</td>
                 </tr>

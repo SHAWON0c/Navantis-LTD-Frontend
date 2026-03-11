@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetGroupedDepotRequestsQuery } from "../../redux/features/depot/depotProductRequestAPI";
 import Card from "../../component/common/Card";
@@ -37,11 +37,18 @@ const DepotReceiveRequest = () => {
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}>
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
+              className="ml-2">
               Back
             </Button>
-            <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-              <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>DEPOT</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">RECEIVE REQUEST</span>
+              </h2>
             </div>
           </div>
           <div className="text-sm text-neutral-500 mt-2 md:mt-0">

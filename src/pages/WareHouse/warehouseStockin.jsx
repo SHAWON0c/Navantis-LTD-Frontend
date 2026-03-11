@@ -84,8 +84,8 @@ const WarehouseStockIn = () => {
     { key: 'Batch', label: 'Batch', sortable: true },
     { key: 'Quantity', label: 'Quantity', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
     { key: 'Expire', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
-    { key: 'PriceUnitTP', label: 'TP', sortable: true, render: (value) => `₹${Number(value || 0).toLocaleString()}` },
-    { key: 'TotalPrice', label: 'Total Price', sortable: true, render: (value) => `₹${Number(value || 0).toLocaleString()}` },
+    { key: 'PriceUnitTP', label: 'TP', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
+    { key: 'TotalPrice', label: 'Total Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'stockStatus', label: 'Stock Status', sortable: true },
     { key: 'Date', label: 'Stock In Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
   ];
