@@ -127,7 +127,7 @@ const DamagedProducts = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-neutral-900">Damaged Products</h1>
-              <p className="text-neutral-600 text-sm">Manage damaged product reports and inventory</p>
+              <p className="text-neutral-600 text-sm">//damaged product reports and inventory</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

@@ -5,6 +5,7 @@ import { useGetGroupedDepotRequestsQuery } from "../../redux/features/depot/depo
 import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
 import Loader from "../../component/Loader";
+import { MdArrowBack } from "react-icons/md";
 
 const STATUS_OPTIONS = ["pending", "requested", "accepted"];
 
@@ -34,16 +35,24 @@ const DepotReceiveRequest = () => {
   return (
     <div className="min-h-screen bg-neutral-50 p-6">
       <Card className="mb-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-neutral-900">Depot Receive Requests</h1>
-            <p className="text-neutral-600 text-sm">Review and manage incoming depot requests</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}>
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 h-12 flex items-center px-6">
+              <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
+            </div>
           </div>
           <div className="text-sm text-neutral-500 mt-2 md:mt-0">
             Total: {totalRequests}
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap gap-3">
+    
+      </Card>
+
+
+        <div className="my-4 flex flex-wrap gap-3 ">
           {STATUS_OPTIONS.map((status) => (
             <Button
               key={status}
@@ -55,7 +64,6 @@ const DepotReceiveRequest = () => {
             </Button>
           ))}
         </div>
-      </Card>
 
       {groupedRequests.length === 0 ? (
         <Card>

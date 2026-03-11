@@ -7,8 +7,8 @@ const Card = ({
   headerAction,
   footer,
   className = '',
-  shadow = 'sm',
-  padding = 'md',
+  shadow = 'xs',
+  padding = 'xs',
   borderColor = 'gray',
   noBorder = false,
   ...props
@@ -22,8 +22,8 @@ const Card = ({
   };
 
   const paddingClasses = {
-    xs: 'p-2',
-    sm: 'p-3',
+    xs: 'p-1',
+    sm: 'p-2',
     md: 'p-4',
     lg: 'p-6',
     xl: 'p-8',
@@ -42,13 +42,26 @@ const Card = ({
   return (
     <div className={cardClasses} {...props}>
       {(title || subtitle || headerAction) && (
-        <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200">
-          <div className="flex-1">
+        <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200 p-2">
+          {/* <div className="flex-1">
             {title && (
               <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
             )}
             {subtitle && (
               <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+            )}
+          </div> */}
+
+          <div className="flex items-center gap-3 flex-wrap">
+            {title && (
+              <h3 className="text-lg font-semibold text-gray-900">
+                {title}
+              </h3>
+            )}
+            {subtitle && (
+              <p className="text-sm text-gray-600">
+                {subtitle}
+              </p>
             )}
           </div>
           {headerAction && (

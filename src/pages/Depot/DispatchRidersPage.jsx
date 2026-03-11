@@ -6,6 +6,8 @@ import CreateRiderModal from "../../component/modals/CreateRiderModal";
 import Loader from "../../component/Loader";
 import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
+import { ChevronRight } from "lucide-react";
 
 const DispatchRidersPage = () => {
   const { data, isLoading, isError } = useGetAllRidersQuery();
@@ -44,9 +46,18 @@ const DispatchRidersPage = () => {
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-2xl font-bold text-neutral-900">Dispatch Riders</h1>
-              <p className="text-neutral-600 text-sm">Manage dispatch rider information</p>
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
+              className="ml-2">
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>DEPOT</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">DISPATCH RIDERS</span>
+              </h2>
             </div>
           </div>
           <Button
@@ -54,6 +65,7 @@ const DispatchRidersPage = () => {
             size="medium"
             icon={FaUserPlus}
             onClick={() => setOpenModal(true)}
+            className="mr-2"
           >
             Add Rider
           </Button>

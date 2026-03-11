@@ -60,7 +60,7 @@ export default function MyOrders() {
           <div className="flex items-center gap-3">
             <div>
               <h1 className="text-2xl font-bold text-neutral-900">My Orders</h1>
-              <p className="text-neutral-600 text-sm">View and manage your orders</p>
+              <p className="text-neutral-600 text-sm">View and //your orders</p>
             </div>
           </div>
           <div className="text-sm text-neutral-500">

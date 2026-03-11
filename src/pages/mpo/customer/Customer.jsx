@@ -62,7 +62,7 @@ const Customer = () => {
           <div className="flex items-center gap-3">
             <div>
               <h1 className="text-2xl font-bold text-neutral-900">Customers</h1>
-              <p className="text-neutral-600 text-sm">Manage customer information and status</p>
+              <p className="text-neutral-600 text-sm">//customer information and status</p>
             </div>
           </div>
           <div className="text-sm text-neutral-500">

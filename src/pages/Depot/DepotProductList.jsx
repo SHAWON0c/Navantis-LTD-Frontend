@@ -9,6 +9,8 @@ import DepotProductCard from "../../component/common/DepotProductCard";
 import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
 import Loader from "../../component/Loader";
+import { MdArrowBack } from "react-icons/md";
+import { ChevronRight } from "lucide-react";
 
 
 const DepotProductsList = () => {
@@ -74,12 +76,21 @@ const DepotProductsList = () => {
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-2xl font-bold text-neutral-900">Depot Products</h1>
-              <p className="text-neutral-600 text-sm">Manage depot product inventory</p>
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
+              className="ml-2">
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>DEPOT</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">PRODUCT LIST</span>
+              </h2>
             </div>
           </div>
-          <div className="text-sm text-neutral-500">
+          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Total Products: {filteredProducts.length}
           </div>
         </div>
@@ -102,7 +113,7 @@ const DepotProductsList = () => {
       {/* Data Table */}
       <Card title="Depot Product List" subtitle={`Showing ${currentProducts.length} of ${filteredProducts.length} products`}>
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 p-2">
             <label className="text-sm font-medium">Show</label>
             <select
               value={productsPerPage}

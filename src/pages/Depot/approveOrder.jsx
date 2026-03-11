@@ -781,6 +781,10 @@ import {
 import { useAssignRiderMutation, useGetAllRidersQuery } from "../../redux/features/rider/riderApi";
 import Loader from "../../component/Loader";
 import OrderProductsDetailsModal from "../../component/modals/OrderProductsDetailsModal";
+import { ChevronRight } from "lucide-react";
+import Card from "../../component/common/Card";
+import Button from "../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
 
 const PendingOrdersCard = () => {
   const { data, isLoading, refetch } = useGetPendingOrdersQuery();
@@ -830,10 +834,30 @@ const PendingOrdersCard = () => {
   };
 
   return (
-    <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">
-        Pending Orders
-      </h1>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
+              className="ml-2">
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>DEPOT</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">PENDING ORDERS</span>
+              </h2>
+            </div>
+          </div>
+          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+            Total Products:
+          </div>
+        </div>
+      </Card>
 
       <div className="overflow-x-auto bg-white shadow rounded-xl">
         <table className="min-w-full divide-y divide-gray-200">

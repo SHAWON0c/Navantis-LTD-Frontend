@@ -101,7 +101,7 @@ const WarehouseStockIn = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-neutral-900">Warehouse Stock In</h1>
-              <p className="text-neutral-600 text-sm">Manage warehouse incoming stock inventory</p>
+              <p className="text-neutral-600 text-sm">//warehouse incoming stock inventory</p>
             </div>
           </div>
           <div className="text-sm text-neutral-500">

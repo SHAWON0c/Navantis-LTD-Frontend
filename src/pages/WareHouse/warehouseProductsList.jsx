@@ -70,9 +70,8 @@ const WarehouseProductsList = () => {
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-2xl font-bold text-neutral-900">Warehouse Products</h1>
-              <p className="text-neutral-600 text-sm">Manage warehouse product inventory</p>
+             <div className="bg-white text-gray-500 h-12 flex items-center px-6">
+              <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
             </div>
           </div>
           <div className="text-sm text-neutral-500">
