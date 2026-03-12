@@ -1,25 +1,291 @@
+// import React, { useState } from "react";
+// import { useAuth } from "../../../provider/AuthProvider";
+// import Loader from "../../../component/Loader";
+// import Button from "../../../component/common/Button";
+// import FormInput from "../../../component/common/FormInput";
+// import FormSelect from "../../../component/common/FormSelect";
+// import UniversalSummaryPanel from "../../../component/common/UniversalSummaryPanel";
+// import Card from "../../../component/common/Card";
+// import Table from "../../../component/common/Table";
+
+// import {
+//   useGetBrandsQuery,
+//   useGetProductsByBrandQuery,
+// } from "../../../redux/features/products/productsApi";
+
+// import {
+//   useGetCustomersByStatusQuery,
+// } from "../../../redux/features/customer/customerApi";
+
+// import { useCreateOrderMutation } from "../../../redux/features/orders/orderApi";
+// import { skipToken } from "@reduxjs/toolkit/query/react";
+
+// const PlaceOrder = () => {
+
+//   const { loading: authLoading } = useAuth();
+//   const [createOrder, { isLoading: creating }] = useCreateOrderMutation();
+
+//   const [products, setProducts] = useState([]);
+
+//   const [formData, setFormData] = useState({
+//     customerName: "",
+//     customerId: "",
+//     payMode: "",
+//     brand: "",
+//   });
+
+//   const [selectedAddress, setSelectedAddress] = useState("");
+
+//   // ================= API =================
+
+//   const { data: brandsData = [], isLoading: brandsLoading } =
+//     useGetBrandsQuery();
+
+//   const { data: productsData = {}, isLoading: productsLoading } =
+//     useGetProductsByBrandQuery(formData.brand || skipToken);
+
+//   const { data: customersData = {}, isLoading: customersLoading } =
+//     useGetCustomersByStatusQuery("active");
+
+//   const brands = brandsData;
+//   const apiProducts = productsData.products || [];
+//   const customers = customersData.data || [];
+
+//   // ================= CUSTOMER =================
+
+//   const selectedCustomer = customers.find(
+//     (c) => c._id === formData.customerId
+//   );
+
+//   const discountPercent = selectedCustomer?.discount || 0;
+//   const discountDecimal = discountPercent / 100;
+
+//   // ================= TOTAL =================
+
+//   const totalAmount = products.reduce(
+//     (acc, p) => acc + p.price * p.quantity,
+//     0
+//   );
+
+//   const discount = totalAmount * discountDecimal;
+//   const grandTotal = totalAmount - discount;
+
+//   // ================= ADD PRODUCT =================
+
+//   const handleAddProduct = (product) => {
+
+//     const exist = products.find((p) => p.productId === product.productId);
+
+//     if (exist) {
+//       setProducts((prev) =>
+//         prev.map((p) =>
+//           p.productId === product.productId
+//             ? { ...p, quantity: p.quantity + 1 }
+//             : p
+//         )
+//       );
+//     } else {
+//       setProducts((prev) => [
+//         ...prev,
+//         { ...product, key: Date.now(), quantity: 1 },
+//       ]);
+//     }
+//   };
+
+//   // ================= REMOVE PRODUCT =================
+
+//   const removeProduct = (key) => {
+//     setProducts(products.filter((p) => p.key !== key));
+//   };
+
+//   // ================= CHANGE QTY =================
+
+//   const changeQty = (key, qty) => {
+
+//     setProducts((prev) =>
+//       prev.map((p) =>
+//         p.key === key ? { ...p, quantity: Number(qty) } : p
+//       )
+//     );
+
+//   };
+
+//   // ================= SUBMIT =================
+
+//   const handleSubmit = async () => {
+
+//     if (!products.length) return alert("Add product first");
+
+//     if (!formData.customerId) return alert("Select customer");
+
+//     const payload = {
+//       customerId: formData.customerId,
+//       payMode: formData.payMode,
+//       products: products.map((p) => ({
+//         productId: p.productId,
+//         quantity: p.quantity,
+//       })),
+//     };
+
+//     try {
+
+//       await createOrder(payload).unwrap();
+
+//       alert("Order placed successfully");
+
+//       setProducts([]);
+
+//     } catch (err) {
+
+//       console.log(err);
+//       alert("Order failed");
+
+//     }
+
+//   };
+
+//   if (authLoading || brandsLoading || customersLoading)
+//     return <Loader />;
+
+//   return (
+//     <div className="w-full min-h-screen bg-gray-100 flex flex-col lg:flex-row">
+//       {/* LEFT PANEL */}
+//       <div className="w-full lg:w-[340px] bg-white border-r p-6 space-y-6">
+//         <div className="text-gray-500 text-sm font-semibold mb-2">NPL / Admin / Purchase Order</div>
+//         <Card shadow="md" padding="md" className="space-y-4">
+//           <FormSelect
+//             label="Customer"
+//             value={formData.customerId}
+//             onChange={(e) => {
+//               const customer = customers.find((c) => c._id === e.target.value);
+//               setFormData((prev) => ({
+//                 ...prev,
+//                 customerName: customer ? `${customer.customerName} - ${customer.customerId}` : "",
+//                 customerId: customer ? customer._id : "",
+//               }));
+//               setSelectedAddress(customer?.address || "");
+//             }}
+//             options={customers.map((c) => ({
+//               value: c._id,
+//               label: `${c.customerName} - ${c.customerId}`,
+//             }))}
+//             placeholder="Select customer"
+//             required
+//           />
+//           {selectedAddress && <div className="text-xs text-gray-500">{selectedAddress}</div>}
+//           <FormSelect
+//             label="Payment Mode"
+//             value={formData.payMode}
+//             onChange={(e) => setFormData((prev) => ({ ...prev, payMode: e.target.value }))}
+//             options={selectedCustomer?.payMode?.map((p) => ({ value: p, label: p })) || []}
+//             placeholder="Select mode"
+//             required
+//           />
+//           <FormSelect
+//             label="Brand"
+//             value={formData.brand}
+//             onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
+//             options={brands.map((b) => ({ value: b, label: b }))}
+//             placeholder="Filter brands..."
+//             required
+//           />
+//         </Card>
+//         {/* Available Products (Desktop only) */}
+//         <Card shadow="sm" padding="sm" className="hidden lg:block">
+//           <div className="text-xs text-gray-500 mb-2">Available — {formData.brand}</div>
+//           <div className="max-h-96 overflow-y-auto">
+//             {productsLoading && <Loader size={30} color="#2563eb" />}
+//             {apiProducts.map((p) => (
+//               <div
+//                 key={p._id}
+//                 className="p-2 border-b hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all duration-150"
+//                 onClick={() => handleAddProduct({ product: p.productName, productId: p._id, price: p.tradePrice })}
+//               >
+//                 <div>
+//                   <div className="text-sm font-medium">{p.productShortCode}</div>
+//                   <div className="text-xs text-gray-500">{p.productName}</div>
+//                 </div>
+//                 <div className="text-sm font-semibold text-blue-700">৳{p.tradePrice}</div>
+//               </div>
+//             ))}
+//           </div>
+//         </Card>
+//       </div>
+//       {/* RIGHT PANEL */}
+//       <div className="flex-1 flex flex-col bg-white">
+//         <div className="p-6 overflow-auto">
+//           <Card shadow="md" padding="md">
+//             <Table
+//               columns={[{ Header: "Product", accessor: "product" }, { Header: "Qty", accessor: "quantity" }, { Header: "Price (৳)", accessor: "price" }, { Header: "", accessor: "action" }]}
+//               data={products.map((p) => ({
+//                 product: <div className="font-medium">{p.product}</div>,
+//                 quantity: <FormInput type="number" value={p.quantity} onChange={(e) => changeQty(p.key, e.target.value)} size="sm" className="w-16 text-center" min={1} />,
+//                 price: <div className="text-right">৳{(p.price * p.quantity).toFixed(2)}</div>,
+//                 action: <Button variant="outline" size="small" onClick={() => removeProduct(p.key)} className="text-red-500">✕</Button>,
+//                 key: p.key,
+//               }))}
+//               emptyMessage="Select a brand and click products to add them here."
+//               size="md"
+//               striped
+//               hover
+//             />
+//           </Card>
+//         </div>
+//         {/* Summary Panel */}
+//         <div className="border-t p-6 bg-gray-50">
+//           <UniversalSummaryPanel
+//             totals={{
+//               "Total": `৳${totalAmount.toFixed(2)}`,
+//               [`Discount (${discountPercent}%)`]: `-৳${discount.toFixed(2)}`,
+//               "Grand Total": `৳${grandTotal.toFixed(2)}`,
+//             }}
+//           />
+//           <Button
+//             onClick={handleSubmit}
+//             disabled={creating}
+//             loading={creating}
+//             variant="primary"
+//             size="large"
+//             className="w-full mt-4"
+//           >
+//             {creating ? "Placing Order..." : "Place Order"}
+//           </Button>
+//         </div>
+//       </div>
+//     </div>
+
+//   );
+// };
+
+// export default PlaceOrder;
+
+
+
+
+// ui okey 
 import React, { useState } from "react";
 import { useAuth } from "../../../provider/AuthProvider";
 import Loader from "../../../component/Loader";
-import Select from "react-select";
+import Button from "../../../component/common/Button";
+import FormInput from "../../../component/common/FormInput";
+import FormSelect from "../../../component/common/FormSelect";
+import Card from "../../../component/common/Card";
+import Table from "../../../component/common/Table";
 
 import {
   useGetBrandsQuery,
   useGetProductsByBrandQuery,
 } from "../../../redux/features/products/productsApi";
 
-import {
-  useGetCustomersByStatusQuery,
-} from "../../../redux/features/customer/customerApi";
-
+import { useGetCustomersByStatusQuery } from "../../../redux/features/customer/customerApi";
 import { useCreateOrderMutation } from "../../../redux/features/orders/orderApi";
 import { skipToken } from "@reduxjs/toolkit/query/react";
+import { MdArrowBack } from "react-icons/md";
+import { ChevronRight } from "lucide-react";
 
 const PlaceOrder = () => {
-
   const { loading: authLoading } = useAuth();
   const [createOrder, { isLoading: creating }] = useCreateOrderMutation();
-
   const [products, setProducts] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -32,13 +298,9 @@ const PlaceOrder = () => {
   const [selectedAddress, setSelectedAddress] = useState("");
 
   // ================= API =================
-
-  const { data: brandsData = [], isLoading: brandsLoading } =
-    useGetBrandsQuery();
-
+  const { data: brandsData = [], isLoading: brandsLoading } = useGetBrandsQuery();
   const { data: productsData = {}, isLoading: productsLoading } =
     useGetProductsByBrandQuery(formData.brand || skipToken);
-
   const { data: customersData = {}, isLoading: customersLoading } =
     useGetCustomersByStatusQuery("active");
 
@@ -47,30 +309,18 @@ const PlaceOrder = () => {
   const customers = customersData.data || [];
 
   // ================= CUSTOMER =================
-
-  const selectedCustomer = customers.find(
-    (c) => c._id === formData.customerId
-  );
-
+  const selectedCustomer = customers.find((c) => c._id === formData.customerId);
   const discountPercent = selectedCustomer?.discount || 0;
   const discountDecimal = discountPercent / 100;
 
   // ================= TOTAL =================
-
-  const totalAmount = products.reduce(
-    (acc, p) => acc + p.price * p.quantity,
-    0
-  );
-
+  const totalAmount = products.reduce((acc, p) => acc + p.price * p.quantity, 0);
   const discount = totalAmount * discountDecimal;
   const grandTotal = totalAmount - discount;
 
   // ================= ADD PRODUCT =================
-
   const handleAddProduct = (product) => {
-
     const exist = products.find((p) => p.productId === product.productId);
-
     if (exist) {
       setProducts((prev) =>
         prev.map((p) =>
@@ -82,341 +332,215 @@ const PlaceOrder = () => {
     } else {
       setProducts((prev) => [
         ...prev,
-        { ...product, key: Date.now(), quantity: 1 },
+        { ...product, id: product.productId, quantity: 1 },
       ]);
     }
   };
 
   // ================= REMOVE PRODUCT =================
-
-  const removeProduct = (key) => {
-    setProducts(products.filter((p) => p.key !== key));
+  const removeProduct = (id) => {
+    setProducts(products.filter((p) => p.id !== id));
   };
 
   // ================= CHANGE QTY =================
-
-  const changeQty = (key, qty) => {
-
+  const changeQty = (id, qty) => {
+    if (qty < 1) return;
     setProducts((prev) =>
-      prev.map((p) =>
-        p.key === key ? { ...p, quantity: Number(qty) } : p
-      )
+      prev.map((p) => (p.id === id ? { ...p, quantity: Number(qty) } : p))
     );
-
   };
 
   // ================= SUBMIT =================
-
   const handleSubmit = async () => {
-
     if (!products.length) return alert("Add product first");
-
     if (!formData.customerId) return alert("Select customer");
 
     const payload = {
       customerId: formData.customerId,
       payMode: formData.payMode,
-      products: products.map((p) => ({
-        productId: p.productId,
-        quantity: p.quantity,
-      })),
+      products: products.map((p) => ({ productId: p.productId, quantity: p.quantity })),
     };
 
     try {
-
       await createOrder(payload).unwrap();
-
       alert("Order placed successfully");
-
       setProducts([]);
-
     } catch (err) {
-
       console.log(err);
       alert("Order failed");
-
     }
-
   };
 
-  if (authLoading || brandsLoading || customersLoading)
-    return <Loader />;
+  if (authLoading || brandsLoading || customersLoading) return <Loader />;
 
   return (
+    <div className="w-full min-h-screen bg-gray-100 md:p-6 ">
 
-    <div className="w-full min-h-screen bg-gray-100 flex flex-col lg:flex-row">
-
-      {/* LEFT PANEL */}
-
-      <div className="w-full lg:w-[320px] bg-white border-r p-4 space-y-4">
-
-        <div className="text-gray-500 text-sm font-semibold">
-          NPL / Admin / Purchase Order
+            <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
+              className="ml-2">
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>MPO</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">PLACE ORDER</span>
+              </h2>
+            </div>
+          </div>
+          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+            Total Products: 
+          </div>
         </div>
+      </Card>
+      <div className="grid lg:grid-cols-12 gap-6">
 
-        {/* CUSTOMER */}
+        {/* LEFT PANEL */}
+        <div className="lg:col-span-3 space-y-6">
+          <Card shadow="md" padding="md">
+            <div className="text-lg font-semibold mb-4">Order Details</div>
 
-        <div>
+            <FormSelect
+              label="Customer"
+              value={formData.customerId}
+              onChange={(e) => {
+                const customer = customers.find((c) => c._id === e.target.value);
+                setFormData((prev) => ({
+                  ...prev,
+                  customerName: customer
+                    ? `${customer.customerName} - ${customer.customerId}`
+                    : "",
+                  customerId: customer ? customer._id : "",
+                }));
+                setSelectedAddress(customer?.address || "");
+              }}
+              options={customers.map((c) => ({
+                value: c._id,
+                label: `${c.customerName} - ${c.customerId}`,
+              }))}
+              placeholder="Select customer"
+            />
 
-          <label className="text-xs text-gray-500">CUSTOMER</label>
-
-          <Select
-            placeholder="Search customer..."
-            options={customers.map((c) => ({
-              value: c._id,
-              label: `${c.customerName} - ${c.customerId}`,
-            }))}
-            onChange={(option) => {
-
-              const customer = customers.find(
-                (c) => c._id === option.value
-              );
-
-              setFormData((prev) => ({
-                ...prev,
-                customerName: `${customer.customerName} - ${customer.customerId}`,
-                customerId: customer._id,
-              }));
-
-              setSelectedAddress(customer.address);
-
-            }}
-          />
-
-          <p className="text-xs text-gray-500">{selectedAddress}</p>
-
-        </div>
-
-        {/* PAYMENT */}
-
-        <div>
-
-          <label className="text-xs text-gray-500">PAYMENT MODE</label>
-
-          <select
-            className="w-full border rounded p-2"
-            value={formData.payMode}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                payMode: e.target.value,
-              }))
-            }
-          >
-
-            <option value="">Select mode</option>
-
-            {selectedCustomer?.payMode?.map((p) => (
-              <option key={p}>{p}</option>
-            ))}
-
-          </select>
-
-        </div>
-
-        {/* BRAND */}
-
-        <div>
-
-          <label className="text-xs text-gray-500">BRAND</label>
-
-          <select
-            className="w-full border rounded p-2"
-            value={formData.brand}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                brand: e.target.value,
-              }))
-            }
-          >
-
-            <option value="">Filter brands...</option>
-
-            {brands.map((b) => (
-              <option key={b}>{b}</option>
-            ))}
-
-          </select>
-
-        </div>
-
-        {/* AVAILABLE PRODUCTS (Desktop only) */}
-
-        <div className="hidden lg:block">
-
-          <label className="text-xs text-gray-500">
-            AVAILABLE — {formData.brand}
-          </label>
-
-          <div className="border rounded mt-2 max-h-96 overflow-y-auto">
-
-            {productsLoading && (
-              <p className="p-2 text-sm">Loading...</p>
+            {selectedCustomer && (
+              <div className="text-sm bg-gray-50 p-3 rounded mt-3">
+                <div className="font-medium">{selectedCustomer.customerName}</div>
+                <div className="text-gray-500 text-xs">{selectedAddress}</div>
+                <div className="text-xs mt-1">Discount: {discountPercent}%</div>
+              </div>
             )}
 
-            {apiProducts.map((p) => (
+            <FormSelect
+              label="Payment Mode"
+              value={formData.payMode}
+              onChange={(e) => setFormData((prev) => ({ ...prev, payMode: e.target.value }))}
+              options={selectedCustomer?.payMode?.map((p) => ({ value: p, label: p })) || []}
+              placeholder="Select mode"
+            />
 
-              <div
-                key={p._id}
-                className="p-2 border-b hover:bg-blue-50 cursor-pointer flex justify-between"
-                onClick={() =>
-                  handleAddProduct({
-                    product: p.productName,
-                    productId: p._id,
-                    price: p.tradePrice,
-                  })
-                }
-              >
+            <FormSelect
+              label="Brand"
+              value={formData.brand}
+              onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
+              options={brands.map((b) => ({ value: b, label: b }))}
+              placeholder="Select brand"
+            />
+          </Card>
 
-                <div>
-
-                  <div className="text-sm font-medium">
-                    {p.productShortCode}
+          {/* PRODUCT LIST */}
+          <Card shadow="sm" padding="sm">
+            <div className="text-sm font-semibold mb-3">Products ({formData.brand})</div>
+            <div className="max-h-96 overflow-y-auto">
+              {productsLoading && <Loader />}
+              {apiProducts.map((p) => (
+                <div
+                  key={p._id}
+                  className="border-b p-2 cursor-pointer hover:bg-blue-50 flex justify-between"
+                  onClick={() =>
+                    handleAddProduct({ productId: p._id, product: p.productName, price: p.tradePrice })
+                  }
+                >
+                  <div>
+                    <div className="text-sm font-medium">{p.productShortCode}</div>
+                    <div className="text-xs text-gray-500">{p.productName}</div>
                   </div>
-
-                  <div className="text-xs text-gray-500">
-                    {p.productName}
-                  </div>
-
+                  <div className="text-blue-600 font-semibold">৳{p.tradePrice}</div>
                 </div>
-
-                <div className="text-sm font-semibold">
-                  ৳{p.tradePrice}
-                </div>
-
-              </div>
-
-            ))}
-
-          </div>
-
+              ))}
+            </div>
+          </Card>
         </div>
 
-      </div>
+        {/* RIGHT PANEL */}
+        <div className="lg:col-span-9 space-y-6">
 
-      {/* RIGHT PANEL */}
-
-      <div className="flex-1 flex flex-col bg-white">
-
-        <div className="p-4 overflow-auto">
-
-          <table className="w-full text-sm">
-
-            <thead className="border-b text-gray-500">
-
-              <tr>
-
-                <th className="text-left py-2">PRODUCT</th>
-                <th className="text-center">QTY</th>
-                <th className="text-right">PRICE (৳)</th>
-                <th></th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {products.length === 0 && (
-
-                <tr>
-
-                  <td colSpan="4" className="text-center py-8 text-gray-400">
-
-                    Select a brand and click products to add them here.
-
-                  </td>
-
-                </tr>
-
-              )}
-
+          {/* PRODUCT TABLE */}
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <h3 className="text-lg font-semibold mb-3">Products (Debug)</h3>
+            {products.length === 0 && <div className="text-gray-500">No products added yet</div>}
+            <ul className="space-y-2">
               {products.map((p) => (
-
-                <tr key={p.key} className="border-b">
-
-                  <td className="py-3">
-
-                    <div className="font-medium">{p.product}</div>
-
-                  </td>
-
-                  <td className="text-center">
-
+                <li
+                  key={p.id}
+                  className="flex justify-between border p-2 rounded hover:bg-gray-50"
+                >
+                  <div>{p.product}</div>
+                  <div className="flex items-center gap-2">
                     <input
                       type="number"
                       value={p.quantity}
-                      className="w-14 border text-center rounded"
-                      onChange={(e) =>
-                        changeQty(p.key, e.target.value)
-                      }
+                      min={1}
+                      onChange={(e) => changeQty(p.id, e.target.value)}
+                      className="w-16 text-center border rounded p-1"
                     />
-
-                  </td>
-
-                  <td className="text-right">
-
-                    ৳{(p.price * p.quantity).toFixed(2)}
-
-                  </td>
-
-                  <td className="text-center">
-
+                    <span>৳{(p.price * p.quantity).toFixed(2)}</span>
                     <button
-                      onClick={() => removeProduct(p.key)}
-                      className="text-red-500"
+                      onClick={() => removeProduct(p.id)}
+                      className="text-red-500 font-bold px-2"
                     >
                       ✕
                     </button>
-
-                  </td>
-
-                </tr>
-
+                  </div>
+                </li>
               ))}
+            </ul>
+          </div>
 
-            </tbody>
+          {/* INVOICE SUMMARY */}
+          <Card shadow="lg" padding="md">
+            <div className="text-lg font-semibold mb-4">Invoice Summary</div>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span>Total</span>
+                <span>৳{totalAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-red-500">
+                <span>Discount ({discountPercent}%)</span>
+                <span>- ৳{discount.toFixed(2)}</span>
+              </div>
+              <div className="border-t pt-3 flex justify-between text-lg font-bold">
+                <span>Grand Total</span>
+                <span>৳{grandTotal.toFixed(2)}</span>
+              </div>
+            </div>
 
-          </table>
+            <Button
+              onClick={handleSubmit}
+              loading={creating}
+              className="w-full mt-6"
+              size="large"
+            >
+              {creating ? "Placing Order..." : "Place Order"}
+            </Button>
+          </Card>
 
         </div>
-
-        {/* TOTAL */}
-
-        <div className="border-t p-4 space-y-2 bg-gray-50">
-
-          <div className="flex justify-between text-sm">
-            <span>Total</span>
-            <span>৳{totalAmount.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between text-green-600 text-sm">
-            <span>Discount ({discountPercent}%)</span>
-            <span>-৳{discount.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between font-semibold text-lg">
-            <span>Grand Total</span>
-            <span>৳{grandTotal.toFixed(2)}</span>
-          </div>
-
-          <button
-            onClick={handleSubmit}
-            disabled={creating}
-            className="w-full bg-blue-700 text-white py-3 rounded"
-          >
-
-            {creating ? "Placing Order..." : "Place Order"}
-
-          </button>
-
-        </div>
-
       </div>
-
     </div>
-
   );
 };
 
