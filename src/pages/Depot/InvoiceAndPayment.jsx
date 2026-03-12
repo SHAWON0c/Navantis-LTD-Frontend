@@ -273,8 +273,10 @@ const QuickPayModal = ({ open, onClose, searchData, setSearchData, triggerSearch
       onCancel={onClose}
       footer={null}
       width={650}
-      bodyStyle={{ maxHeight: "70vh", overflowY: "auto", padding: "24px" }}
       centered
+      styles={{
+        body: { maxHeight: "70vh", overflowY: "auto", padding: "24px" }, // replaces bodyStyle
+      }}
     >
       <div className="flex gap-3 mb-6">
         <Input

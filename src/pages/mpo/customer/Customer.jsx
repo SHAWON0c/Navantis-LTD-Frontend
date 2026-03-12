@@ -73,7 +73,7 @@ const Customer = () => {
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>MPO</span>
                 <ChevronRight size={14} className="text-gray-400" />
-                <span className="text-gray-900 font-bold">Customer List</span>
+                <span className="text-gray-900 font-bold">CUSTOMER LIST</span>
               </h2>
             </div>
           </div>
@@ -87,7 +87,7 @@ const Customer = () => {
       {/* Data Table */}
       <Card title="Customers List" subtitle={`Showing ${currentCustomers.length} of ${filteredCustomers.length} records`}>
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex gap-2">
+          <div className="flex gap-4 ml-2">
             <Button
               variant={statusFilter === "active" ? "primary" : "outline"}
               size="small"

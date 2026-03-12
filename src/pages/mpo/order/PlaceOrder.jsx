@@ -376,7 +376,7 @@ const PlaceOrder = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100 md:p-6 ">
 
-            <Card className="mb-6">
+      <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
@@ -394,7 +394,7 @@ const PlaceOrder = () => {
             </div>
           </div>
           <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
-            Total Products: 
+            Total Products:
           </div>
         </div>
       </Card>
@@ -452,7 +452,7 @@ const PlaceOrder = () => {
           </Card>
 
           {/* PRODUCT LIST */}
-          <Card shadow="sm" padding="sm">
+          {/* <Card shadow="sm" padding="sm">
             <div className="text-sm font-semibold mb-3">Products ({formData.brand})</div>
             <div className="max-h-96 overflow-y-auto">
               {productsLoading && <Loader />}
@@ -469,6 +469,36 @@ const PlaceOrder = () => {
                     <div className="text-xs text-gray-500">{p.productName}</div>
                   </div>
                   <div className="text-blue-600 font-semibold">৳{p.tradePrice}</div>
+                </div>
+              ))}
+            </div>
+          </Card> */}
+
+          <Card shadow="sm" padding="sm">
+            <div className="text-sm font-semibold mb-3">Products ({formData.brand})</div>
+            <div className="max-h-96 overflow-y-auto">
+              {productsLoading && <Loader />}
+              {apiProducts.map((p) => (
+                <div
+                  key={p._id}
+                  className="border-b p-2 flex justify-between items-center hover:bg-blue-50"
+                >
+                  <div>
+                    <div className="text-sm font-medium">{p.productShortCode}</div>
+                    <div className="text-xs text-gray-500">{p.productName}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-blue-600 font-semibold">৳{p.tradePrice}</div>
+                    <button
+                      type="button"
+                      className="bg-blue-600 text-white text-xs px-2 py-1 rounded hover:bg-blue-700"
+                      onClick={() =>
+                        handleAddProduct({ productId: p._id, product: p.productName, price: p.tradePrice })
+                      }
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

@@ -71,7 +71,7 @@ export default function MyOrders() {
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>MPO</span>
                 <ChevronRight size={14} className="text-gray-400" />
-                <span className="text-gray-900 font-bold">PLACE ORDER</span>
+                <span className="text-gray-900 font-bold">MY ORDERS</span>
               </h2>
             </div>
           </div>
@@ -181,7 +181,7 @@ export default function MyOrders() {
 
       {/* Batch Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4">
           <Card className="w-full max-w-2xl">
             <h2 className="text-xl font-semibold mb-4">Selected Batches</h2>
             <div className="overflow-x-auto">

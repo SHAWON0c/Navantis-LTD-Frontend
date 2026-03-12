@@ -37,7 +37,7 @@ const DepotReceiveRequest = () => {
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
+            <Button variant="ghost" size="small" icon={<MdArrowBack />} onClick={() => window.history.back()}
               className="ml-2">
               Back
             </Button>
@@ -108,7 +108,7 @@ const DepotReceiveRequest = () => {
                             <td className="py-3 px-4">{req.productName}</td>
                             <td className="text-center py-3 px-4">{req.packSize}</td>
                             <td className="text-center py-3 px-4">{req.requestedQuantity}</td>
-                            <td className="text-center py-3 px-4">{req.warehouseQuantity}</td>
+                            <td className="text-center py-3 px-4">Not available to Show</td>  {/* Value: dynamically read from selectedProduct state  -----------  Warehouse Qty*/}
                             <td className="text-center py-3 px-4">{req.depotQuantity}</td>
                             <td
                               className="text-center py-3 px-4 cursor-pointer"
@@ -149,7 +149,7 @@ const DepotReceiveRequest = () => {
                                               <td className="px-2 py-1 border text-center">
                                                 {new Date(b.expireDate).toLocaleDateString()}
                                               </td>
-                                              <td className="px-2 py-1 border text-center">{b.totalQuantity}</td>
+                                              <td className="px-2 py-1 border text-center">Not available to Show</td>    {/*{b.totalQuantity}*/}
                                               {req.status !== "pending" && (
                                                 <td className="px-2 py-1 border text-center">
                                                   {b.requestedQuantity || 0}
