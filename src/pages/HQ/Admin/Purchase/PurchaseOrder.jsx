@@ -6,6 +6,10 @@ import { useCreatePurchaseOrderMutation } from "../../../../redux/features/HQ/MD
 import Loader from "../../../../component/Loader";
 import { useAuth } from "../../../../provider/AuthProvider";
 import toast from "../../../../utils/toast";
+import Card from "../../../../component/common/Card";
+import Button from "../../../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
+import { ChevronRight } from "lucide-react";
 
 const PurchaseOrder = () => {
   // 1️⃣ Get user info from AuthProvider
@@ -151,11 +155,31 @@ const handleSubmit = async (e) => {
   if (authLoading) return <Loader />;
 
   return (
-    <div className="mx-auto p-2">
+    <div className="min-h-screen bg-neutral-50">
       {/* Top Bar */}
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
-      </div>
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small"  onClick={() => window.history.back()}
+              className="ml-2">
+                 <MdArrowBack className="inline mr-1" />
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>ADMIN</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">PURCHASE ORDER</span>
+              </h2>
+            </div>
+          </div>
+          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+
+          </div>
+        </div>
+      </Card>
 
       {/* Main Form */}
       <div className="mx-auto bg-white rounded-lg shadow-md p-10 space-y-2 mt-4">

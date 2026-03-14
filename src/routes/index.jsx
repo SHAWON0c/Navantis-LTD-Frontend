@@ -13,7 +13,7 @@ import AuthProvider from "../provider/AuthProvider";
 import ProtectedRoute from "../provider/PrivateRoute";
 import WarehouseAddProduct from "../pages/WareHouse/warehouseAddProduct";
 // import ProfilePage from "../pages/profile/ProfilePage";
-import WarehouseRequest from "../pages/WareHouse/WarehouseRequest";
+
 import StockIn from "../pages/WareHouse/warehouseStockin";
 import WarehouseProductsList from "../pages/WareHouse/warehouseProductsList";
 import DepotProductsList from "../pages/Depot/DepotProductList";
@@ -48,6 +48,7 @@ import PurchaseOrderList from "../pages/HQ/Admin/Purchase/PurchaseOrderList";
 import DepotRequestsPage from "../pages/HQ/Admin/depo/DepotRequestsPage";
 import NotFoundPage from "../pages/notFound/NotFoundPage";
 import MyOrders from "../pages/mpo/order/MyOrders";
+import WarehouseRequest from "../pages/HQ/Admin/WarehouseRequest";
 
 
 // ✅ FIXED PATHS

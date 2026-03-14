@@ -4,6 +4,9 @@ import { useGetDamageRequestsQuery } from "../../../redux/features/wareHouse/war
 import Card from "../../../component/common/Card";
 import UniversalSummaryPanel from "../../../component/common/UniversalSummaryPanel";
 import Loader from "../../../component/Loader";
+import Button from "../../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
+import { ChevronRight } from "lucide-react";
 
 const WarehouseDamageRequest = () => {
   const { data: whReceiveRequests, isLoading, refetch } = useGetDamageRequestsQuery();
@@ -30,11 +33,22 @@ const WarehouseDamageRequest = () => {
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-           <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-              <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
+            <Button variant="ghost" size="small"  onClick={() => window.history.back()}
+              className="ml-2">
+                 <MdArrowBack className="inline mr-1" />
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>ADMIN</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">WAREHOUSE DAMAGE REQUEST</span>
+              </h2>
             </div>
           </div>
-          <div className="text-sm text-neutral-500">
+          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Total Requests: {filteredProducts.length}
           </div>
         </div>

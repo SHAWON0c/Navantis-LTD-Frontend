@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useGetPendingPurchaseOrdersQuery } from "../../redux/features/HQ/MD/purchaseOrder/purchaseOrderApi";
 import { useAuth } from "../../provider/AuthProvider";
 import { useSubmitReceiveMutation } from "../../redux/features/wareHouse/warehouseReceiveApi";
 import { showToast } from "../../component/common/toastService"; // ✅ import custom toast
 import Loader from "../../component/Loader";
+import Card from "../../component/common/Card";
+import Button from "../../component/common/Button";
+import { MdArrowBack } from "react-icons/md";
 
 const WarehouseAddProduct = () => {
   const { data, isLoading } = useGetPendingPurchaseOrdersQuery();
@@ -124,10 +127,31 @@ const WarehouseAddProduct = () => {
   if (isLoading) return <Loader></Loader>;
 
   return (
-    <div className="mx-auto p-6">
-      <div className="bg-white text-gray-500 h-12 flex items-center px-6">
-        <h2 className="text-base font-bold">Warehouse / Add Product</h2>
-      </div>
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <Card className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="small"  onClick={() => window.history.back()}
+              className="ml-2">
+                 <MdArrowBack className="inline mr-1" />
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
+              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>WAREHOUSE</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">WAREHOUSE RECEIVE</span>
+              </h2>
+            </div>
+          </div>
+          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+           WAREHOUSE RECEIVE
+          </div>
+        </div>
+      </Card>
 
       <div className="mx-auto bg-white rounded-lg shadow-md p-10 space-y-4 mt-4">
         <form onSubmit={handleSubmit} className="space-y-4">
