@@ -78,7 +78,7 @@ export default function AppRoutes() {
 
 
         {/* Admin */}
-        <Route element={<ProtectedRoute allowedRoles={["md"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["md","superadmin"]} />}>
           <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
           <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
 
@@ -86,7 +86,7 @@ export default function AppRoutes() {
 
         {/* Warehouse */}
 
-        <Route element={<ProtectedRoute allowedRoles={["md", "wm"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["md", "wm" ,"superadmin"]} />}>
 
           <Route path="/admin/warehouse-request" element={<WarehouseRequest />} />
           <Route path="/admin/damage-request" element={<WarehouseDamageRequest />} />
@@ -106,7 +106,7 @@ export default function AppRoutes() {
 
 
 
-        <Route element={<ProtectedRoute allowedRoles={["dm", "amdin", "md"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["dm", "amdin", "md" ,"superadmin"]} />}>
           <Route path="/depot/products" element={<DepotProductsList />} />
           <Route path="/warehouse/damaged" element={<DamagedProducts />} />
           <Route path="/depot/receive-request" element={<DepotReceiveRequest />} />
@@ -125,7 +125,7 @@ export default function AppRoutes() {
           <Route path="/territory/:id/set-target" element={<SetTerritoryTarget />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"mpo"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"mpo","superadmin"]} />}>
           <Route path="/customer/list" element={<Customer />} />
           <Route path="/customer/add" element={<CreateCustomer />} />
 

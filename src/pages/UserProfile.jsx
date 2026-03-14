@@ -1,158 +1,404 @@
-// UserProfile.jsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useMemo, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import Loader from "../component/Loader";
+import { useUserProfile } from "../hooks/useUserProfile";
+
+const formatLabel = (key = "") => {
+  return String(key)
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[._-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^./, (c) => c.toUpperCase());
+};
+
+const isDateLike = (value) => {
+  if (typeof value !== "string") return false;
+  if (!value.includes("-") && !value.includes("T")) return false;
+  return !Number.isNaN(Date.parse(value));
+};
+
+const parseJSONSafe = (value) => {
+  if (typeof value !== "string") return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+};
+
+const renderValue = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return <span className="text-gray-400">N/A</span>;
+  }
+
+  if (typeof value === "boolean") {
+    return value ? "Yes" : "No";
+  }
+
+  if (typeof value === "number") {
+    return value.toLocaleString();
+  }
+
+  if (isDateLike(value)) {
+    return new Date(value).toLocaleString();
+  }
+
+  if (Array.isArray(value)) {
+    if (!value.length) return <span className="text-gray-400">N/A</span>;
+    return value.join(", ");
+  }
+
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+
+  return String(value).trim() || <span className="text-gray-400">N/A</span>;
+};
+
+const FieldGrid = ({ fields }) => {
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      {fields.map((field) => (
+        <div key={field.label} className="rounded-lg border border-gray-200 bg-white p-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{field.label}</p>
+          <p className="mt-1 text-sm font-semibold text-gray-800">{renderValue(field.value)}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data, error, isLoading } = useUserProfile();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setLoading(false);
-          return;
-        }
+  const profile = data?.data || null;
+  const org = profile?.organizationProfile || {};
 
-        const res = await axios.get(
-          "http://localhost:5000/api/users/me ",
-          {
-            headers: { Authorization: token },
-          }
-        );
+  const sections = useMemo(() => {
+    if (!profile) return [];
 
-        if (res.data.success) {
-          setUserData(res.data.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch user data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const knownRootKeys = new Set([
+      "_id",
+      "employeeId",
+      "email",
+      "role",
+      "isVerified",
+      "createdAt",
+      "updatedAt",
+      "__v",
+      "organizationProfile",
+    ]);
 
-    fetchUser();
-  }, []);
+    const knownOrgKeys = new Set([
+      "_id",
+      "userId",
+      "identity",
+      "education",
+      "employment",
+      "payroll",
+      "leaveInfo",
+      "shiftInfo",
+      "healthInfo",
+      "emergencyContact",
+      "assets",
+      "exitInfo",
+      "history",
+      "name",
+      "phone",
+      "email",
+      "profilePic",
+      "fathersName",
+      "mothersName",
+      "dateOfBirth",
+      "bloodGroup",
+      "presentAddress",
+      "permanentAddress",
+      "createdAt",
+      "updatedAt",
+      "__v",
+    ]);
 
-  if (loading) return <Loader/>;
-  if (!userData) return <p>No user data found.</p>;
+    const rootExtras = Object.entries(profile).filter(([key]) => !knownRootKeys.has(key));
+    const orgExtras = Object.entries(org).filter(([key]) => !knownOrgKeys.has(key));
 
-  const org = userData.organizationProfile || {};
+    return [
+      {
+        id: "basic-info",
+        title: "Basic Info",
+        fields: [
+          { label: "User ID", value: profile._id },
+          { label: "Employee ID", value: profile.employeeId },
+          { label: "Email", value: profile.email },
+          { label: "Role", value: profile.role },
+          { label: "Verified", value: profile.isVerified },
+          { label: "Created At", value: profile.createdAt },
+          { label: "Updated At", value: profile.updatedAt },
+          { label: "Version", value: profile.__v },
+        ],
+      },
+      {
+        id: "personal-info",
+        title: "Personal Info",
+        fields: [
+          { label: "Name", value: org.name },
+          { label: "Phone", value: org.phone },
+          { label: "Email", value: org.email },
+          { label: "Father's Name", value: org.fathersName },
+          { label: "Mother's Name", value: org.mothersName },
+          { label: "Date of Birth", value: org.dateOfBirth },
+          { label: "Blood Group", value: org.bloodGroup },
+          { label: "Present Address", value: org.presentAddress },
+          { label: "Permanent Address", value: org.permanentAddress },
+        ],
+      },
+      {
+        id: "identity",
+        title: "Identity",
+        fields: [
+          { label: "NID Number", value: org.identity?.nidNumber },
+          { label: "Passport Number", value: org.identity?.passportNumber },
+          { label: "Driving License", value: org.identity?.drivingLicenseNumber },
+          { label: "TIN Number", value: org.identity?.tinNumber },
+          { label: "NID Verified", value: org.identity?.isNidVerified },
+        ],
+      },
+      {
+        id: "education",
+        title: "Education",
+        fields: [
+          { label: "Highest Education", value: org.education?.highestEducation },
+          { label: "Institution", value: org.education?.institution },
+          { label: "Passing Year", value: org.education?.passingYear },
+        ],
+      },
+      {
+        id: "employment",
+        title: "Employment",
+        fields: [
+          { label: "Employee Code", value: org.employment?.employeeCode },
+          { label: "Designation", value: org.employment?.designation },
+          { label: "Department", value: org.employment?.department },
+          { label: "Grade", value: org.employment?.grade },
+          { label: "Workplace", value: org.employment?.workplace },
+          { label: "Employment Type", value: org.employment?.employmentType },
+          { label: "Reporting Manager ID", value: org.employment?.reportingManagerId },
+          { label: "Territory ID", value: org.employment?.territoryId },
+          { label: "Market Points", value: org.employment?.marketPoints },
+          { label: "Joined At", value: org.employment?.joinedAt },
+          { label: "Probation End Date", value: org.employment?.probationEndDate },
+          { label: "Confirmation Date", value: org.employment?.confirmationDate },
+          { label: "Employment Status", value: org.employment?.employmentStatus },
+        ],
+      },
+      {
+        id: "payroll",
+        title: "Payroll",
+        fields: [
+          { label: "Basic Salary", value: org.payroll?.basicSalary },
+          { label: "Gross Salary", value: org.payroll?.grossSalary },
+          { label: "Payment Method", value: org.payroll?.paymentMethod },
+          { label: "Bank Name", value: org.payroll?.bankName },
+          { label: "Account Number", value: org.payroll?.accountNumber },
+          { label: "Salary Hold", value: org.payroll?.isSalaryHold },
+        ],
+      },
+      {
+        id: "leave-info",
+        title: "Leave Info",
+        fields: [
+          { label: "Casual", value: org.leaveInfo?.casual },
+          { label: "Sick", value: org.leaveInfo?.sick },
+          { label: "Annual", value: org.leaveInfo?.annual },
+        ],
+      },
+      {
+        id: "shift-info",
+        title: "Shift Info",
+        fields: [
+          { label: "Shift Name", value: org.shiftInfo?.shiftName },
+          { label: "Weekly Off", value: org.shiftInfo?.weeklyOff },
+        ],
+      },
+      {
+        id: "health-info",
+        title: "Health Info",
+        fields: [
+          { label: "Medical Conditions", value: org.healthInfo?.medicalConditions },
+          { label: "Allergies", value: org.healthInfo?.allergies },
+          { label: "Insurance Policy No", value: org.healthInfo?.insurancePolicyNo },
+        ],
+      },
+      {
+        id: "emergency-contact",
+        title: "Emergency Contact",
+        fields: [
+          { label: "Name", value: org.emergencyContact?.name },
+          { label: "Relation", value: org.emergencyContact?.relation },
+          { label: "Phone", value: org.emergencyContact?.phone },
+        ],
+      },
+      {
+        id: "assets",
+        title: "Assets",
+        fields: [
+          { label: "Laptop Serial", value: org.assets?.laptopSerial },
+          { label: "Mobile IMEI", value: org.assets?.mobileIMEI },
+          { label: "SIM Number", value: org.assets?.simNumber },
+          { label: "Company Email", value: org.assets?.companyEmail },
+          { label: "Access Card ID", value: org.assets?.accessCardId },
+        ],
+      },
+      {
+        id: "exit-info",
+        title: "Exit Info",
+        fields: [
+          { label: "Resignation Date", value: org.exitInfo?.resignationDate },
+          { label: "Last Working Day", value: org.exitInfo?.lastWorkingDay },
+          { label: "Exit Reason", value: org.exitInfo?.exitReason },
+          { label: "Clearance Status", value: org.exitInfo?.clearanceStatus },
+        ],
+      },
+      {
+        id: "history",
+        title: "Profile History",
+        history: org.history || [],
+      },
+      ...rootExtras.map(([key, value]) => ({
+        id: `root-extra-${key}`,
+        title: `Root Extra: ${formatLabel(key)}`,
+        fields: [{ label: formatLabel(key), value }],
+      })),
+      ...orgExtras.map(([key, value]) => ({
+        id: `org-extra-${key}`,
+        title: `Profile Extra: ${formatLabel(key)}`,
+        fields: [{ label: formatLabel(key), value }],
+      })),
+      {
+        id: "raw-json",
+        title: "Raw JSON",
+        raw: profile,
+      },
+    ];
+  }, [profile, org]);
 
-  // Helper to safely access nested fields
-  const getValue = (value) => (value !== undefined && value !== null ? value : "");
+  const [activeId, setActiveId] = useState("basic-info");
+
+  const activeSection =
+    sections.find((section) => section.id === activeId) || sections[0];
+
+  if (isLoading) return <Loader />;
+
+  if (error || !profile) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-5 text-red-700">
+        No user profile data found.
+      </div>
+    );
+  }
 
   return (
-    <div style={{ maxWidth: "900px", margin: "20px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <h2>User Profile</h2>
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Basic Info</h3>
-        <div><strong>Name:</strong> {getValue(org.name)}</div>
-        <div><strong>Email:</strong> {getValue(userData.email)}</div>
-        <div><strong>Employee ID:</strong> {getValue(userData.employeeId)}</div>
-        <div><strong>Role:</strong> {getValue(userData.role)}</div>
-        <div><strong>Verified:</strong> {userData.isVerified ? "Yes" : "No"}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Identity</h3>
-        <div><strong>NID:</strong> {getValue(org.identity?.nidNumber)}</div>
-        <div><strong>Passport:</strong> {getValue(org.identity?.passportNumber)}</div>
-        <div><strong>Driving License:</strong> {getValue(org.identity?.drivingLicenseNumber)}</div>
-        <div><strong>TIN:</strong> {getValue(org.identity?.tinNumber)}</div>
-        <div><strong>NID Verified:</strong> {org.identity?.isNidVerified ? "Yes" : "No"}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Education</h3>
-        <div><strong>Highest Education:</strong> {getValue(org.education?.highestEducation)}</div>
-        <div><strong>Institution:</strong> {getValue(org.education?.institution)}</div>
-        <div><strong>Passing Year:</strong> {getValue(org.education?.passingYear)}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Employment</h3>
-        <div><strong>Employee Code:</strong> {getValue(org.employment?.employeeCode)}</div>
-        <div><strong>Designation:</strong> {getValue(org.employment?.designation)}</div>
-        <div><strong>Department:</strong> {getValue(org.employment?.department)}</div>
-        <div><strong>Grade:</strong> {getValue(org.employment?.grade)}</div>
-        <div><strong>Workplace:</strong> {getValue(org.employment?.workplace)}</div>
-        <div><strong>Type:</strong> {getValue(org.employment?.employmentType)}</div>
-        <div><strong>Status:</strong> {getValue(org.employment?.employmentStatus)}</div>
-        <div><strong>Joined At:</strong> {org.employment?.joinedAt ? new Date(org.employment.joinedAt).toLocaleDateString() : ""}</div>
-        <div><strong>Probation End:</strong> {org.employment?.probationEndDate ? new Date(org.employment.probationEndDate).toLocaleDateString() : ""}</div>
-        <div><strong>Confirmation Date:</strong> {org.employment?.confirmationDate ? new Date(org.employment.confirmationDate).toLocaleDateString() : ""}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Payroll</h3>
-        <div><strong>Basic Salary:</strong> {getValue(org.payroll?.basicSalary)}</div>
-        <div><strong>Gross Salary:</strong> {getValue(org.payroll?.grossSalary)}</div>
-        <div><strong>Payment Method:</strong> {getValue(org.payroll?.paymentMethod)}</div>
-        <div><strong>Bank Name:</strong> {getValue(org.payroll?.bankName)}</div>
-        <div><strong>Account Number:</strong> {getValue(org.payroll?.accountNumber)}</div>
-        <div><strong>Salary Hold:</strong> {org.payroll?.isSalaryHold ? "Yes" : "No"}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Leave Info</h3>
-        <div><strong>Casual:</strong> {getValue(org.leaveInfo?.casual)}</div>
-        <div><strong>Sick:</strong> {getValue(org.leaveInfo?.sick)}</div>
-        <div><strong>Annual:</strong> {getValue(org.leaveInfo?.annual)}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Shift Info</h3>
-        <div><strong>Shift:</strong> {getValue(org.shiftInfo?.shiftName)}</div>
-        <div><strong>Weekly Off:</strong> {getValue(org.shiftInfo?.weeklyOff)}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Health Info</h3>
-        <div><strong>Medical Conditions:</strong> {getValue(org.healthInfo?.medicalConditions)}</div>
-        <div><strong>Allergies:</strong> {getValue(org.healthInfo?.allergies)}</div>
-        <div><strong>Insurance Policy No:</strong> {getValue(org.healthInfo?.insurancePolicyNo)}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Emergency Contact</h3>
-        <div><strong>Name:</strong> {getValue(org.emergencyContact?.name)}</div>
-        <div><strong>Relation:</strong> {getValue(org.emergencyContact?.relation)}</div>
-        <div><strong>Phone:</strong> {getValue(org.emergencyContact?.phone)}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Assets</h3>
-        <div><strong>Laptop Serial:</strong> {getValue(org.assets?.laptopSerial)}</div>
-        <div><strong>Mobile IMEI:</strong> {getValue(org.assets?.mobileIMEI)}</div>
-        <div><strong>SIM Number:</strong> {getValue(org.assets?.simNumber)}</div>
-        <div><strong>Company Email:</strong> {getValue(org.assets?.companyEmail)}</div>
-        <div><strong>Access Card:</strong> {getValue(org.assets?.accessCardId)}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Exit Info</h3>
-        <div><strong>Resignation Date:</strong> {org.exitInfo?.resignationDate || ""}</div>
-        <div><strong>Last Working Day:</strong> {org.exitInfo?.lastWorkingDay || ""}</div>
-        <div><strong>Exit Reason:</strong> {org.exitInfo?.exitReason || ""}</div>
-        <div><strong>Clearance Status:</strong> {org.exitInfo?.clearanceStatus || ""}</div>
-      </section>
-
-      <section style={{ marginBottom: "20px" }}>
-        <h3>Profile History</h3>
-        {org.history?.length > 0 ? (
-          org.history.map((item) => (
-            <div key={item._id} style={{ borderBottom: "1px solid #ccc", padding: "5px 0" }}>
-              <strong>Action:</strong> {item.action} <br />
-              <strong>Date:</strong> {new Date(item.date).toLocaleString()}
+<div className="min-h-[calc(100vh-7rem)] bg-gray-100 p-2 md:p-4">
+  <div className="grid grid-cols-1 gap-4 md:grid-cols-[300px_1fr]">
+       <aside className="h-fit rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:sticky md:top-4">
+          <div className="mb-4 border-b border-gray-200 pb-4">
+            <div className="flex items-center gap-3">
+              <img
+                src={org.profilePic || "/images/NPL-Logo2.png"}
+                alt="Profile"
+                className="h-14 w-14 rounded-full border border-gray-200 object-cover"
+              />
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{renderValue(org.name || profile.email)}</p>
+                <p className="text-xs text-gray-500">{renderValue(profile.employeeId)}</p>
+              </div>
             </div>
-          ))
-        ) : (
-          <p>No history available</p>
-        )}
-      </section>
+          </div>
+
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Profile Topics</h2>
+          <nav className="space-y-1">
+            {sections.map((section) => {
+              const isActive = section.id === activeId;
+              return (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => setActiveId(section.id)}
+                  className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition ${
+                    isActive
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <span>{section.title}</span>
+                  {isActive && <CheckCircle2 size={16} className="text-primary-600" />}
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+         <main className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 border-b border-gray-200 pb-4">
+            <h3 className="text-2xl font-semibold text-gray-900">{activeSection?.title}</h3>
+            <p className="mt-1 text-sm text-gray-500">Topic-wise data from your API JSON.</p>
+          </div>
+
+          {!!activeSection?.fields && <FieldGrid fields={activeSection.fields} />}
+
+          {!!activeSection?.history && (
+            <div className="space-y-3">
+              {activeSection.history.length ? (
+                activeSection.history.map((item, index) => {
+                  const parsed = parseJSONSafe(item?.newValue);
+                  return (
+                    <div key={item?._id || index} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-gray-500">Action</p>
+                          <p className="text-sm font-semibold text-gray-800">{renderValue(item?.action)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-gray-500">Date</p>
+                          <p className="text-sm font-semibold text-gray-800">{renderValue(item?.date)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-gray-500">Updated By</p>
+                          <p className="text-sm font-semibold text-gray-800">{renderValue(item?.updatedBy)}</p>
+                        </div>
+                      </div>
+
+                      {parsed ? (
+                        <details className="mt-3 rounded-md border border-gray-200 bg-white p-3">
+                          <summary className="cursor-pointer text-sm font-semibold text-primary-700">
+                            View Parsed newValue JSON
+                          </summary>
+                          <pre className="mt-3 overflow-auto rounded bg-gray-900 p-3 text-xs text-green-200">
+                            {JSON.stringify(parsed, null, 2)}
+                          </pre>
+                        </details>
+                      ) : (
+                        <div className="mt-3">
+                          <p className="text-xs uppercase tracking-wide text-gray-500">newValue</p>
+                          <p className="break-all text-sm text-gray-700">{renderValue(item?.newValue)}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-gray-500">No history available.</p>
+              )}
+            </div>
+          )}
+
+          {!!activeSection?.raw && (
+            <pre className="max-h-140 overflow-auto rounded-lg border border-gray-200 bg-gray-900 p-4 text-xs text-green-200">
+              {JSON.stringify(activeSection.raw, null, 2)}
+            </pre>
+          )}
+        </main>
+      </div>
     </div>
   );
 };

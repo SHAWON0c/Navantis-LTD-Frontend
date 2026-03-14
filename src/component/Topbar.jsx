@@ -24,8 +24,16 @@ export default function Topbar({ onMenuClick }) {
 
   const { data } = useUserProfile();
 
-  const user = data?.data?.user;
-  const org = data?.data?.organizationProfile;
+  const payload = data?.data;
+  const profile = payload?.user
+    ? {
+        ...payload.user,
+        organizationProfile:
+          payload.organizationProfile || payload.user?.organizationProfile || {},
+      }
+    : payload;
+  const user = profile || {};
+  const org = profile?.organizationProfile || {};
 
   const [darkMode, setDarkMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -131,16 +139,13 @@ export default function Topbar({ onMenuClick }) {
       {/* RIGHT */}
       <div className="flex items-center gap-4 relative">
         {/* Mega Menu with Clock */}
-        <div className="relative flex items-center gap-3 hidden md:block" ref={megaRef}>
+        <div className="relative hidden items-center gap-3 md:flex" ref={megaRef}>
           <button
             onClick={() => setMegaMenuOpen(!megaMenuOpen)}
             className="text-sm text-gray-600 hover:text-black dark:text-gray-200 dark:hover:text-white"
           >
             Mega Menu
           </button>
-
-
-          here 
 
           {/* ⏰ Digital Clock next to Mega Menu */}
           <div className="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 font-mono text-sm font-semibold text-blue-600 dark:text-blue-400">
@@ -235,7 +240,7 @@ export default function Topbar({ onMenuClick }) {
 
             {/* 🔴 Notification Badge */}
             {notificationCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+              <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
                 {notificationCount > 99 ? "99+" : notificationCount}
               </span>
             )}

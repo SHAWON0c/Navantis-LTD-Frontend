@@ -1,7 +1,7 @@
 [
 {
   "key": "admin",
-  "label": "Admin",
+  "label": "Managing Director",
   "icon": "Users",
   "children": [
     {
@@ -14,14 +14,14 @@
           "label": "Purchase Order",
           "path": "/admin/purchase-order",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md" ,"superadmin"]
         },
         {
           "key": "admin-purchase-list",
           "label": "Purchase List",
           "path": "/admin/purchase-list",
           "icon": "ClipboardList",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         }
       ]
     },
@@ -35,7 +35,7 @@
           "label": "Warehouse Request",
           "path": "/admin/warehouse-request",
           "icon": "Warehouse",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md" ,"superadmin"]
         }
       ]
     },
@@ -49,7 +49,7 @@
           "label": "Depot Request",
           "path": "/admin/depot-request",
           "icon": "Building2",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         }
       ]
     },
@@ -63,14 +63,14 @@
           "label": "Expired Request",
           "path": "/admin/expired-request",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         },
         {
           "key": "admin-ex-return-request",
           "label": "Ex. Return Request",
           "path": "/admin/ex-return-request",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         }
       ]
     },
@@ -84,14 +84,14 @@
           "label": "Missing Products",
           "path": "/admin/missing-products",
           "icon": "ClipboardList",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         },
         {
           "key": "admin-price-update",
           "label": "Price Update",
           "path": "/admin/price-update",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         }
       ]
     },
@@ -105,21 +105,21 @@
           "label": "Damage Request",
           "path": "/admin/damage-request",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         },
         {
           "key": "admin-damaged-expired",
           "label": "Damaged & Expired",
           "path": "/admin/damaged-expired",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         },
         {
           "key": "admin-expired-returns",
           "label": "Expired Returns",
           "path": "/admin/expired-returns",
           "icon": "FileText",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         }
       ]
     },
@@ -133,21 +133,21 @@
           "label": "Doctor",
           "path": "/admin/doctor",
           "icon": "Stethoscope",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         },
         {
           "key": "admin-customer",
           "label": "Customer",
           "path": "/admin/customer",
           "icon": "UserCheck",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         },
         {
           "key": "admin-update-customer",
           "label": "Update Customer",
           "path": "/admin/update-customer",
           "icon": "UserCheck",
-          "allowedRoles": ["md"]
+          "allowedRoles": ["md","superadmin"]
         }
       ]
     }
@@ -168,14 +168,14 @@
           "label": "Receive New Products",
           "path": "/warehouse/receive",
           "icon": "FileText",
-          "allowedRoles": ["md", "wm"]
+          "allowedRoles": ["md", "wm","superadmin"]
         },
         {
           "key": "warehouse-stock-in",
           "label": "Stock In",
           "path": "/warehouse/stock-in",
           "icon": "FileText",
-          "allowedRoles": ["md", "wm"]
+          "allowedRoles": ["md", "wm","superadmin"]
         }
       ]
     },
@@ -189,14 +189,14 @@
           "label": "Depot Delivery",
           "path": "/warehouse/depot-delivery",
           "icon": "Building2",
-          "allowedRoles": ["md", "wm"]
+          "allowedRoles": ["md", "wm","superadmin"]
         },
         {
           "key": "warehouse-stock-out",
           "label": "Stock Out",
           "path": "/warehouse/stock-out",
           "icon": "FileText",
-          "allowedRoles": ["md", "wm"]
+          "allowedRoles": ["md", "wm","superadmin"]
         }
       ]
     },
@@ -210,14 +210,14 @@
           "label": "Products List",
           "path": "/warehouse/products",
           "icon": "ClipboardList",
-          "allowedRoles": ["md", "wm"]
+          "allowedRoles": ["md", "wm","superadmin"]
         },
         {
           "key": "warehouse-damaged-products",
           "label": "Damaged Products",
           "path": "/warehouse/damaged",
           "icon": "FileText",
-          "allowedRoles": ["md", "wm"]
+          "allowedRoles": ["md", "wm","superadmin"]
         }
       ]
     }
@@ -238,14 +238,14 @@
           "label": "Receive Request",
           "path": "/depot/receive-request",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-receive-products",
           "label": "Receive Products",
           "path": "/depot/receive",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         }
       ]
     },
@@ -259,21 +259,21 @@
           "label": "Products List",
           "path": "/depot/products",
           "icon": "ClipboardList",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-stock-in",
           "label": "Stock In",
           "path": "/depot/stock-in",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-stock-out",
           "label": "Stock Out",
           "path": "/depot/stock-out",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         }
       ]
     },
@@ -287,21 +287,21 @@
           "label": "Sales Returned",
           "path": "/depot/sales-returned",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-expired-products",
           "label": "Expired Products",
           "path": "/depot/expired",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-ex-return-status",
           "label": "Ex. Return Status",
           "path": "/depot/ex-return-status",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         }
       ]
     },
@@ -315,21 +315,21 @@
           "label": "Order Delivery",
           "path": "/depot/order-delivery",
           "icon": "ClipboardList",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-dispatch-rider",
           "label": "Dispatch Rider",
           "path": "/depot/dispatch-rider",
           "icon": "UserCheck",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         },
         {
           "key": "depot-delivery-report",
           "label": "Delivery Report",
           "path": "/depot/delivery-report",
           "icon": "FileBarChart",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         }
       ]
     },
@@ -343,7 +343,7 @@
           "label": "Invoice & Payment",
           "path": "/depot/invoice-payment",
           "icon": "FileText",
-          "allowedRoles": ["md", "dm"]
+          "allowedRoles": ["md", "dm","superadmin"]
         }
       ]
     }
@@ -365,14 +365,14 @@
           "label": "Orders Overview",
           "path": "/zm/orders",
           "icon": "Building2",
-          "allowedRoles": ["zm", "am", "md"]
+          "allowedRoles": ["zm", "am", "md","superadmin"]
         },
         {
           "key": "zm-delivery-report",
           "label": "Delivery Report",
           "path": "/zm/delivery-report",
           "icon": "Building2",
-          "allowedRoles": ["zm", "am" ,"md"]
+          "allowedRoles": ["zm", "am" ,"md","superadmin"]
         }
       ]
     }
@@ -393,7 +393,7 @@
           "label": "Customer List",
           "path": "/zm/customers",
           "icon": "UserCheck",
-          "allowedRoles": ["zm", "am" ,"md"]
+          "allowedRoles": ["zm", "am" ,"md","superadmin"]
         }
       ]
     }
@@ -415,7 +415,7 @@
           "label": "Add New Institute",
           "path": "/institute/add",
           "icon": "FileText",
-          "allowedRoles": ["admin"]
+          "allowedRoles": ["admin","superadmin"]
         },
         {
           "key": "institute-list",
@@ -429,7 +429,7 @@
           "label": "Place Order",
           "path": "/institute/place-order",
           "icon": "ShoppingCart",
-          "allowedRoles": ["admin"]
+          "allowedRoles": ["admin","superadmin"]
         }
       ]
     }
@@ -450,14 +450,14 @@
           "label": "Add New Doctor",
           "path": "/doctor-requisition/add-doctor",
           "icon": "UserCheck",
-          "allowedRoles": ["admin"]
+          "allowedRoles": ["admin","superadmin"]
         },
         {
           "key": "doctor-requisition-place-order",
           "label": "Place Doctor Order",
           "path": "/doctor-requisition/place-order",
           "icon": "ShoppingCart",
-          "allowedRoles": ["admin"]
+          "allowedRoles": ["admin","superadmin"]
         }
       ]
     }
@@ -479,21 +479,21 @@
           "label": "Net Sales",
           "path": "/reports/net-sales",
           "icon": "FileText",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         },
         {
           "key": "report-sales-returns",
           "label": "Sales Returns",
           "path": "/reports/sales-returns",
           "icon": "FileText",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         },
         {
           "key": "report-customer-invoice",
           "label": "Customer Invoice & Sales",
           "path": "/reports/customer-invoice-sales",
           "icon": "FileText",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         }
       ]
     },
@@ -507,35 +507,35 @@
           "label": "Products Summary",
           "path": "/reports/products-summary",
           "icon": "ClipboardList",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         },
         {
           "key": "report-product-summary-all",
           "label": "Product Summary (All)",
           "path": "/reports/product-summary-all",
           "icon": "ClipboardList",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         },
         {
           "key": "report-product-summary-customer",
           "label": "Product Summary (Customer)",
           "path": "/reports/product-summary-customer",
           "icon": "ClipboardList",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         },
         {
           "key": "report-product-sales-returns",
           "label": "Product Sales Returns",
           "path": "/reports/product-sales-returns",
           "icon": "FileText",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         },
         {
           "key": "report-expired-products",
           "label": "Expired Products",
           "path": "/reports/expired",
           "icon": "FileText",
-          "allowedRoles": ["admin", "accountant"]
+          "allowedRoles": ["admin", "accountant","superadmin"]
         }
       ]
     }
@@ -558,14 +558,14 @@
           "label": "Target vs Sales Achievement",
           "path": "/achievement/target-sales",
           "icon": "FileBarChart",
-          "allowedRoles": ["admin", "sales-manager"]
+          "allowedRoles": ["admin", "sales-manager","superadmin"]
         },
         {
           "key": "achievement-growth",
           "label": "Achievement & Growth",
           "path": "/achievement/growth",
           "icon": "FileBarChart",
-          "allowedRoles": ["admin", "sales-manager"]
+          "allowedRoles": ["admin", "sales-manager","superadmin"]
         }
       ]
     },
@@ -579,14 +579,14 @@
           "label": "Product Wise Target vs Sales",
           "path": "/achievement/product-wise",
           "icon": "FileBarChart",
-          "allowedRoles": ["admin", "sales-manager"]
+          "allowedRoles": ["admin", "sales-manager","superadmin"]
         },
         {
           "key": "achievement-all-products",
           "label": "All Products Target vs Sales",
           "path": "/achievement/all-products",
           "icon": "FileBarChart",
-          "allowedRoles": ["admin", "sales-manager"]
+          "allowedRoles": ["admin", "sales-manager","superadmin"]
         }
       ]
     }
@@ -597,126 +597,118 @@
 
 
 
-
 {
   "key": "mpo",
   "label": "MPO",
-  "icon": "User",
+  "icon": "FileText",
   "children": [
     {
       "key": "mpo-doctor",
       "label": "Doctor",
-      "icon": "Stethoscope",
+      "icon": "FileText",
       "children": [
         {
           "key": "mpo-doctor-add",
           "label": "Add New Doctor",
           "path": "/doctor/add",
-          "icon": "UserCheck",
-          "allowedRoles": ["mpo"]
+          "icon": "FileText",
+          "allowedRoles": ["mpo", "superadmin"]
         },
         {
           "key": "mpo-doctor-list",
           "label": "Doctor List",
           "path": "/doctor/list",
-          "icon": "ClipboardList",
-          "allowedRoles": ["mpo"]
+          "icon": "FileText",
+          "allowedRoles": ["mpo", "superadmin"]
         }
       ]
     },
     {
       "key": "mpo-orders",
       "label": "Orders",
-      "icon": "ShoppingCart",
+      "icon": "FileText",
       "children": [
         {
           "key": "mpo-orders-place",
           "label": "Place Order",
           "path": "/orders/place",
           "icon": "FileText",
-          "allowedRoles": ["mpo", "sales"]
+          "allowedRoles": ["mpo", "sales", "superadmin"]
         },
         {
           "key": "mpo-orders-my",
           "label": "My Orders",
           "path": "/orders/my-orders",
-          "icon": "ClipboardList",
-          "allowedRoles": ["mpo", "sales"]
+          "icon": "FileText",
+          "allowedRoles": ["mpo", "sales", "superadmin"]
         }
       ]
     },
     {
       "key": "mpo-customer",
       "label": "Customer",
-      "icon": "UserCheck",
+      "icon": "FileText",
       "children": [
         {
           "key": "mpo-customer-add",
           "label": "Add New Customer",
           "path": "/customer/add",
           "icon": "FileText",
-          "allowedRoles": ["mpo", "sales"]
+          "allowedRoles": ["mpo", "sales", "superadmin"]
         },
         {
           "key": "mpo-customer-list",
           "label": "Customer List",
           "path": "/customer/list",
-          "icon": "ClipboardList",
-          "allowedRoles": ["mpo", "sales"]
+          "icon": "FileText",
+          "allowedRoles": ["mpo", "sales", "superadmin"]
         }
       ]
-    }
-  ]
-},
-{
-  "key": "mpo",
-  "label": "MPO",
-  "icon": "User",
-  "children": [
+    },
     {
       "key": "mpo-accounts",
       "label": "Accounts",
-      "icon": "Wallet",
+      "icon": "FileText",
       "children": [
         {
           "key": "mpo-sales-report",
           "label": "Sales Report",
-          "icon": "FileBarChart",
+          "icon": "FileText",
           "children": [
             {
               "key": "mpo-product-summary",
               "label": "Product Summary",
               "path": "/sales-report/product-summary",
-              "icon": "ClipboardList",
-              "allowedRoles": ["admin", "sales", "accountant"]
+              "icon": "FileText",
+              "allowedRoles": ["admin", "sales", "accountant", "superadmin"]
             },
             {
               "key": "mpo-due-payment",
               "label": "Due Payment",
               "path": "/sales-report/due-payment",
               "icon": "FileText",
-              "allowedRoles": ["accountant"]
+              "allowedRoles": ["accountant", "superadmin"]
             },
             {
               "key": "mpo-target-sales",
               "label": "Target vs Sales",
               "path": "/sales-report/target-sales",
-              "icon": "FileBarChart",
-              "allowedRoles": ["admin", "sales"]
+              "icon": "FileText",
+              "allowedRoles": ["admin", "sales", "superadmin"]
             },
             {
               "key": "mpo-achievement-growth",
               "label": "Achievement & Growth",
               "path": "/sales-report/achievement-growth",
-              "icon": "FileBarChart",
-              "allowedRoles": ["admin", "sales"]
+              "icon": "FileText",
+              "allowedRoles": ["admin", "sales", "superadmin"]
             },
             {
               "key": "mpo-product-wise-target",
               "label": "Product Wise Target vs Sales",
               "path": "/sales-report/product-wise-target",
-              "icon": "FileBarChart",
-              "allowedRoles": ["admin", "sales"]
+              "icon": "FileText",
+              "allowedRoles": ["admin", "sales", "superadmin"]
             }
           ]
         }
@@ -724,242 +716,249 @@
     }
   ]
 },
+
+
+
 {
   "key": "hr",
   "label": "HR",
-  "icon": "Users",
+  "icon": "FileText",
   "children": [
     {
       "key": "hr-attendance-leave",
       "label": "Attendance & Leave",
-      "icon": "CalendarCheck",
+      "icon": "FileText",
       "children": [
         {
           "key": "hr-daily-attendance",
           "label": "Daily Attendance",
           "path": "/hr/daily-attendance",
-          "icon": "CalendarCheck",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-leave-balance",
           "label": "Leave Balance",
           "path": "/hr/leave-balance",
-          "icon": "ClipboardCheck",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-leave-application",
           "label": "Leave Application & Approval",
           "path": "/hr/leave-application",
-          "icon": "ClipboardList",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-leave-attendance-view",
           "label": "Leave & Attendance View",
           "path": "/hr/leave-attendance-view",
-          "icon": "ClipboardList",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         }
       ]
     },
     {
       "key": "hr-payroll",
       "label": "Payroll & Salary",
-      "icon": "DollarSign",
+      "icon": "FileText",
       "children": [
         {
           "key": "hr-salary-structure",
           "label": "Salary Structure",
           "path": "/hr/salary-structure",
           "icon": "FileText",
-          "allowedRoles": ["hr"]
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-monthly-payslip",
           "label": "Monthly Payslip Generation",
           "path": "/hr/monthly-payslip",
           "icon": "FileText",
-          "allowedRoles": ["hr"]
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-payslip-tax",
           "label": "Payslip & Tax Certificate",
           "path": "/hr/payslip-tax",
-          "icon": "Receipt",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-final-settlement",
           "label": "Final Settlement & Payment",
           "path": "/hr/final-settlement",
           "icon": "FileText",
-          "allowedRoles": ["hr"]
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-ta-da",
           "label": "TA/DA Management",
           "path": "/hr/ta-da",
-          "icon": "Truck",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-festival-bonus",
           "label": "Festival Bonus Management",
           "path": "/hr/festival-bonus",
-          "icon": "Gift",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-pf-management",
           "label": "PF Management",
           "path": "/hr/pf-management",
-          "icon": "DollarSign",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         }
       ]
     },
     {
       "key": "hr-employee-management",
       "label": "Employee Management",
-      "icon": "UserPlus",
+      "icon": "FileText",
       "children": [
         {
           "key": "hr-personal-info",
           "label": "Personal Information Update",
           "path": "/hr/personal-info",
-          "icon": "UserPlus",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-yearly-assessment",
           "label": "Yearly Assessment",
           "path": "/hr/yearly-assessment",
-          "icon": "Trophy",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         }
       ]
     },
     {
       "key": "hr-assets",
       "label": "Assets & Inventory",
-      "icon": "Package",
+      "icon": "FileText",
       "children": [
         {
           "key": "hr-user-assets",
           "label": "User Asset Management",
           "path": "/hr/user-assets",
-          "icon": "Laptop",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-assets-list",
           "label": "Assets List (HQ & Depot)",
           "path": "/hr/assets-list",
-          "icon": "Package",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         }
       ]
     },
     {
       "key": "hr-system",
       "label": "HR System",
-      "icon": "Settings",
+      "icon": "FileText",
       "children": [
         {
           "key": "hr-gate-pass",
           "label": "Office Gate Pass System",
           "path": "/hr/gate-pass",
-          "icon": "Lock",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-vendor-database",
           "label": "Vendor & Service Provider Database",
           "path": "/hr/vendor-database",
-          "icon": "List",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-notice-board",
           "label": "HR Notice Board",
           "path": "/hr/notice-board",
-          "icon": "AlertTriangle",
-          "allowedRoles": ["hr"]
+          "icon": "FileText",
+          "allowedRoles": ["hr", "superadmin"]
         },
         {
           "key": "hr-employment-docs",
           "label": "Letters & Employment Docs",
           "path": "/hr/employment-docs",
           "icon": "FileText",
-          "allowedRoles": ["hr"]
+          "allowedRoles": ["hr", "superadmin"]
         }
       ]
     }
   ]
 },
+
+
+
 {
   "key": "accounts",
   "label": "Accounts",
-  "icon": "Wallet",
+  "icon": "FileText",
   "children": [
     {
       "key": "accounts-accountant",
       "label": "Accountant",
-      "icon": "Landmark",
+      "icon": "FileText",
       "children": [
         {
           "key": "acc-daily-collections",
           "label": "Daily Collections",
           "path": "/accountant/daily-collections",
           "icon": "FileText",
-          "allowedRoles": ["accountant"]
+          "allowedRoles": ["accountant", "superadmin"]
         },
         {
           "key": "acc-due-payments",
           "label": "Due Payments",
           "path": "/accountant/due-payments",
           "icon": "FileText",
-          "allowedRoles": ["accountant"]
+          "allowedRoles": ["accountant", "superadmin"]
         },
         {
           "key": "acc-mpo-statement",
           "label": "MPO Statement",
           "path": "/accountant/mpo-statement",
           "icon": "FileText",
-          "allowedRoles": ["accountant"]
+          "allowedRoles": ["accountant", "superadmin"]
         },
         {
           "key": "acc-invoice-sales-summary",
           "label": "Invoice Sales Summary",
           "path": "/accountant/invoice-sales-summary",
           "icon": "FileText",
-          "allowedRoles": ["accountant"]
+          "allowedRoles": ["accountant", "superadmin"]
         },
         {
           "key": "acc-expense-tracking",
           "label": "Expense Tracking",
           "path": "/accountant/expense-tracking",
-          "icon": "DollarSign",
-          "allowedRoles": ["accountant"]
+          "icon": "FileText",
+          "allowedRoles": ["accountant", "superadmin"]
         },
         {
           "key": "acc-payment-approval",
           "label": "Payment Approval",
           "path": "/accountant/payment-approval",
-          "icon": "ClipboardCheck",
-          "allowedRoles": ["accountant"]
+          "icon": "FileText",
+          "allowedRoles": ["accountant", "superadmin"]
         },
         {
           "key": "acc-reports-analysis",
           "label": "Reports & Analysis",
           "path": "/accountant/reports",
-          "icon": "BarChart3",
-          "allowedRoles": ["accountant"]
+          "icon": "FileText",
+          "allowedRoles": ["accountant", "superadmin"]
         }
       ]
     }
   ]
 }
+
 ]
