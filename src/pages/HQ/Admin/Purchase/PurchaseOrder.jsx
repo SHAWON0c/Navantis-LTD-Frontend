@@ -155,7 +155,7 @@ const handleSubmit = async (e) => {
   if (authLoading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen">
       {/* Top Bar */}
       <Card className="mb-6">
         <div className="flex items-center justify-between">

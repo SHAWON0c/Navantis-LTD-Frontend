@@ -49,6 +49,12 @@ import DepotRequestsPage from "../pages/HQ/Admin/depo/DepotRequestsPage";
 import NotFoundPage from "../pages/notFound/NotFoundPage";
 import MyOrders from "../pages/mpo/order/MyOrders";
 import WarehouseRequest from "../pages/HQ/Admin/WarehouseRequest";
+import CompanyCalendarPage from "../pages/apps/CompanyCalendarPage";
+import CalculatorPage from "../pages/apps/CalculatorPage";
+import TodoNotesPage from "../pages/apps/TodoNotesPage";
+import OutlookPage from "../pages/apps/OutlookPage";
+import EmployeeNumbersPage from "../pages/apps/EmployeeNumbersPage";
+import DrivePage from "../pages/apps/DrivePage";
 
 
 // ✅ FIXED PATHS
@@ -75,6 +81,12 @@ export default function AppRoutes() {
         {/* Default dashboard */}
         <Route path="/dashboard" element={<DashboardSelector />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/apps/company-calendar" element={<CompanyCalendarPage />} />
+        <Route path="/apps/calculator" element={<CalculatorPage />} />
+        <Route path="/apps/todo-notes" element={<TodoNotesPage />} />
+        <Route path="/apps/outlook" element={<OutlookPage />} />
+        <Route path="/apps/employee-numbers" element={<EmployeeNumbersPage />} />
+        <Route path="/apps/drive" element={<DrivePage />} />
 
 
         {/* Admin */}

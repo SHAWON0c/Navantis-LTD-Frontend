@@ -9,6 +9,14 @@ import AuthProvider from "./provider/AuthProvider.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // make sure styles are imported
 
+// Apply persisted theme before initial render to avoid light-mode flicker.
+const savedTheme = localStorage.getItem("darkMode");
+if (savedTheme === "true") {
+  document.documentElement.classList.add("dark");
+} else {
+  document.documentElement.classList.remove("dark");
+}
+
 // ReactDOM.createRoot(document.getElementById("root")).render(
 //   <React.StrictMode>
 //     <Provider store={store}>

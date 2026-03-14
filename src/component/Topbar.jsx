@@ -18,7 +18,7 @@ import { resetAuthState } from "../redux/features/auth/authSlice"; // adjust pat
 import { useNavigate } from "react-router-dom";
 import { useUserProfile } from "../hooks/useUserProfile"; // ✅ import your hook
 
-export default function Topbar({ onMenuClick }) {
+export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimating = false }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -95,6 +95,7 @@ export default function Topbar({ onMenuClick }) {
       if (megaRef.current && !megaRef.current.contains(event.target)) setMegaMenuOpen(false);
       if (notifRef.current && !notifRef.current.contains(event.target)) setNotificationsOpen(false);
       if (profileRef.current && !profileRef.current.contains(event.target)) setProfileOpen(false);
+      if (appsRef.current && !appsRef.current.contains(event.target)) setAppsOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -108,6 +109,11 @@ export default function Topbar({ onMenuClick }) {
     navigate("/login");
   };
 
+  const navigateToApp = (path) => {
+    setAppsOpen(false);
+    navigate(path);
+  };
+
   const dropdownClass =
     "absolute right-5 mt-5 w-56 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg rounded-md overflow-hidden z-50";
   const dropdownClass2 =
@@ -117,10 +123,21 @@ export default function Topbar({ onMenuClick }) {
     <header className="h-16 w-full flex items-center justify-between px-4 shadow-sm bg-white dark:bg-gray-800 dark:text-gray-200">
       {/* LEFT */}
       <div className="flex items-center gap-4">
-<Menu
-  onClick={onMenuClick}
-  className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200 "
-/>
+        <button
+          type="button"
+          onClick={onMenuClick}
+          disabled={sidebarAnimating}
+          aria-label="Toggle sidebar"
+          className={`rounded-md p-1.5 transition-all duration-[980ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            sidebarAnimating ? "cursor-not-allowed opacity-60" : "hover:bg-gray-100 dark:hover:bg-gray-700"
+          }`}
+        >
+          <Menu
+            className={`h-5 w-5 text-gray-600 dark:text-gray-200 transition-transform duration-[980ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
+              sidebarOpen ? "rotate-0" : "rotate-180"
+            }`}
+          />
+        </button>
         <span className="md:text-xl text-sm font-semibold tracking-wide">NPL EMS</span>
       </div>
 
@@ -307,31 +324,49 @@ export default function Topbar({ onMenuClick }) {
           {appsOpen && (
             <div className="absolute right-0 mt-10 w-64 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg rounded-md overflow-hidden z-50 p-4 grid grid-cols-2 gap-4">
               {/* Each app button */}
-              <button className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors">
+              <button
+                onClick={() => navigateToApp("/apps/company-calendar")}
+                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
                 <AppWindow className="w-6 h-6" />
                 <span className="text-xs">Company Calendar</span>
               </button>
 
-              <button className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors">
+              <button
+                onClick={() => navigateToApp("/apps/calculator")}
+                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
                 <AppWindow className="w-6 h-6" />
                 <span className="text-xs">Calculator</span>
               </button>
 
-              <button className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors">
+              <button
+                onClick={() => navigateToApp("/apps/todo-notes")}
+                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
                 <AppWindow className="w-6 h-6" />
                 <span className="text-xs">To-Do Notes</span>
               </button>
 
-              <button className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors">
+              <button
+                onClick={() => navigateToApp("/apps/outlook")}
+                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
                 <AppWindow className="w-6 h-6" />
                 <span className="text-xs">Outlook</span>
               </button>
 
-              <button className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors">
+              <button
+                onClick={() => navigateToApp("/apps/employee-numbers")}
+                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
                 <AppWindow className="w-6 h-6" />
                 <span className="text-xs">Employee Numbers</span>
               </button>
-              <button className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors">
+              <button
+                onClick={() => navigateToApp("/apps/drive")}
+                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
+              >
                 <AppWindow className="w-6 h-6" />
                 <span className="text-xs">Drive</span>
               </button>

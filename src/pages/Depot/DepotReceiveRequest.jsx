@@ -17,7 +17,7 @@ const DepotReceiveRequest = () => {
   if (isLoading) return <Loader />;
   if (isError)
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <Card className="text-center">
           <p className="text-error text-lg">Failed to load requests.</p>
         </Card>
@@ -33,7 +33,7 @@ const DepotReceiveRequest = () => {
     setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-6">
+    <div className="min-h-screen p-6">
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

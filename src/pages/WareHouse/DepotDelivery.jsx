@@ -63,7 +63,7 @@
 //   if (isLoading) return <Loader />;
 
 //   return (
-//     <div className="min-h-screen bg-neutral-50">
+//     <div className="min-h-screen">
 //       {/* Header */}
 //       <Card className="mb-6">
 //         <div className="flex items-center justify-between">
@@ -284,7 +284,7 @@ const DepotDelivery = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen">
       {/* Header */}
       <Card className="mb-6">
         <div className="flex items-center justify-between">
