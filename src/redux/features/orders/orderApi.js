@@ -142,6 +142,34 @@ export const orderAPI = baseAPI.injectEndpoints({
       providesTags: ["Orders"],
     }),
 
+    // ✅ Return Order Product
+    orderReturn: builder.mutation({
+      query: ({ orderId, payload }) => ({
+        url: `/orders/returns/${orderId}`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
+    // ✅ Get pending return requests
+    getPendingReturns: builder.query({
+      query: () => ({
+        url: "/orders/returns/pending",
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
+    }),
+
+    // ✅ Approve return request
+    approveReturn: builder.mutation({
+      query: (returnId) => ({
+        url: `/orders/returns/approve/${returnId}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
 
     // ✅ Get Orders by Status
     getOrderStatusInfo: builder.query({
@@ -183,6 +211,9 @@ export const {
   useDeliverOrderMutation,
   useGetOrderStatusInfoQuery,
   useLazySearchOrderQuery, // ✅ lazy search hook for Quick Pay
-    useGetMpoPendingOrdersQuery,
+  useOrderReturnMutation,
+  useGetPendingReturnsQuery,
+  useApproveReturnMutation,
+  useGetMpoPendingOrdersQuery,
   useGetMpoDeliveredOrdersQuery,
 } = orderAPI;

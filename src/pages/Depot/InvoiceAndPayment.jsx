@@ -252,8 +252,9 @@ const QuickPayModal = ({ open, onClose, searchData, setSearchData, triggerSearch
     try {
       const result = await triggerSearch(invoiceInput).unwrap();
       if (result.success) {
+        const orderData = Array.isArray(result.data) ? result.data[0] : result.data;
         setSearchData({
-          ...result.data,
+          ...orderData,
           paymentType: "",
           cashAmount: 0,
           bankInfo: { bankName: "", accountNumber: "", amount: 0 },

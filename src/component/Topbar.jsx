@@ -234,7 +234,7 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
               </button>
               <div className="border-t border-gray-200 dark:border-gray-700"></div>
               <button className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <User className="w-4 h-4" /> Profile
+                <Settings className="w-4 h-4" /> Settings & Security
               </button>
               <button
                 onClick={handleLogout}
@@ -300,7 +300,13 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
           </div>
           {profileOpen && (
             <div className={dropdownClass}>
-              <button className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <button
+                onClick={() => {
+                  setProfileOpen(false);
+                  navigate("/profile");
+                }}
+                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
                 <User className="w-4 h-4" /> Profile
               </button>
               <button

@@ -41,6 +41,7 @@ import HardcodedInvoicePrint from "../component/reports/InvoicePrintPage";
 import DispatchRidersPage from "../pages/Depot/DispatchRidersPage";
 import InvoiceAndPayment from "../pages/Depot/InvoiceAndPayment";
 import DepotReceive from "../pages/Depot/DepotReceive";
+import ReturnRequestList from "../pages/Depot/ReturnRequestList";
 import DashboardSelector from "../component/DashboardSelector";
 import MPOPage from "../pages/dashboard/MPOPage";
 import PurchaseOrder from "../pages/HQ/Admin/Purchase/PurchaseOrder";
@@ -125,6 +126,7 @@ export default function AppRoutes() {
           <Route path="/depot/stock-in" element={<DepotStockIn />} />
           <Route path="/depot/stock-out" element={<DepotStockOut />} />
           <Route path="/depot/order-delivery" element={<PendingOrders />} />
+              <Route path="/depot/products/returnlist" element={<ReturnRequestList />} />
                 <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
           <Route path="/depot/dispatch-rider" element={<DispatchRidersPage />} />
           <Route path="/depot/invoice-payment" element={<InvoiceAndPayment />} />

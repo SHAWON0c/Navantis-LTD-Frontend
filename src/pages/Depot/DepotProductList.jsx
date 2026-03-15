@@ -4,6 +4,7 @@ import { ImSearch } from "react-icons/im";
 import WarehouseProductCard from "../../component/common/WarehouseProductCard";
 import DepotProductSummaryPanel from "../../component/common/DepotProductSummaryPanel";
 import DepotProductRequestModal from "../../component/modals/DepotProductRequestModal";
+import OrderReturnModal from "../../component/modals/OrderReturnModal";
 import { useGetDepotProductListQuery } from "../../redux/features/depot/depotStockApi";
 import DepotProductCard from "../../component/common/DepotProductCard";
 import Card from "../../component/common/Card";
@@ -21,6 +22,7 @@ const DepotProductsList = () => {
   const [productsPerPage, setProductsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
 
   const filteredProducts = whProducts
     .filter((product) =>
@@ -106,6 +108,7 @@ const DepotProductsList = () => {
               totalTP: totalTradePrice,
             }}
             onRequest={() => setRequestModalOpen(true)}
+            onReturn={() => setReturnModalOpen(true)}
           />
         </div>
       </div>
@@ -249,6 +252,7 @@ const DepotProductsList = () => {
 
       {/* Modal */}
       <DepotProductRequestModal isOpen={requestModalOpen} onClose={() => setRequestModalOpen(false)} />
+      <OrderReturnModal isOpen={returnModalOpen} onClose={() => setReturnModalOpen(false)} />
     </div>
   );
 };

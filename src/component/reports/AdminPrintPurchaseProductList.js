@@ -176,7 +176,7 @@ const AdminPurchaseInvoice = ({ purchaseOrders, fromDate, toDate }) => {
           ${styles}
           <style>
             @page { size: A4; margin: 5mm 8mm 3mm 8mm; }
-            body { margin: 0; padding: 0; font-family: Arial, sans-serif; color: #000; position: relative; }
+            body { margin: 0; padding: 0; font-family: Arial, sans-serif; color: #000; background: #ffffff !important; position: relative; }
             table { width: 100%; border-collapse: collapse; font-size: 11px; }
             th, td { border: 1px solid #000; padding: 6px; }
             th { background-color: #e0e0e0; font-weight: bold; }

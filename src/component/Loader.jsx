@@ -2,7 +2,13 @@ import { tailChase } from "ldrs";
 import { useEffect, useState } from "react";
 tailChase.register();
 
-const Loader = ({ size = 45, speed = 2.5, color = null, visible = true }) => {
+const Loader = ({
+  size = 45,
+  speed = 2.5,
+  color = null,
+  visible = true,
+  fullScreen = false,
+}) => {
   const [show, setShow] = useState(visible);
   const [isDark, setIsDark] = useState(() =>
     document.documentElement.classList.contains("dark")
@@ -29,19 +35,17 @@ const Loader = ({ size = 45, speed = 2.5, color = null, visible = true }) => {
     return () => observer.disconnect();
   }, []);
 
+  const containerClass = fullScreen
+    ? `fixed inset-0 z-50 flex items-center justify-center
+       transition-opacity duration-300 ease-in-out
+       bg-transparent dark:bg-transparent`
+    : `w-full min-h-[55vh] flex items-center justify-center
+       transition-opacity duration-300 ease-in-out`;
+
   return show ? (
-    <div
-      className={`fixed inset-0 flex items-center justify-center z-50 
-        transition-opacity duration-400 ease-in-out
-        bg-transparent dark:bg-transparent backdrop-blur-[1px] dark:backdrop-blur-none
-        ${visible ? "opacity-100" : "opacity-0"}
-      `}
-    >
+    <div className={`${containerClass} ${visible ? "opacity-100" : "opacity-0"}`}>
       <div
-        className={`transition-transform duration-500 ease-in-out 
-          ${visible ? "scale-100" : "scale-90"}
-          translate-x-0 md:translate-x-32  /* center on mobile, keep desktop offset */
-        `}
+        className={`transition-transform duration-300 ease-in-out ${visible ? "scale-100" : "scale-95"}`}
       >
         <l-tail-chase size={size} speed={speed} color={spinnerColor}></l-tail-chase>
       </div>

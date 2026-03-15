@@ -33,7 +33,7 @@ const DepotReceiveRequest = () => {
     setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen ">
       <Card className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

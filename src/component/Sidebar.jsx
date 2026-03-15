@@ -173,7 +173,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-4 py-2 rounded-md bg-red-700 animate-pulse"
+              className="flex items-center gap-3 px-4 py-2 rounded-md bg-[#181616] animate-pulse"
             >
               <div className="w-5 h-5 bg-gray-500 rounded-full" />
               {isOpen && (
@@ -224,10 +224,10 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
             key={item.key}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-2 py-1 px-2 rounded hover:bg-yellow-400 transition-colors
-              ${isActive ? "bg-yellow-400 text-black" : "text-gray-100"}`
+              `flex items-center gap-4 py-1 px-2 rounded hover:bg-[#c1d4fa] transition-all duration-400 ease-in-out
+              ${isActive ? "bg-[#eedacd] dark:bg-red-500! text-black " : "hover:text-black"}`
             }
-          >
+           end>
             {Icon && <Icon className="w-4 h-4" />}
             {item.label}
           </NavLink>
@@ -238,7 +238,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
         <div key={item.key}>
           <div
             onClick={() => toggleMenu(item.key)}
-            className="flex items-center justify-between px-2 py-1 rounded cursor-pointer hover:bg-yellow-400 transition-colors"
+            className="flex items-center justify-between px-2 py-1 rounded cursor-pointer hover:bg-[#eedacd] hover:text-black transition-all duration-900 ease-in-out"
           >
             <div className="flex items-center gap-2">
               {Icon && <Icon className="w-4 h-4" />}
@@ -246,7 +246,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
             </div>
 
             <ChevronRight
-              className={`w-4 h-4 transition-transform duration-200 ${
+              className={`w-4 h-4 transition-transform duration-900 ease-in-out ${
                 isOpen ? "rotate-90" : ""
               }`}
             />
@@ -279,8 +279,8 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
                 key={menu.key}
                 to={menu.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2 rounded-md font-bold hover:bg-yellow-400 transition-colors
-                  ${isActive ? "bg-yellow-400 text-black" : ""}`
+                  `flex items-center gap-3 px-4 py-2 rounded-md font-bold hover:bg-[#eedacd] transition-all duration-900 ease-in-out
+                  ${isActive ? "bg-[#eedacd] text-black" : ""}`
                 }
                 title={!isOpen ? menu.label : undefined}
               >
@@ -294,7 +294,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
             <div key={menu.key}>
               <div
                 onClick={() => toggleMenu(menu.key)}
-                className="flex items-center justify-between px-4 py-2 rounded-md cursor-pointer font-semibold hover:bg-yellow-400 transition-colors"
+                className="flex items-center justify-between px-4 py-2 rounded-md cursor-pointer font-semibold hover:bg-[#eedacd] hover:text-black transition-all duration-900 ease-in-out"
                 title={!isOpen ? menu.label : undefined}
               >
                 <div className="flex items-center gap-3">
@@ -304,7 +304,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
 
                 {isOpen && (
                   <ChevronRight
-                    className={`w-4 h-4 transition-transform duration-200 ${
+                    className={`w-4 h-4 transition-transform duration-900 ease-in-out ${
                       isOpenMenu ? "rotate-90" : ""
                     }`}
                   />
