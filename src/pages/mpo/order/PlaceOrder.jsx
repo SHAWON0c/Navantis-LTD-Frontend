@@ -263,7 +263,7 @@
 
 
 // ui okey 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../provider/AuthProvider";
 import Loader from "../../../component/Loader";
 import Button from "../../../component/common/Button";
@@ -287,6 +287,10 @@ const PlaceOrder = () => {
   const { loading: authLoading } = useAuth();
   const [createOrder, { isLoading: creating }] = useCreateOrderMutation();
   const [products, setProducts] = useState([]);
+  const [productSearch, setProductSearch] = useState("");
+  const holdTimerRef = useRef(null);
+  const holdTriggeredRef = useRef(false);
+  const holdTargetIdRef = useRef(null);
 
   const [formData, setFormData] = useState({
     customerName: "",
@@ -307,6 +311,16 @@ const PlaceOrder = () => {
   const brands = brandsData;
   const apiProducts = productsData.products || [];
   const customers = customersData.data || [];
+  const filteredProducts = apiProducts.filter((product) => {
+    const searchValue = productSearch.trim().toLowerCase();
+
+    if (!searchValue) return true;
+
+    return (
+      product.productName?.toLowerCase().includes(searchValue) ||
+      product.productShortCode?.toLowerCase().includes(searchValue)
+    );
+  });
 
   // ================= CUSTOMER =================
   const selectedCustomer = customers.find((c) => c._id === formData.customerId);
@@ -339,7 +353,64 @@ const PlaceOrder = () => {
 
   // ================= REMOVE PRODUCT =================
   const removeProduct = (id) => {
-    setProducts(products.filter((p) => p.id !== id));
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const decrementProductQuantity = (id) => {
+    setProducts((prev) =>
+      prev.reduce((accumulator, product) => {
+        if (product.id !== id) {
+          accumulator.push(product);
+          return accumulator;
+        }
+
+        if (product.quantity > 1) {
+          accumulator.push({ ...product, quantity: product.quantity - 1 });
+        }
+
+        return accumulator;
+      }, [])
+    );
+  };
+
+  const clearHoldTimer = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+
+  const startRemoveHold = (id) => {
+    clearHoldTimer();
+    holdTriggeredRef.current = false;
+    holdTargetIdRef.current = id;
+
+    holdTimerRef.current = setTimeout(() => {
+      holdTriggeredRef.current = true;
+      removeProduct(id);
+      holdTargetIdRef.current = null;
+      holdTimerRef.current = null;
+    }, 1000);
+  };
+
+  const finishRemoveHold = (id) => {
+    if (holdTargetIdRef.current !== id) return;
+
+    const wasLongPress = holdTriggeredRef.current;
+
+    clearHoldTimer();
+    holdTargetIdRef.current = null;
+    holdTriggeredRef.current = false;
+
+    if (!wasLongPress) {
+      decrementProductQuantity(id);
+    }
+  };
+
+  const cancelRemoveHold = () => {
+    clearHoldTimer();
+    holdTargetIdRef.current = null;
+    holdTriggeredRef.current = false;
   };
 
   // ================= CHANGE QTY =================
@@ -370,6 +441,8 @@ const PlaceOrder = () => {
       alert("Order failed");
     }
   };
+
+  useEffect(() => () => clearHoldTimer(), []);
 
   if (authLoading || brandsLoading || customersLoading) return <Loader />;
 
@@ -445,7 +518,10 @@ const PlaceOrder = () => {
             <FormSelect
               label="Brand"
               value={formData.brand}
-              onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
+              onChange={(e) => {
+                setFormData((prev) => ({ ...prev, brand: e.target.value }));
+                setProductSearch("");
+              }}
               options={brands.map((b) => ({ value: b, label: b }))}
               placeholder="Select brand"
             />
@@ -476,9 +552,19 @@ const PlaceOrder = () => {
 
           <Card shadow="sm" padding="sm">
             <div className="text-sm font-semibold mb-3">Products ({formData.brand})</div>
+            <input
+              type="text"
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              placeholder="Search by product name or shortcode"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
             <div className="max-h-96 overflow-y-auto">
               {productsLoading && <Loader />}
-              {apiProducts.map((p) => (
+              {!productsLoading && filteredProducts.length === 0 && (
+                <div className="text-sm text-gray-500 p-2">No products match your search.</div>
+              )}
+              {filteredProducts.map((p) => (
                 <div
                   key={p._id}
                   className="border-b p-2 flex justify-between items-center hover:bg-blue-50"
@@ -510,7 +596,7 @@ const PlaceOrder = () => {
 
           {/* PRODUCT TABLE */}
           <div className="bg-white rounded-lg shadow-md p-4">
-            <h3 className="text-lg font-semibold mb-3">Products (Debug)</h3>
+            <h3 className="text-lg font-semibold mb-3">Selected Products</h3>
             {products.length === 0 && <div className="text-gray-500">No products added yet</div>}
             <ul className="space-y-2">
               {products.map((p) => (
@@ -529,8 +615,13 @@ const PlaceOrder = () => {
                     />
                     <span>৳{(p.price * p.quantity).toFixed(2)}</span>
                     <button
-                      onClick={() => removeProduct(p.id)}
-                      className="text-red-500 font-bold px-2"
+                      type="button"
+                      onPointerDown={() => startRemoveHold(p.id)}
+                      onPointerUp={() => finishRemoveHold(p.id)}
+                      onPointerLeave={cancelRemoveHold}
+                      onPointerCancel={cancelRemoveHold}
+                      className="font-bold px-3 py-1 rounded transition-colors select-none text-red-500 hover:bg-red-50"
+                      title="Click to reduce 1 quantity. Hold 1 second to remove the whole product."
                     >
                       ✕
                     </button>
