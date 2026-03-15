@@ -253,7 +253,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
           </div>
 
           {isOpen && (
-            <div className="ml-4 mt-1 space-y-1 text-sm">
+            <div className="ml-6 mt-1 space-y-1 text-sm">
               {renderMenuItems(item.children)}
             </div>
           )}

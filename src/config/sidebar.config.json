@@ -365,7 +365,7 @@
             "key": "depot-return-list",
             "label": "Return Requests",
             "path": "/depot/products/returnlist",
-            "icon": "RotateCcw",
+            "icon": "FileText",
             "allowedRoles": [
               "md",
               "dm",
