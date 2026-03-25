@@ -128,12 +128,12 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
           onClick={onMenuClick}
           disabled={sidebarAnimating}
           aria-label="Toggle sidebar"
-          className={`rounded-md p-1.5 transition-all duration-[980ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
+          className={`rounded-md p-1.5 transition-all duration-980 ease-[cubic-bezier(0.19,1,0.22,1)] ${
             sidebarAnimating ? "cursor-not-allowed opacity-60" : "hover:bg-gray-100 dark:hover:bg-gray-700"
           }`}
         >
           <Menu
-            className={`h-5 w-5 text-gray-600 dark:text-gray-200 transition-transform duration-[980ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            className={`h-5 w-5 text-gray-600 dark:text-gray-200 transition-transform duration-980 ease-[cubic-bezier(0.19,1,0.22,1)] ${
               sidebarOpen ? "rotate-0" : "rotate-180"
             }`}
           />

@@ -60,6 +60,25 @@ import MarketPoints from "../pages/Superadmin/marketPoints/MarketPoints";
 import Zones from "../pages/Superadmin/zones/Zones";
 import Areas from "../pages/Superadmin/Areas/Areas";
 import Teritories from "../pages/Superadmin/teritories/Teritories";
+import DailyAttendancePage from "../pages/HR/DailyAttendancePage";
+import LeaveBalancePage from "../pages/HR/LeaveBalancePage";
+import LeaveApplicationPage from "../pages/HR/LeaveApplicationPage";
+import LeaveAttendanceViewPage from "../pages/HR/LeaveAttendanceViewPage";
+import SalaryStructurePage from "../pages/HR/SalaryStructurePage";
+import MonthlyPayslipPage from "../pages/HR/MonthlyPayslipPage";
+import PayslipTaxPage from "../pages/HR/PayslipTaxPage";
+import FinalSettlementPage from "../pages/HR/FinalSettlementPage";
+import TaDaManagementPage from "../pages/HR/TaDaManagementPage";
+import FestivalBonusPage from "../pages/HR/FestivalBonusPage";
+import PfManagementPage from "../pages/HR/PfManagementPage";
+import PersonalInfoPage from "../pages/HR/PersonalInfoPage";
+import YearlyAssessmentPage from "../pages/HR/YearlyAssessmentPage";
+import UserAssetsPage from "../pages/HR/UserAssetsPage";
+import AssetsListPage from "../pages/HR/AssetsListPage";
+import GatePassPage from "../pages/HR/GatePassPage";
+import VendorDatabasePage from "../pages/HR/VendorDatabasePage";
+import NoticeBoardPage from "../pages/HR/NoticeBoardPage";
+import EmploymentDocsPage from "../pages/HR/EmploymentDocsPage";
 
 
 // ✅ FIXED PATHS
@@ -92,6 +111,28 @@ export default function AppRoutes() {
         <Route path="/apps/outlook" element={<OutlookPage />} />
         <Route path="/apps/employee-numbers" element={<EmployeeNumbersPage />} />
         <Route path="/apps/drive" element={<DrivePage />} />
+
+        <Route element={<ProtectedRoute allowedRoles={["hr", "superadmin"]} />}>
+          <Route path="/hr/daily-attendance" element={<DailyAttendancePage />} />
+          <Route path="/hr/leave-balance" element={<LeaveBalancePage />} />
+          <Route path="/hr/leave-application" element={<LeaveApplicationPage />} />
+          <Route path="/hr/leave-attendance-view" element={<LeaveAttendanceViewPage />} />
+          <Route path="/hr/salary-structure" element={<SalaryStructurePage />} />
+          <Route path="/hr/monthly-payslip" element={<MonthlyPayslipPage />} />
+          <Route path="/hr/payslip-tax" element={<PayslipTaxPage />} />
+          <Route path="/hr/final-settlement" element={<FinalSettlementPage />} />
+          <Route path="/hr/ta-da" element={<TaDaManagementPage />} />
+          <Route path="/hr/festival-bonus" element={<FestivalBonusPage />} />
+          <Route path="/hr/pf-management" element={<PfManagementPage />} />
+          <Route path="/hr/personal-info" element={<PersonalInfoPage />} />
+          <Route path="/hr/yearly-assessment" element={<YearlyAssessmentPage />} />
+          <Route path="/hr/user-assets" element={<UserAssetsPage />} />
+          <Route path="/hr/assets-list" element={<AssetsListPage />} />
+          <Route path="/hr/gate-pass" element={<GatePassPage />} />
+          <Route path="/hr/vendor-database" element={<VendorDatabasePage />} />
+          <Route path="/hr/notice-board" element={<NoticeBoardPage />} />
+          <Route path="/hr/employment-docs" element={<EmploymentDocsPage />} />
+        </Route>
 
 
         {/* Admin */}

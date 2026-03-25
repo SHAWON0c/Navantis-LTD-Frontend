@@ -136,7 +136,7 @@
 
 
 // src/provider/AuthProvider.jsx
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, useCallback } from "react";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -146,6 +146,54 @@ const DEBUG = import.meta.env.DEV; // true only in development
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const clearAuthStorage = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("employeeId");
+  };
+
+  const verifyToken = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (!res.ok) throw new Error("Token verification failed");
+
+      const data = await res.json();
+      const payload = data?.data?.user || data?.data || data?.user || data;
+
+      const syncedRole = String(payload?.role || "").toLowerCase();
+      const syncedEmployeeId =
+        payload?.employeeId || payload?.employeeID || payload?.id || localStorage.getItem("employeeId") || "";
+
+      if (!syncedRole) throw new Error("No role found in verify-token response");
+
+      const syncedUser = {
+        token,
+        role: syncedRole,
+        employeeId: syncedEmployeeId,
+      };
+
+      setUser(syncedUser);
+      localStorage.setItem("role", syncedRole);
+      localStorage.setItem("employeeId", syncedEmployeeId);
+
+      if (DEBUG) console.log("✅ Auth re-synced from backend:", syncedUser);
+    } catch (error) {
+      if (DEBUG) console.log("🚨 verify-token failed, clearing auth", error);
+
+      setUser(null);
+      clearAuthStorage();
+    }
+  }, []);
 
   // ===============================
   // Restore user on page refresh
@@ -174,7 +222,34 @@ export default function AuthProvider({ children }) {
     }
 
     setLoading(false);
-  }, []);
+
+    // Sync role/status from backend so UI updates if role changed in DB.
+    verifyToken();
+  }, [verifyToken]);
+
+  useEffect(() => {
+    const handleVisibilitySync = () => {
+      if (document.visibilityState === "visible") {
+        verifyToken();
+      }
+    };
+
+    window.addEventListener("focus", verifyToken);
+    document.addEventListener("visibilitychange", handleVisibilitySync);
+
+    return () => {
+      window.removeEventListener("focus", verifyToken);
+      document.removeEventListener("visibilitychange", handleVisibilitySync);
+    };
+  }, [verifyToken]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      verifyToken();
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
+  }, [verifyToken]);
 
   // ===============================
   // Login
@@ -204,10 +279,7 @@ export default function AuthProvider({ children }) {
     if (DEBUG) console.log("🚪 Logout");
 
     setUser(null);
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("employeeId");
+    clearAuthStorage();
   };
 
   return (
@@ -217,6 +289,7 @@ export default function AuthProvider({ children }) {
         loginUser,
         logoutUser,
         loading,
+        verifyToken,
       }}
     >
       {!loading && children}
