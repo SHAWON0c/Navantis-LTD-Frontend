@@ -292,7 +292,7 @@
 
 
 // src/pages/auth/Login.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -312,6 +312,15 @@ export default function Login() {
   const [loginError, setLoginError] = useState("");
 
   const [login, { isLoading }] = useLoginMutation();
+
+  useEffect(() => {
+    const reason = sessionStorage.getItem("authLogoutReason");
+
+    if (reason) {
+      toast.warning(reason);
+      sessionStorage.removeItem("authLogoutReason");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

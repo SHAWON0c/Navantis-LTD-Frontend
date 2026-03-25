@@ -56,6 +56,10 @@ import TodoNotesPage from "../pages/apps/TodoNotesPage";
 import OutlookPage from "../pages/apps/OutlookPage";
 import EmployeeNumbersPage from "../pages/apps/EmployeeNumbersPage";
 import DrivePage from "../pages/apps/DrivePage";
+import MarketPoints from "../pages/Superadmin/marketPoints/MarketPoints";
+import Zones from "../pages/Superadmin/zones/Zones";
+import Areas from "../pages/Superadmin/Areas/Areas";
+import Teritories from "../pages/Superadmin/teritories/Teritories";
 
 
 // ✅ FIXED PATHS
@@ -95,6 +99,13 @@ export default function AppRoutes() {
           <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
           <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
 
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={["superadmin"]} />}>
+          <Route path="/superadmin/zones" element={<Zones />} />
+          <Route path="/superadmin/areas" element={<Areas />} />
+          <Route path="/superadmin/territories" element={<Teritories />} />
+          <Route path="/superadmin/marketpoints" element={<MarketPoints />} />
         </Route>
 
         {/* Warehouse */}

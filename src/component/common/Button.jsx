@@ -38,7 +38,11 @@ const Button = ({
       onClick={onClick}
       {...props}
     >
-      {icon && <span className="mr-2">{icon}</span>}
+      {icon && (
+        <span className="mr-2">
+          {typeof icon === 'function' ? <icon /> : icon}
+        </span>
+      )}
       {children}
     </button>
   );

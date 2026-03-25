@@ -9,6 +9,7 @@ export const areaAPI = baseAPI.injectEndpoints({
         url: "/areas",
         method: "GET",
       }),
+      providesTags: ["Areas"],
     }),
 
     // 🔹 Get single area by ID
@@ -17,6 +18,7 @@ export const areaAPI = baseAPI.injectEndpoints({
         url: `/areas/${areaId}`,
         method: "GET",
       }),
+      providesTags: (result, error, areaId) => [{ type: "Areas", areaId }],
     }),
 
     // 🔹 Create new area
@@ -26,15 +28,20 @@ export const areaAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ["Areas"],
     }),
 
-    // 🔹 Update area manager / zonal manager
+    // 🔹 Update area
     updateArea: builder.mutation({
-      query: ({ areaId, data }) => ({
-        url: `/areas/${areaId}`,
+      query: ({ id, ...payload }) => ({
+        url: `/areas/${id}`,
         method: "PATCH",
-        body: data,
+        body: payload,
       }),
+      invalidatesTags: (result, error, { id }) => [
+        "Areas",
+        { type: "Areas", id },
+      ],
     }),
 
     // 🔹 Delete area
@@ -43,6 +50,16 @@ export const areaAPI = baseAPI.injectEndpoints({
         url: `/areas/${areaId}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Areas"],
+    }),
+
+    // 🔹 Get all area managers
+    getAllAreaManagers: builder.query({
+      query: () => ({
+        url: "/areas/area-managers",
+        method: "GET",
+      }),
+      providesTags: ["AreaManagers"],
     }),
 
   }),
@@ -55,4 +72,5 @@ export const {
   useCreateAreaMutation,
   useUpdateAreaMutation,
   useDeleteAreaMutation,
+  useGetAllAreaManagersQuery, // ✅ Added hook
 } = areaAPI;

@@ -289,8 +289,11 @@ const PlaceOrder = () => {
   const [products, setProducts] = useState([]);
   const [productSearch, setProductSearch] = useState("");
   const holdTimerRef = useRef(null);
+  const addFeedbackTimerRef = useRef(null);
   const holdTriggeredRef = useRef(false);
   const holdTargetIdRef = useRef(null);
+  const [recentlyAddedProductId, setRecentlyAddedProductId] = useState("");
+  const [addFeedbackMessage, setAddFeedbackMessage] = useState("");
 
   const [formData, setFormData] = useState({
     customerName: "",
@@ -300,6 +303,28 @@ const PlaceOrder = () => {
   });
 
   const [selectedAddress, setSelectedAddress] = useState("");
+
+  const clearAddFeedbackTimer = () => {
+    if (addFeedbackTimerRef.current) {
+      clearTimeout(addFeedbackTimerRef.current);
+      addFeedbackTimerRef.current = null;
+    }
+  };
+
+  const triggerAddFeedback = (productId, productName) => {
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      navigator.vibrate([14, 18, 14]);
+    }
+
+    setRecentlyAddedProductId(productId);
+    setAddFeedbackMessage(`${productName} added to order`);
+
+    clearAddFeedbackTimer();
+    addFeedbackTimerRef.current = setTimeout(() => {
+      setRecentlyAddedProductId("");
+      addFeedbackTimerRef.current = null;
+    }, 700);
+  };
 
   // ================= API =================
   const { data: brandsData = [], isLoading: brandsLoading } = useGetBrandsQuery();
@@ -349,6 +374,11 @@ const PlaceOrder = () => {
         { ...product, id: product.productId, quantity: 1 },
       ]);
     }
+  };
+
+  const handleAddProductTap = (product) => {
+    handleAddProduct(product);
+    triggerAddFeedback(product.productId, product.product);
   };
 
   // ================= REMOVE PRODUCT =================
@@ -442,7 +472,13 @@ const PlaceOrder = () => {
     }
   };
 
-  useEffect(() => () => clearHoldTimer(), []);
+  useEffect(
+    () => () => {
+      clearHoldTimer();
+      clearAddFeedbackTimer();
+    },
+    []
+  );
 
   if (authLoading || brandsLoading || customersLoading) return <Loader />;
 
@@ -552,6 +588,7 @@ const PlaceOrder = () => {
 
           <Card shadow="sm" padding="sm">
             <div className="text-sm font-semibold mb-3">Products ({formData.brand})</div>
+            <div className="sr-only" aria-live="polite">{addFeedbackMessage}</div>
             <input
               type="text"
               value={productSearch}
@@ -564,29 +601,41 @@ const PlaceOrder = () => {
               {!productsLoading && filteredProducts.length === 0 && (
                 <div className="text-sm text-gray-500 p-2">No products match your search.</div>
               )}
-              {filteredProducts.map((p) => (
-                <div
-                  key={p._id}
-                  className="border-b p-2 flex justify-between items-center hover:bg-blue-50"
-                >
-                  <div>
-                    <div className="text-sm font-medium">{p.productShortCode}</div>
-                    <div className="text-xs text-gray-500">{p.productName}</div>
+              {filteredProducts.map((p) => {
+                const isJustAdded = recentlyAddedProductId === p._id;
+
+                return (
+                  <div
+                    key={p._id}
+                    className="border-b p-2 flex justify-between items-center hover:bg-blue-50"
+                  >
+                    <div>
+                      <div className="text-sm font-medium">{p.productShortCode}</div>
+                      <div className="text-xs text-gray-500">{p.productName}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-blue-600 font-semibold">৳{p.tradePrice}</div>
+                      <button
+                        type="button"
+                        className={`text-xs px-2.5 py-1 rounded font-medium transition-all duration-200 active:scale-95 ${
+                          isJustAdded
+                            ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-200"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                        onClick={() =>
+                          handleAddProductTap({
+                            productId: p._id,
+                            product: p.productName,
+                            price: p.tradePrice,
+                          })
+                        }
+                      >
+                        {isJustAdded ? "Added" : "Add"}
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-blue-600 font-semibold">৳{p.tradePrice}</div>
-                    <button
-                      type="button"
-                      className="bg-blue-600 text-white text-xs px-2 py-1 rounded hover:bg-blue-700"
-                      onClick={() =>
-                        handleAddProduct({ productId: p._id, product: p.productName, price: p.tradePrice })
-                      }
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </Card>
         </div>

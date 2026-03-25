@@ -1,4 +1,46 @@
 [
+    {
+    "key": "superadmin",
+    "label": "Superadmin",
+    "icon": "FileText",
+    "children": [
+      {
+        "key": "zone-management",
+        "label": "Division Management",
+        "icon": "FileText",
+        "children": [
+          {
+            "key": "zones-management",
+            "label": "Zones",
+            "path": "/superadmin/zones",
+            "icon": "FileText",
+            "allowedRoles": ["superadmin"]
+          },
+          {
+            "key": "areas-management",
+            "label": "Areas",
+            "path": "/superadmin/areas",
+            "icon": "FileText",
+            "allowedRoles": ["superadmin"]
+          },
+          {
+            "key": "territories-management",
+            "label": "Territories",
+            "path": "/superadmin/territories",
+            "icon": "FileText",
+            "allowedRoles": ["superadmin"]
+          },
+          {
+            "key": "marketpoints-management",
+            "label": "Marketpoints",
+            "path": "/superadmin/marketpoints",
+            "icon": "FileText",
+            "allowedRoles": ["superadmin"]
+          }
+        ]
+      }
+    ]
+  },
   {
     "key": "admin",
     "label": "Managing Director",
