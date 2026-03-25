@@ -15,12 +15,15 @@ import {
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { resetAuthState } from "../redux/features/auth/authSlice"; // adjust path
+import { baseAPI } from "../redux/services/baseApi";
 import { useNavigate } from "react-router-dom";
 import { useUserProfile } from "../hooks/useUserProfile"; // ✅ import your hook
+import { useAuth } from "../provider/AuthProvider";
 
 export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimating = false }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { logoutUser } = useAuth();
 
   const { data } = useUserProfile();
 
@@ -40,6 +43,7 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationCount, setNotificationCount] = useState(3); // example
 
 
@@ -104,9 +108,25 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
 
   // Logout handler
   const handleLogout = () => {
-    dispatch(resetAuthState());
-    localStorage.removeItem("token");
-    navigate("/login");
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    setSettingsOpen(false);
+    setMegaMenuOpen(false);
+    setNotificationsOpen(false);
+    setProfileOpen(false);
+    setAppsOpen(false);
+
+    // Clear auth + jump to login first to avoid visible dashboard re-render shake
+    logoutUser();
+    navigate("/login", { replace: true });
+
+    // Defer heavier Redux cleanup until next tick for smoother transition
+    setTimeout(() => {
+      dispatch(baseAPI.util.resetApiState());
+      dispatch(resetAuthState());
+      setIsLoggingOut(false);
+    }, 0);
   };
 
   const navigateToApp = (path) => {

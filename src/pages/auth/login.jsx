@@ -301,6 +301,7 @@ import logo from "/images/NPL-Updated-Logo.png";
 import { setCredentials } from "../../redux/features/auth/authSlice";
 import { useLoginMutation } from "../../redux/features/auth/authAPI";
 import { useAuth } from "../../provider/AuthProvider";
+import { baseAPI } from "../../redux/services/baseApi";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -349,6 +350,9 @@ export default function Login() {
         role: "mpo"
       }
       */
+
+      // Clear any stale cached queries from previous user session before setting new credentials
+      dispatch(baseAPI.util.resetApiState());
 
       // 1️⃣ Update Redux
       dispatch(
