@@ -14,10 +14,7 @@ import {
 	useGetZonalManagersQuery,
 	useUpdateZoneMutation,
 } from "../../../redux/features/zones/zoneAPI";
-import {
-	zonalManagers,
-	zoneCreatePayloadExample,
-} from "../hierarchyMockData";
+import { zoneCreatePayloadExample } from "../hierarchyMockData";
 
 const formatList = (items = []) => {
 	const normalizedItems = items.filter(Boolean);
@@ -185,6 +182,34 @@ const resolveFirstNameList = (candidates = [], keys = []) => {
 	return [];
 };
 
+const getManagerId = (manager) =>
+	manager?.zonalManagerId || manager?._id || manager?.id || manager?.userId || "";
+
+const getManagerName = (manager) =>
+	manager?.name ||
+	manager?.fullName ||
+	manager?.employeeName ||
+	manager?.zonalManagerName ||
+	"";
+
+const normalizeZonalManagerList = (response) => {
+	const candidates = [
+		response,
+		response?.data,
+		response?.data?.data,
+		response?.result,
+		response?.results,
+	];
+
+	for (const candidate of candidates) {
+		if (Array.isArray(candidate)) {
+			return candidate;
+		}
+	}
+
+	return [];
+};
+
 const normalizeZone = (zone, index) => {
 	const areas = toArray(zone?.areas ?? zone?.areaList);
 	const topLevelAreas = normalizeInputList(
@@ -342,29 +367,13 @@ const Zones = () => {
 		setZones(rawZones.map((zone, index) => normalizeZone(zone, index)));
 	}, [zonesResponse]);
 
-	const zonalManagerById = useMemo(() => {
-		return zonalManagers.reduce((acc, manager) => {
-			acc[manager.id] = manager;
-			return acc;
-		}, {});
-	}, []);
-
-	const zonalManagerOptions = useMemo(() => {
-		return zonalManagers.map((manager) => ({
-			label: manager.name,
-			value: manager.id,
-		}));
-	}, []);
-
 	const zonalManagerApiList = useMemo(() => {
-		return Array.isArray(zonalManagersResponse?.data)
-			? zonalManagersResponse.data
-			: [];
+		return normalizeZonalManagerList(zonalManagersResponse);
 	}, [zonalManagersResponse]);
 
 	const zonalManagerApiById = useMemo(() => {
 		return zonalManagerApiList.reduce((acc, manager) => {
-			const id = manager?.zonalManagerId || manager?._id || manager?.id;
+			const id = getManagerId(manager);
 			if (!id) return acc;
 			acc[id] = manager;
 			return acc;
@@ -375,7 +384,7 @@ const Zones = () => {
 		return zones.map((zone) => {
 			const zonalManagerName =
 				zone.zonalManagerName ||
-				zonalManagerById[zone.zonalManagerId]?.name ||
+				getManagerName(zonalManagerApiById[zone.zonalManagerId]) ||
 				zone.zonalManagerId ||
 				"-";
 
@@ -387,7 +396,7 @@ const Zones = () => {
 				allMarketPoints: formatList(zone.allMarketPointNames),
 			};
 		});
-	}, [zones, zonalManagerById]);
+	}, [zones, zonalManagerApiById]);
 
 	const zonalManagerFilterOptions = useMemo(() => {
 		const uniqueNames = [...new Set(
@@ -405,7 +414,7 @@ const Zones = () => {
 	const zonalManagerSearchOptions = useMemo(() => {
 		const apiOptions = [...new Set(
 			zonalManagerApiList
-				.map((manager) => manager?.name)
+				.map((manager) => getManagerName(manager))
 				.filter((name) => typeof name === "string" && name.trim())
 		)].map((name) => ({
 			label: name,
@@ -420,10 +429,10 @@ const Zones = () => {
 	}, [zonalManagerApiList, zonalManagerFilterOptions]);
 
 	const zonalManagerFormOptions = useMemo(() => {
-		const apiOptions = zonalManagerApiList
+		return zonalManagerApiList
 			.map((manager) => {
-				const id = manager?.zonalManagerId || manager?._id || manager?.id;
-				const name = manager?.name;
+				const id = getManagerId(manager);
+				const name = getManagerName(manager);
 				if (!id || !name) return null;
 				return {
 					label: name,
@@ -431,13 +440,7 @@ const Zones = () => {
 				};
 			})
 			.filter(Boolean);
-
-		if (apiOptions.length) {
-			return apiOptions;
-		}
-
-		return zonalManagerOptions;
-	}, [zonalManagerApiList, zonalManagerOptions]);
+	}, [zonalManagerApiList]);
 
 	const filteredZoneRows = useMemo(() => {
 		return allZoneRows.filter((zone) => {
@@ -630,8 +633,7 @@ const Zones = () => {
 				? {
 						zonalManagerId: formData.zonalManagerId,
 						zonalManagerName:
-							zonalManagerApiById[formData.zonalManagerId]?.name ||
-							zonalManagerById[formData.zonalManagerId]?.name ||
+							getManagerName(zonalManagerApiById[formData.zonalManagerId]) ||
 							formData.zonalManagerId,
 				  }
 				: {}),
