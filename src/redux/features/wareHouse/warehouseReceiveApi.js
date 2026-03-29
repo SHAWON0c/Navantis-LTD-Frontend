@@ -18,7 +18,7 @@ export const warehouseReceiveAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ['WarehouseReceive'], // ✅ triggers refetch
+      invalidatesTags: ['WarehouseReceive', 'PurchaseOrders'], // ✅ triggers refetch for receive + pending PO list
     }),
 
     // Get differences / warehouse receive requests

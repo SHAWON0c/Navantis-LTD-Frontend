@@ -526,6 +526,11 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
 
   const { data: productsData = {}, isLoading: productsLoading } = useGetProductsByBrandQuery(selectedBrand, { skip: !selectedBrand });
   const products = productsData.products || [];
+  const sortedProducts = [...products].sort((a, b) => {
+    const aKey = (a.productShortCode || a.productName || "").toUpperCase();
+    const bKey = (b.productShortCode || b.productName || "").toUpperCase();
+    return aKey.localeCompare(bKey);
+  });
 
   const { data: depotsResponse, isLoading: depotsLoading } = useGetDepotsQuery();
   const depots = depotsResponse?.data || [];
@@ -564,6 +569,18 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (selectedProduct) refetch();
   }, [selectedProduct, refetch]);
+
+  const getProductLabel = (product) => {
+    const shortCode = product?.productShortCode || "";
+    const productName = product?.productName || "";
+    const packSize = product?.packSize ? ` - ${product.packSize}` : "";
+
+    if (shortCode && productName) {
+      return `${shortCode} - ${productName}${packSize}`;
+    }
+
+    return `${productName || shortCode}${packSize}`;
+  };
 
   if (!isOpen) return null;
 
@@ -679,7 +696,7 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
             <label className="text-sm font-medium">Product</label>
             <input
               readOnly
-              value={selectedProduct?.productName || ""}
+              value={selectedProduct ? getProductLabel(selectedProduct) : ""}
               placeholder="Select Product"
               disabled={!selectedBrand}
               onClick={() => selectedBrand && setProductOpen(!productOpen)}
@@ -690,7 +707,7 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
                 {productsLoading ? (
                   <li className="p-2 text-gray-400">Loading...</li>
                 ) : (
-                  products.map((p) => (
+                  sortedProducts.map((p) => (
                     <li
                       key={p._id}
                       className="p-2 hover:bg-blue-100 cursor-pointer"
@@ -699,7 +716,7 @@ const DepotProductRequestModal = ({ isOpen, onClose }) => {
                         setProductOpen(false);
                       }}
                     >
-                      {p.productName}
+                      {getProductLabel(p)}
                     </li>
                   ))
                 )}

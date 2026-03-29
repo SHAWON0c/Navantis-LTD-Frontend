@@ -10,7 +10,12 @@ import Button from "../../component/common/Button";
 import { MdArrowBack } from "react-icons/md";
 
 const WarehouseAddProduct = () => {
-  const { data, isLoading } = useGetPendingPurchaseOrdersQuery();
+  const {
+    data,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetPendingPurchaseOrdersQuery();
   const [submitReceive, { isLoading: submitting }] = useSubmitReceiveMutation();
 
   const [dateOpen, setDateOpen] = useState(false);
@@ -99,6 +104,8 @@ const WarehouseAddProduct = () => {
       await submitReceive(payload).unwrap();
       showToast("Warehouse product received successfully!", "success");
 
+      await refetch();
+
       setFormData({
         productName: "",
         productShortCode: "",
@@ -113,6 +120,8 @@ const WarehouseAddProduct = () => {
       });
       setSelectedProduct(null);
       setSelectedDate("");
+      setDateOpen(false);
+      setProductOpen(false);
     } catch (err) {
       console.error(err);
       showToast("Failed to submit warehouse receive.", "error");
@@ -124,7 +133,7 @@ const WarehouseAddProduct = () => {
     if (e.key === "ArrowUp" || e.key === "ArrowDown") e.preventDefault();
   };
 
-  if (isLoading) return <Loader></Loader>;
+  if (isLoading || isFetching) return <Loader></Loader>;
 
   return (
     <div className="min-h-screen">

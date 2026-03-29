@@ -336,6 +336,10 @@ const PlaceOrder = () => {
   const brands = brandsData;
   const apiProducts = productsData.products || [];
   const customers = customersData.data || [];
+  const formatWithPackSize = (text, packSize) => {
+    const safeText = text || "";
+    return packSize ? `${safeText}-${packSize}` : safeText;
+  };
   const filteredProducts = apiProducts.filter((product) => {
     const searchValue = productSearch.trim().toLowerCase();
 
@@ -610,8 +614,12 @@ const PlaceOrder = () => {
                     className="border-b p-2 flex justify-between items-center hover:bg-blue-50"
                   >
                     <div>
-                      <div className="text-sm font-medium">{p.productShortCode}</div>
-                      <div className="text-xs text-gray-500">{p.productName}</div>
+                      <div className="text-sm font-medium">
+                        {formatWithPackSize(p.productShortCode, p.packSize)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {formatWithPackSize(p.productName, p.packSize)}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-blue-600 font-semibold">৳{p.tradePrice}</div>
@@ -626,6 +634,8 @@ const PlaceOrder = () => {
                           handleAddProductTap({
                             productId: p._id,
                             product: p.productName,
+                            productShortCode: p.productShortCode,
+                            packSize: p.packSize,
                             price: p.tradePrice,
                           })
                         }
@@ -653,7 +663,14 @@ const PlaceOrder = () => {
                   key={p.id}
                   className="flex justify-between border p-2 rounded hover:bg-gray-50"
                 >
-                  <div>{p.product}</div>
+                  <div>
+                    <div className="text-sm font-medium">
+                      {formatWithPackSize(p.productShortCode, p.packSize)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {formatWithPackSize(p.product, p.packSize)}
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
