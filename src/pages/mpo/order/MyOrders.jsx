@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   useGetMpoPendingOrdersQuery,
   useGetMpoDeliveredOrdersQuery,
+  useUpdateOrderQuantityMutation,
+  useDeleteOrderMutation,
 } from "../../../redux/features/orders/orderApi";
 import Loader from "../../../component/Loader";
 import Card from "../../../component/common/Card";
@@ -18,9 +20,8 @@ export default function MyOrders() {
   const [selectedOrderId, setSelectedOrderId] = useState("");
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-
-  const [selectedBatches, setSelectedBatches] = useState([]);
-  const [showBatchModal, setShowBatchModal] = useState(false);
+  const [updateOrderQuantity, { isLoading: isUpdatingOrder }] = useUpdateOrderQuantityMutation();
+  const [deleteOrderApi, { isLoading: isDeletingOrder }] = useDeleteOrderMutation();
 
   // Fetch only when needed
   const {
@@ -65,8 +66,6 @@ export default function MyOrders() {
     setSelectedOrderId("");
     setIsEditingDetails(false);
     setShowDetailsModal(false);
-    setSelectedBatches([]);
-    setShowBatchModal(false);
 
     // Refetch fresh data
     if (status === "pending") refetchPending();
@@ -77,6 +76,10 @@ export default function MyOrders() {
     setSelectedOrderProducts(
       (order?.products || []).map((product) => ({
         ...product,
+        productId:
+          typeof product.productId === "string"
+            ? product.productId
+            : product.productId?._id || product._id,
         quantity: Number(product.quantity || 0),
       }))
     );
@@ -105,40 +108,101 @@ export default function MyOrders() {
     );
   };
 
-  const handleSaveDetailsEdit = () => {
+  const handleSaveDetailsEdit = async () => {
     if (!selectedOrderId) return;
 
-    setPendingOrders((prev) =>
-      prev.map((order) =>
-        order._id === selectedOrderId
-          ? {
-              ...order,
-              products: selectedOrderProducts.map((product) => ({
-                ...product,
-                quantity: Math.max(1, Number(product.quantity || 1)),
-              })),
-            }
-          : order
-      )
-    );
+    try {
+      const products = selectedOrderProducts
+        .map((product) => ({
+          productId:
+            typeof product.productId === "string"
+              ? product.productId
+              : product.productId?._id || product._id,
+          quantity: Math.max(1, Number(product.quantity || 1)),
+        }))
+        .filter((product) => Boolean(product.productId));
 
-    setIsEditingDetails(false);
+      if (products.length === 0) {
+        alert("No valid productId found for update.");
+        return;
+      }
+
+      // Backend expects one product update payload at a time:
+      // { productId: "...", quantity: number }
+      for (const product of products) {
+        await updateOrderQuantity({
+          orderId: selectedOrderId,
+          payload: {
+            productId: product.productId,
+            quantity: product.quantity,
+          },
+        }).unwrap();
+      }
+
+      setPendingOrders((prev) =>
+        prev.map((order) =>
+          order._id === selectedOrderId
+            ? {
+                ...order,
+                products: selectedOrderProducts.map((product) => ({
+                  ...product,
+                  quantity: Math.max(1, Number(product.quantity || 1)),
+                })),
+              }
+            : order
+        )
+      );
+
+      refetchPending();
+      setIsEditingDetails(false);
+    } catch (error) {
+      console.error("Update order quantity failed", error);
+      alert(error?.data?.message || "Failed to update order quantities.");
+    }
   };
 
-  const handleDeleteOrder = () => {
+  const handleDeleteOrder = async () => {
     if (!selectedOrderId) return;
 
-    setPendingOrders((prev) => prev.filter((order) => order._id !== selectedOrderId));
-    setShowDetailsModal(false);
-    setSelectedOrderProducts([]);
-    setSelectedOrderInfo(null);
-    setSelectedOrderId("");
-    setIsEditingDetails(false);
+    try {
+      await deleteOrderApi(selectedOrderId).unwrap();
+
+      setPendingOrders((prev) => prev.filter((order) => order._id !== selectedOrderId));
+      setShowDetailsModal(false);
+      setSelectedOrderProducts([]);
+      setSelectedOrderInfo(null);
+      setSelectedOrderId("");
+      setIsEditingDetails(false);
+      refetchPending();
+    } catch (error) {
+      console.error("Delete order failed", error);
+      alert(error?.data?.message || "Failed to delete order.");
+    }
   };
 
-  const handleBatchesClick = (batches) => {
-    setSelectedBatches(batches || []);
-    setShowBatchModal(true);
+  const handleDeleteOrderById = async (orderId) => {
+    if (!orderId) return;
+
+    const isConfirmed = window.confirm("Are you sure you want to delete this order?");
+    if (!isConfirmed) return;
+
+    try {
+      await deleteOrderApi(orderId).unwrap();
+      setPendingOrders((prev) => prev.filter((order) => order._id !== orderId));
+
+      if (selectedOrderId === orderId) {
+        setShowDetailsModal(false);
+        setSelectedOrderProducts([]);
+        setSelectedOrderInfo(null);
+        setSelectedOrderId("");
+        setIsEditingDetails(false);
+      }
+
+      refetchPending();
+    } catch (error) {
+      console.error("Delete order failed", error);
+      alert(error?.data?.message || "Failed to delete order.");
+    }
   };
 
   return (
@@ -225,13 +289,23 @@ export default function MyOrders() {
                         {formatOrderDate(order.orderDate || order.createdAt)}
                       </td>
                       <td className="text-center py-3 px-4">
-                        <Button
-                          variant="primary"
-                          size="small"
-                          onClick={() => handleViewDetails(order)}
-                        >
-                          View Details
-                        </Button>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="primary"
+                            size="small"
+                            onClick={() => handleViewDetails(order)}
+                          >
+                            View Details
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="small"
+                            disabled={isDeletingOrder}
+                            onClick={() => handleDeleteOrderById(order._id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -251,81 +325,47 @@ export default function MyOrders() {
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">MarketPoint</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">Territory</th>
                   <th className="text-center py-3 px-4 font-semibold text-gray-700">Order Date</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Product</th>
-                  <th className="text-center py-3 px-4 font-semibold text-gray-700">Quantity</th>
-                  <th className="text-center py-3 px-4 font-semibold text-gray-700">Activities</th>
+                  <th className="text-center py-3 px-4 font-semibold text-gray-700">Total Orders</th>
+                  <th className="text-center py-3 px-4 font-semibold text-gray-700">Details</th>
                 </tr>
               </thead>
               <tbody>
                 {deliveredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-8 text-gray-500">
+                    <td colSpan={7} className="text-center py-8 text-gray-500">
                       No delivered orders found
                     </td>
                   </tr>
                 ) : (
                   deliveredOrders.map((order, idx) => {
-                    const products = order.products || [];
+                    const totalQty = (order.products || []).reduce(
+                      (sum, product) => sum + Number(product?.quantity || 0),
+                      0
+                    );
 
-                    if (products.length === 0) {
-                      return (
-                        <tr key={order._id || idx} className="border-b border-gray-200 hover:bg-gray-50">
-                          <td className="text-center py-3 px-4">{idx + 1}</td>
-                          <td className="text-left py-3 px-4">
-                            {order.customerName || "-"} / {order.customerNumericId || order.customerId || "-"}
-                          </td>
-                          <td className="text-left py-3 px-4">{order.marketPointName || "-"}</td>
-                          <td className="text-left py-3 px-4">{order.territoryName || "-"}</td>
-                          <td className="text-center py-3 px-4">{formatOrderDate(order.orderDate || order.createdAt)}</td>
-                          <td className="text-left py-3 px-4">-</td>
-                          <td className="text-center py-3 px-4">-</td>
-                          <td className="text-center py-3 px-4">-</td>
-                        </tr>
-                      );
-                    }
-
-                    return products.map((product, productIndex) => (
-                      <tr
-                        key={`${order._id || idx}-${product.productId || productIndex}`}
-                        className="border-b border-gray-200 hover:bg-gray-50"
-                      >
-                        {productIndex === 0 && (
-                          <>
-                            <td className="text-center py-3 px-4" rowSpan={products.length}>
-                              {idx + 1}
-                            </td>
-                            <td className="text-left py-3 px-4" rowSpan={products.length}>
-                              {order.customerName || "-"} / {order.customerNumericId || order.customerId || "-"}
-                            </td>
-                            <td className="text-left py-3 px-4" rowSpan={products.length}>
-                              {order.marketPointName || "-"}
-                            </td>
-                            <td className="text-left py-3 px-4" rowSpan={products.length}>
-                              {order.territoryName || "-"}
-                            </td>
-                            <td className="text-center py-3 px-4" rowSpan={products.length}>
-                              {formatOrderDate(order.orderDate || order.createdAt)}
-                            </td>
-                          </>
-                        )}
-
-                        <td className="text-left py-3 px-4">{product.productName || "-"}</td>
-                        <td className="text-center py-3 px-4">{product.quantity ?? 0}</td>
+                    return (
+                      <tr key={order._id || idx} className="border-b border-gray-200 hover:bg-gray-50">
+                        <td className="text-center py-3 px-4">{idx + 1}</td>
+                        <td className="text-left py-3 px-4">
+                          {order.customerName || "-"} / {order.customerNumericId || order.customerId || "-"}
+                        </td>
+                        <td className="text-left py-3 px-4">{order.marketPointName || "-"}</td>
+                        <td className="text-left py-3 px-4">{order.territoryName || "-"}</td>
                         <td className="text-center py-3 px-4">
-                          {product.selectedBatches?.length > 0 ? (
-                            <Button
-                              variant="primary"
-                              size="small"
-                              onClick={() => handleBatchesClick(product.selectedBatches)}
-                            >
-                              View Batches
-                            </Button>
-                          ) : (
-                            "-"
-                          )}
+                          {formatOrderDate(order.orderDate || order.createdAt)}
+                        </td>
+                        <td className="text-center py-3 px-4">{totalQty}</td>
+                        <td className="text-center py-3 px-4">
+                          <Button
+                            variant="primary"
+                            size="small"
+                            onClick={() => handleViewDetails(order)}
+                          >
+                            Details
+                          </Button>
                         </td>
                       </tr>
-                    ));
+                    );
                   })
                 )}
               </tbody>
@@ -363,12 +403,13 @@ export default function MyOrders() {
                   <tr className="bg-gray-100 border-b border-gray-200">
                     <th className="text-left py-2 px-4 font-semibold">Product</th>
                     <th className="text-center py-2 px-4 font-semibold">Quantity</th>
+                    <th className="text-left py-2 px-4 font-semibold">Batches</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedOrderProducts.length === 0 ? (
                     <tr>
-                      <td colSpan={2} className="text-center py-6 text-gray-500">
+                      <td colSpan={3} className="text-center py-6 text-gray-500">
                         No products found
                       </td>
                     </tr>
@@ -392,6 +433,25 @@ export default function MyOrders() {
                             product.quantity ?? 0
                           )}
                         </td>
+                        <td className="text-left py-3 px-4">
+                          {product.selectedBatches?.length ? (
+                            <ul className="space-y-1">
+                              {product.selectedBatches.map((batch, batchIndex) => (
+                                <li key={batch._id || `${batch.batchNo}-${batchIndex}`} className="text-xs sm:text-sm">
+                                  <span className="font-medium">{batch.batchNo || "-"}</span>
+                                  {" "}
+                                  ({Number(batch.quantity || 0)})
+                                  {" - "}
+                                  {batch.expireDate
+                                    ? new Date(batch.expireDate).toLocaleDateString()
+                                    : "-"}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
                       </tr>
                     ))
                   )}
@@ -400,107 +460,54 @@ export default function MyOrders() {
             </div>
 
             <div className="flex flex-wrap justify-end gap-2 mt-6">
-              <Button
-                variant={isEditingDetails ? "secondary" : "outline"}
-                onClick={() => {
-                  if (!isEditingDetails) {
-                    setIsEditingDetails(true);
-                    return;
-                  }
-                  handleSaveDetailsEdit();
-                }}
-              >
-                {isEditingDetails ? "Save" : "Edit"}
-              </Button>
+              {status === "pending" && (
+                <>
+                  <Button
+                    variant={isEditingDetails ? "secondary" : "outline"}
+                    disabled={isUpdatingOrder}
+                    onClick={() => {
+                      if (!isEditingDetails) {
+                        setIsEditingDetails(true);
+                        return;
+                      }
+                      handleSaveDetailsEdit();
+                    }}
+                  >
+                    {isEditingDetails ? "Save" : "Edit"}
+                  </Button>
 
-              {isEditingDetails && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    const order = pendingOrders.find((item) => item._id === selectedOrderId);
-                    setSelectedOrderProducts(
-                      (order?.products || []).map((product) => ({
-                        ...product,
-                        quantity: Number(product.quantity || 0),
-                      }))
-                    );
-                    setIsEditingDetails(false);
-                  }}
-                >
-                  Cancel Edit
-                </Button>
+                  {isEditingDetails && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const order = pendingOrders.find((item) => item._id === selectedOrderId);
+                        setSelectedOrderProducts(
+                          (order?.products || []).map((product) => ({
+                            ...product,
+                            quantity: Number(product.quantity || 0),
+                          }))
+                        );
+                        setIsEditingDetails(false);
+                      }}
+                    >
+                      Cancel Edit
+                    </Button>
+                  )}
+
+                  <Button
+                    variant="danger"
+                    disabled={isDeletingOrder}
+                    onClick={handleDeleteOrder}
+                  >
+                    Delete Order
+                  </Button>
+                </>
               )}
-
-              <Button
-                variant="danger"
-                onClick={handleDeleteOrder}
-              >
-                Delete Order
-              </Button>
 
               <Button
                 variant="danger"
                 onClick={() => setShowDetailsModal(false)}
               >
-                Close
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* Batch Modal (Delivered Orders) */}
-      {showBatchModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4">
-          <Card className="w-full max-w-2xl">
-            <h2 className="text-xl font-semibold mb-4">Selected Batches</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-gray-100 border-b border-gray-200">
-                    <th className="text-left py-2 px-4 font-semibold">Batch No</th>
-                    <th className="text-center py-2 px-4 font-semibold">Expire Date</th>
-                    <th className="text-center py-2 px-4 font-semibold">Quantity</th>
-                    <th className="text-center py-2 px-4 font-semibold">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedBatches.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="text-center py-6 text-gray-500">
-                        No batches found
-                      </td>
-                    </tr>
-                  ) : (
-                    selectedBatches.map((batch, index) => {
-                      const date = new Date(batch.expireDate);
-                      const validDate = Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
-
-                      return (
-                        <tr key={batch._id || `${batch.batchNo}-${index}`} className="border-b border-gray-200">
-                          <td className="text-left py-3 px-4">{batch.batchNo || "-"}</td>
-                          <td className="text-center py-3 px-4">{validDate}</td>
-                          <td className="text-center py-3 px-4">{batch.quantity ?? 0}</td>
-                          <td className="text-center py-3 px-4">
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-semibold ${
-                                batch.isExpired
-                                  ? "bg-red-100 text-red-700"
-                                  : "bg-green-100 text-green-700"
-                              }`}
-                            >
-                              {batch.isExpired ? "Expired" : "Valid"}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="danger" onClick={() => setShowBatchModal(false)}>
                 Close
               </Button>
             </div>

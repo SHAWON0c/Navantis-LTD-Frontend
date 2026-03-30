@@ -105,6 +105,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: "/orders",
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
 
@@ -114,6 +115,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: "/orders/pending",
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
 
@@ -136,9 +138,29 @@ export const orderAPI = baseAPI.injectEndpoints({
       invalidatesTags: ["Orders"],
     }),
 
+    // ✅ Update pending order product quantities
+    updateOrderQuantity: builder.mutation({
+      query: ({ orderId, payload }) => ({
+        url: `/orders/${orderId}/update-quantity`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
+    // ✅ Delete pending order
+    deleteOrder: builder.mutation({
+      query: (orderId) => ({
+        url: `/orders/${orderId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
     // ✅ Search Order by Invoice Number (Lazy query)
     searchOrder: builder.query({
       query: (invoiceNo) => `/orders/search?invoiceNo=${invoiceNo}`,
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
 
@@ -158,6 +180,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: "/orders/returns/pending",
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
 
@@ -178,6 +201,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         method: "GET",
         params: { status }, // status = "delivered" | "pending" | "paid" | "outstanding" | "returned"
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
 
@@ -188,6 +212,7 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: "/orders/mpo-orders/pending",
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
 
@@ -197,8 +222,19 @@ export const orderAPI = baseAPI.injectEndpoints({
         url: "/orders/mpo-orders/delivered",
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Orders"],
     }),
+    getSingleOrder: builder.query({
+      query: (orderId) => ({
+        url: `/orders/${orderId}`,
+        method: "GET",
+      }),
+      keepUnusedDataFor: 0,
+      providesTags: ["Orders"],
+    }),
+
+
   }),
   overrideExisting: false,
 });
@@ -209,6 +245,8 @@ export const {
   useGetPendingOrdersQuery,
   useApproveOrderMutation,
   useDeliverOrderMutation,
+  useUpdateOrderQuantityMutation,
+  useDeleteOrderMutation,
   useGetOrderStatusInfoQuery,
   useLazySearchOrderQuery, // ✅ lazy search hook for Quick Pay
   useOrderReturnMutation,
@@ -216,4 +254,5 @@ export const {
   useApproveReturnMutation,
   useGetMpoPendingOrdersQuery,
   useGetMpoDeliveredOrdersQuery,
+  useGetSingleOrderQuery,
 } = orderAPI;

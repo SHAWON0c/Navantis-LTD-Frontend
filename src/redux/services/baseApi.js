@@ -92,5 +92,7 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
 export const baseAPI = createApi({
   reducerPath: "baseAPI",
   baseQuery: baseQueryWithAuth,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: () => ({}),
 });

@@ -165,16 +165,23 @@ export default function AuthProvider({ children }) {
         },
       });
 
-      if (!res.ok) throw new Error("Token verification failed");
+      if (!res.ok) {
+        const err = new Error("Token verification failed");
+        err.status = res.status;
+        throw err;
+      }
 
       const data = await res.json();
       const payload = data?.data?.user || data?.data || data?.user || data;
 
-      const syncedRole = String(payload?.role || "").toLowerCase();
+      const syncedRole = String(payload?.role || localStorage.getItem("role") || "").toLowerCase();
       const syncedEmployeeId =
         payload?.employeeId || payload?.employeeID || payload?.id || localStorage.getItem("employeeId") || "";
 
-      if (!syncedRole) throw new Error("No role found in verify-token response");
+      if (!syncedRole) {
+        if (DEBUG) console.log("⚠️ verify-token response missing role, keeping current session");
+        return;
+      }
 
       const syncedUser = {
         token,
@@ -188,8 +195,15 @@ export default function AuthProvider({ children }) {
 
       if (DEBUG) console.log("✅ Auth re-synced from backend:", syncedUser);
     } catch (error) {
-      if (DEBUG) console.log("🚨 verify-token failed, clearing auth", error);
+      const status = Number(error?.status || 0);
+      const shouldForceLogout = status === 401 || status === 403;
 
+      if (!shouldForceLogout) {
+        if (DEBUG) console.log("⚠️ verify-token transient failure, keeping session", error);
+        return;
+      }
+
+      if (DEBUG) console.log("🚨 verify-token unauthorized, clearing auth", error);
       setUser(null);
       clearAuthStorage();
     }
