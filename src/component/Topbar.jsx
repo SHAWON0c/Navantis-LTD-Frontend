@@ -158,7 +158,7 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
             }`}
           />
         </button>
-        <span className="md:text-xl text-sm font-semibold tracking-wide">NPL EMS</span>
+        <span className="md:text-xl text-sm font-semibold tracking-wide">EMS-NAVANTIS</span>
       </div>
 
       {/* CENTER */}

@@ -376,90 +376,93 @@ export default function MyOrders() {
 
       {/* Order Products Modal */}
       {showDetailsModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4">
-          <Card className="w-full max-w-2xl">
-            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+        <div className="fixed inset-0 flex items-start sm:items-center justify-center bg-black/40 backdrop-blur-sm z-50 p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl max-h-[90vh] bg-white rounded-lg border border-gray-200 shadow-md p-4 flex flex-col overflow-hidden my-auto">
+            <h2 className="text-xl font-semibold mb-4 shrink-0">Order Details</h2>
 
-            {selectedOrderInfo && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mb-4 bg-gray-50 rounded-lg p-3">
-                <p>
-                  <span className="font-semibold">Customer:</span> {selectedOrderInfo.customerName} / {selectedOrderInfo.customerId}
-                </p>
-                <p>
-                  <span className="font-semibold">MarketPoint:</span> {selectedOrderInfo.marketPoint}
-                </p>
-                <p>
-                  <span className="font-semibold">Territory:</span> {selectedOrderInfo.territory}
-                </p>
-                <p>
-                  <span className="font-semibold">Order Date:</span> {selectedOrderInfo.orderDate}
-                </p>
-              </div>
-            )}
+            <div className="flex-1 min-h-0 overflow-y-auto pr-1">
 
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-gray-100 border-b border-gray-200">
-                    <th className="text-left py-2 px-4 font-semibold">Product</th>
-                    <th className="text-center py-2 px-4 font-semibold">Quantity</th>
-                    <th className="text-left py-2 px-4 font-semibold">Batches</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedOrderProducts.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="text-center py-6 text-gray-500">
-                        No products found
-                      </td>
+              {selectedOrderInfo && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mb-4 bg-gray-50 rounded-lg p-3">
+                  <p>
+                    <span className="font-semibold">Customer:</span> {selectedOrderInfo.customerName} / {selectedOrderInfo.customerId}
+                  </p>
+                  <p>
+                    <span className="font-semibold">MarketPoint:</span> {selectedOrderInfo.marketPoint}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Territory:</span> {selectedOrderInfo.territory}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Order Date:</span> {selectedOrderInfo.orderDate}
+                  </p>
+                </div>
+              )}
+
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-gray-100 border-b border-gray-200">
+                      <th className="text-left py-2 px-4 font-semibold">Product</th>
+                      <th className="text-center py-2 px-4 font-semibold">Quantity</th>
+                      <th className="text-left py-2 px-4 font-semibold">Batches</th>
                     </tr>
-                  ) : (
-                    selectedOrderProducts.map((product, index) => (
-                      <tr
-                        key={product.productId || product._id || `${product.productName}-${index}`}
-                        className="border-b border-gray-200"
-                      >
-                        <td className="text-left py-3 px-4">{product.productName || "-"}</td>
-                        <td className="text-center py-3 px-4">
-                          {isEditingDetails ? (
-                            <input
-                              type="number"
-                              min={1}
-                              value={product.quantity ?? 1}
-                              onChange={(event) => handleEditQuantity(index, event.target.value)}
-                              className="w-20 border border-gray-300 rounded px-2 py-1 text-center"
-                            />
-                          ) : (
-                            product.quantity ?? 0
-                          )}
-                        </td>
-                        <td className="text-left py-3 px-4">
-                          {product.selectedBatches?.length ? (
-                            <ul className="space-y-1">
-                              {product.selectedBatches.map((batch, batchIndex) => (
-                                <li key={batch._id || `${batch.batchNo}-${batchIndex}`} className="text-xs sm:text-sm">
-                                  <span className="font-medium">{batch.batchNo || "-"}</span>
-                                  {" "}
-                                  ({Number(batch.quantity || 0)})
-                                  {" - "}
-                                  {batch.expireDate
-                                    ? new Date(batch.expireDate).toLocaleDateString()
-                                    : "-"}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            "-"
-                          )}
+                  </thead>
+                  <tbody>
+                    {selectedOrderProducts.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="text-center py-6 text-gray-500">
+                          No products found
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      selectedOrderProducts.map((product, index) => (
+                        <tr
+                          key={product.productId || product._id || `${product.productName}-${index}`}
+                          className="border-b border-gray-200"
+                        >
+                          <td className="text-left py-3 px-4">{product.productName || "-"}</td>
+                          <td className="text-center py-3 px-4">
+                            {isEditingDetails ? (
+                              <input
+                                type="number"
+                                min={1}
+                                value={product.quantity ?? 1}
+                                onChange={(event) => handleEditQuantity(index, event.target.value)}
+                                className="w-20 border border-gray-300 rounded px-2 py-1 text-center"
+                              />
+                            ) : (
+                              product.quantity ?? 0
+                            )}
+                          </td>
+                          <td className="text-left py-3 px-4">
+                            {product.selectedBatches?.length ? (
+                              <ul className="space-y-1">
+                                {product.selectedBatches.map((batch, batchIndex) => (
+                                  <li key={batch._id || `${batch.batchNo}-${batchIndex}`} className="text-xs sm:text-sm">
+                                    <span className="font-medium">{batch.batchNo || "-"}</span>
+                                    {" "}
+                                    ({Number(batch.quantity || 0)})
+                                    {" - "}
+                                    {batch.expireDate
+                                      ? new Date(batch.expireDate).toLocaleDateString()
+                                      : "-"}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div className="flex flex-wrap justify-end gap-2 mt-6">
+            <div className="flex flex-wrap justify-end gap-2 mt-6 shrink-0">
               {status === "pending" && (
                 <>
                   <Button
@@ -511,7 +514,7 @@ export default function MyOrders() {
                 Close
               </Button>
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaClipboardList, FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import {
   useGetPendingOrdersQuery,
   useApproveOrderMutation,
@@ -17,6 +18,57 @@ import { ChevronRight } from "lucide-react";
 import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
 import { MdArrowBack } from "react-icons/md";
+import getErrorMessage from "../../utils/getErrorMessage";
+
+const escapeHtml = (value = "") =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+const getErrorDetails = (error) => {
+  if (!error) return "No extra error details were provided.";
+
+  if (Array.isArray(error?.data?.errors) && error.data.errors.length > 0) {
+    return error.data.errors
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item?.message) return item.message;
+        return JSON.stringify(item);
+      })
+      .join("\n");
+  }
+
+  if (typeof error?.data === "string") return error.data;
+  if (error?.error && typeof error.error === "string") return error.error;
+  if (error?.message && typeof error.message === "string") return error.message;
+
+  try {
+    return JSON.stringify(error?.data || error, null, 2);
+  } catch {
+    return "No extra error details were provided.";
+  }
+};
+
+const showErrorPopup = (title, error) => {
+  const primaryMessage = getErrorMessage(error);
+  const details = getErrorDetails(error);
+
+  Swal.fire({
+    icon: "error",
+    title,
+    text: primaryMessage,
+    html: `
+      <div class="text-left mt-2">
+        <p class="font-semibold mb-2">Error details</p>
+        <pre style="max-height: 180px; overflow: auto; text-align: left; white-space: pre-wrap; word-break: break-word; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; font-size: 12px;">${escapeHtml(details)}</pre>
+      </div>
+    `,
+    confirmButtonText: "OK",
+  });
+};
 
 const PendingOrdersCard = () => {
   const { data, isLoading, refetch } = useGetPendingOrdersQuery(undefined, {
@@ -71,6 +123,7 @@ const PendingOrdersCard = () => {
       setSelectedProductOrder(latestOrder);
     } catch (error) {
       console.error("Failed to refresh latest order", error);
+      showErrorPopup("Failed to refresh order", error);
       const fallbackOrder = orders.find((item) => item._id === orderId);
       if (fallbackOrder) setSelectedProductOrder(fallbackOrder);
     }
@@ -85,6 +138,7 @@ const PendingOrdersCard = () => {
     } catch (err) {
       console.error("Assign rider error", err);
       toast.error(`❌ Failed to assign rider: ${err?.data?.message || err.message}`);
+      showErrorPopup("Failed to assign rider", err);
     }
   };
 
@@ -219,6 +273,7 @@ const PendingOrdersCard = () => {
               } catch (err) {
                 console.error("Approve order error", err);
                 toast.error(`❌ Failed to approve order: ${err?.data?.message || err.message}`);
+                showErrorPopup("Failed to approve order", err);
               }
             }}
             isLoading={isApproving}
