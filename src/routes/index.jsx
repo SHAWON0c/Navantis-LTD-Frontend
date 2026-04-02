@@ -79,6 +79,7 @@ import GatePassPage from "../pages/HR/GatePassPage";
 import VendorDatabasePage from "../pages/HR/VendorDatabasePage";
 import NoticeBoardPage from "../pages/HR/NoticeBoardPage";
 import EmploymentDocsPage from "../pages/HR/EmploymentDocsPage";
+import CustomerList from "../pages/managers/CustomerList";
 
 
 // ✅ FIXED PATHS
@@ -197,6 +198,17 @@ export default function AppRoutes() {
 
           <Route path="orders/place" element={<PlaceOrder />} />
           <Route path="/orders/my-orders" element={<MyOrders/>} />
+
+    
+        </Route>
+
+
+
+
+
+          <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"zm","am","superadmin"]} />}>
+          <Route path="/zm/customers" element={<CustomerList />} />
+
 
     
         </Route>

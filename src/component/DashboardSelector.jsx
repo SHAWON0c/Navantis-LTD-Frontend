@@ -82,6 +82,7 @@ export default function DashboardSelector() {
   console.log("🎭 User role:", role);
 
   const roleMap = {
+    md: <DashboardMD key="md" />,
     superadmin: <DashboardMD key="md" />,
     mpo: <MPOPage key="mpo" />,
     wm: <WarehouseDashboard key="wm" />,

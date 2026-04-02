@@ -247,7 +247,7 @@
 // export default CreateCustomer;
 
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useAuth } from "../../../provider/AuthProvider";
 import Loader from "../../../component/Loader";
 
@@ -275,28 +275,14 @@ const CreateCustomer = () => {
     drugLicense: "",
     address: "",
     mobile: "",
-    mobileNormalized: "",
     email: "",
-    emailNormalized: "",
     contactPerson: "",
     discount: 0,
     payMode: [],
     creditLimit: "",
     dayLimit: "",
-    refundCredit: { amount: 0, updatedAt: null },
-    addedByName: userInfo?.name || "",
-    addedByEmail: userInfo?.email || "",
+    mpoId: "",
   });
-
-  useEffect(() => {
-    if (userInfo) {
-      setFormData((prev) => ({
-        ...prev,
-        addedByName: userInfo.name,
-        addedByEmail: userInfo.email,
-      }));
-    }
-  }, [userInfo]);
 
   // Dropdown refs
   const territoryRef = useRef();
@@ -326,19 +312,37 @@ const CreateCustomer = () => {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-        ...(name === "mobile" && { mobileNormalized: value }),
-        ...(name === "email" && { emailNormalized: value }),
       }));
     }
   };
 
+  const submitPayload = useMemo(() => {
+    const fallbackMpoId = userInfo?._id || userInfo?.id || userInfo?.mpoId;
+    const resolvedMpoId = (formData.mpoId || "").trim() || fallbackMpoId;
+
+    return {
+      customerName: formData.customerName,
+      marketPointId: formData.marketPointId,
+      tradeLicense: formData.tradeLicense,
+      drugLicense: formData.drugLicense,
+      address: formData.address,
+      mobile: formData.mobile,
+      email: formData.email,
+      contactPerson: formData.contactPerson,
+      discount: Number(formData.discount) || 0,
+      payMode: formData.payMode,
+      creditLimit: Number(formData.creditLimit) || 0,
+      dayLimit: Number(formData.dayLimit) || 0,
+      ...(resolvedMpoId ? { mpoId: resolvedMpoId } : {}),
+    };
+  }, [formData, userInfo]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createCustomer(formData).unwrap();
+      await createCustomer(submitPayload).unwrap();
       alert("Customer created successfully!");
-      setFormData((prev) => ({
-        ...prev,
+      setFormData({
         customerName: "",
         territoryId: "",
         marketPointId: "",
@@ -346,16 +350,14 @@ const CreateCustomer = () => {
         drugLicense: "",
         address: "",
         mobile: "",
-        mobileNormalized: "",
         email: "",
-        emailNormalized: "",
         contactPerson: "",
         discount: 0,
         payMode: [],
         creditLimit: "",
         dayLimit: "",
-        refundCredit: { amount: 0, updatedAt: null },
-      }));
+        mpoId: "",
+      });
       setTerritoryOpen(false);
       setMarketOpen(false);
     } catch (err) {
@@ -451,7 +453,7 @@ const CreateCustomer = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Pay Mode</label>
             <div className="flex gap-4">
-              {["Cash", "Credit", "Card"].map((mode) => (
+              {["cash", "credit", "stc", "spic"].map((mode) => (
                 <label key={mode} className="flex items-center gap-1">
                   <input
                     type="checkbox"
@@ -460,7 +462,7 @@ const CreateCustomer = () => {
                     checked={formData.payMode.includes(mode)}
                     onChange={handleFormChange}
                   />
-                  {mode}
+                  {mode.toUpperCase()}
                 </label>
               ))}
             </div>
@@ -473,10 +475,22 @@ const CreateCustomer = () => {
           <Input label="Day Limit" name="dayLimit" type="number" value={formData.dayLimit} onChange={handleFormChange} />
         </div>
 
-        {/* Added By (readonly) */}
+        {/* Optional MPO id */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Added By (Name)" name="addedByName" value={formData.addedByName} readOnly />
-          <Input label="Added By (Email)" name="addedByEmail" value={formData.addedByEmail} readOnly />
+          <Input
+            label="MPO ID (Optional)"
+            name="mpoId"
+            value={formData.mpoId}
+            onChange={handleFormChange}
+            placeholder="Leave empty to use logged-in MPO"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Request JSON Preview</label>
+          <pre className="w-full rounded border border-gray-200 bg-gray-50 p-3 text-xs overflow-x-auto text-gray-700">
+{JSON.stringify(submitPayload, null, 2)}
+          </pre>
         </div>
 
         <button
