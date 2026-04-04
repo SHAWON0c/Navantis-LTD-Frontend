@@ -250,9 +250,12 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useAuth } from "../../../provider/AuthProvider";
 import Loader from "../../../component/Loader";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 import { useCreateCustomerMutation } from "../../../redux/features/customer/customerApi";
 import { useGetTerritoriesWithMarketPointsQuery } from "../../../redux/features/teritory/territoryApi";
+import { useUserProfile } from "../../../hooks/useUserProfile";
 import Card from "../../../component/common/Card";
 import { MdArrowBack } from "react-icons/md";
 import Button from "../../../component/common/Button";
@@ -260,11 +263,16 @@ import { ChevronRight } from "lucide-react";
 
 const CreateCustomer = () => {
   const { userInfo, loading: authLoading } = useAuth();
+  const { data: userProfile } = useUserProfile();
   const [createCustomer] = useCreateCustomerMutation();
 
   // Fetch territories with market points
   const { data: territoryResponse, isLoading: territoriesLoading } = useGetTerritoriesWithMarketPointsQuery();
   const territoryData = territoryResponse?.data || [];
+
+  // Get user role
+  const userRole = String(userProfile?.role || localStorage.getItem("role") || "").toLowerCase();
+  const isSuperAdmin = userRole === "superadmin";
 
   // Form state
   const [formData, setFormData] = useState({
@@ -316,6 +324,38 @@ const CreateCustomer = () => {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    const errors = [];
+
+    // Required fields
+    if (!formData.customerName?.trim()) errors.push("Customer Name is required");
+    if (!formData.territoryId) errors.push("Territory is required");
+    if (!formData.marketPointId) errors.push("Market Point is required");
+    if (!formData.tradeLicense?.trim()) errors.push("Trade License is required");
+    if (!formData.drugLicense?.trim()) errors.push("Drug License is required");
+    if (!formData.address?.trim()) errors.push("Address is required");
+    if (!formData.mobile?.trim()) errors.push("Mobile is required");
+    if (!formData.email?.trim()) errors.push("Email is required");
+    if (!formData.contactPerson?.trim()) errors.push("Contact Person is required");
+    if (formData.payMode.length === 0) errors.push("Pay Mode is required (select at least one)");
+
+    // Conditional validation: If credit, stc, or spic is selected, creditLimit and dayLimit are required
+    const hasNonCashMode = formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode));
+    if (hasNonCashMode) {
+      if (!formData.creditLimit || formData.creditLimit <= 0) errors.push("Credit Limit is required when Credit/STC/SPIC is selected");
+      if (!formData.dayLimit || formData.dayLimit <= 0) errors.push("Day Limit is required when Credit/STC/SPIC is selected");
+    }
+
+    return errors;
+  };
+
+  // Get field error messages
+  const getFieldErrorMessage = (fieldName) => {
+    const validationErrors = validateForm();
+    return validationErrors.find((error) => error.includes(fieldName)) || null;
+  };
+
   const submitPayload = useMemo(() => {
     const fallbackMpoId = userInfo?._id || userInfo?.id || userInfo?.mpoId;
     const resolvedMpoId = (formData.mpoId || "").trim() || fallbackMpoId;
@@ -339,9 +379,41 @@ const CreateCustomer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      // Show professional error modal
+      await Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        html: `
+          <div class="text-left">
+            <p class="mb-3 font-semibold text-gray-700">Please fix the following required fields:</p>
+            <ul class="space-y-2">
+              ${validationErrors.map((error) => `<li class="flex items-start gap-2"><span class="text-red-500 mt-1">•</span><span class="text-gray-700">${error}</span></li>`).join("")}
+            </ul>
+          </div>
+        `,
+        confirmButtonText: "Got it",
+        confirmButtonColor: "#ef4444",
+        allowOutsideClick: false,
+      });
+      return;
+    }
+
     try {
       await createCustomer(submitPayload).unwrap();
-      alert("Customer created successfully!");
+      
+      // Show success modal
+      await Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Customer created successfully!",
+        confirmButtonColor: "#3b82f6",
+      });
+
+      // Reset form
       setFormData({
         customerName: "",
         territoryId: "",
@@ -362,7 +434,15 @@ const CreateCustomer = () => {
       setMarketOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to create customer.");
+      const errorMessage = err?.data?.message || "Failed to create customer.";
+      
+      // Show error modal
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage,
+        confirmButtonColor: "#ef4444",
+      });
     }
   };
 
@@ -399,7 +479,14 @@ const CreateCustomer = () => {
 
       <form onSubmit={handleSubmit} className="mx-auto bg-white rounded-lg shadow-md p-10 space-y-4 mt-4">
         {/* Customer Name */}
-        <Input label="Customer Name" name="customerName" value={formData.customerName} onChange={handleFormChange} />
+        <Input 
+          label="Customer Name" 
+          name="customerName" 
+          value={formData.customerName} 
+          onChange={handleFormChange}
+          required={true}
+          error={getFieldErrorMessage("Customer Name")}
+        />
 
         {/* Territory & Market Point */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -413,6 +500,8 @@ const CreateCustomer = () => {
             refElement={territoryRef}
             isOpen={territoryOpen}
             setIsOpen={setTerritoryOpen}
+            required={true}
+            error={getFieldErrorMessage("Territory")}
           />
 
           {/* Market Point */}
@@ -426,32 +515,85 @@ const CreateCustomer = () => {
             isOpen={marketOpen}
             setIsOpen={setMarketOpen}
             disabled={!formData.territoryId}
+            required={true}
+            error={getFieldErrorMessage("Market Point")}
           />
         </div>
 
         {/* Licenses */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Trade License" name="tradeLicense" value={formData.tradeLicense} onChange={handleFormChange} />
-          <Input label="Drug License" name="drugLicense" value={formData.drugLicense} onChange={handleFormChange} />
+          <Input 
+            label="Trade License" 
+            name="tradeLicense" 
+            value={formData.tradeLicense} 
+            onChange={handleFormChange}
+            required={true}
+            error={getFieldErrorMessage("Trade License")}
+          />
+          <Input 
+            label="Drug License" 
+            name="drugLicense" 
+            value={formData.drugLicense} 
+            onChange={handleFormChange}
+            required={true}
+            error={getFieldErrorMessage("Drug License")}
+          />
         </div>
 
         {/* Address */}
-        <Input label="Address" name="address" value={formData.address} onChange={handleFormChange} />
+        <Input 
+          label="Address" 
+          name="address" 
+          value={formData.address} 
+          onChange={handleFormChange}
+          required={true}
+          error={getFieldErrorMessage("Address")}
+        />
 
         {/* Contact & Mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Mobile" name="mobile" value={formData.mobile} onChange={handleFormChange} />
-          <Input label="Email" name="email" value={formData.email} onChange={handleFormChange} />
+          <Input 
+            label="Mobile" 
+            name="mobile" 
+            value={formData.mobile} 
+            onChange={handleFormChange}
+            required={true}
+            error={getFieldErrorMessage("Mobile")}
+          />
+          <Input 
+            label="Email" 
+            name="email" 
+            value={formData.email} 
+            onChange={handleFormChange}
+            required={true}
+            error={getFieldErrorMessage("Email")}
+          />
         </div>
 
         {/* Contact Person */}
-        <Input label="Contact Person" name="contactPerson" value={formData.contactPerson} onChange={handleFormChange} />
+        <Input 
+          label="Contact Person" 
+          name="contactPerson" 
+          value={formData.contactPerson} 
+          onChange={handleFormChange}
+          required={true}
+          error={getFieldErrorMessage("Contact Person")}
+        />
 
         {/* Discount & Pay Mode */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Discount (%)" name="discount" type="number" value={formData.discount} onChange={handleFormChange} />
+          <Input 
+            label="Discount (%)" 
+            name="discount" 
+            type="number" 
+            value={formData.discount} 
+            onChange={handleFormChange}
+            required={false}
+          />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Pay Mode</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Pay Mode <span className="text-red-500">*</span>
+            </label>
             <div className="flex gap-4">
               {["cash", "credit", "stc", "spic"].map((mode) => (
                 <label key={mode} className="flex items-center gap-1">
@@ -471,20 +613,41 @@ const CreateCustomer = () => {
 
         {/* Credit Limit & Day Limit */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Credit Limit" name="creditLimit" type="number" value={formData.creditLimit} onChange={handleFormChange} />
-          <Input label="Day Limit" name="dayLimit" type="number" value={formData.dayLimit} onChange={handleFormChange} />
-        </div>
-
-        {/* Optional MPO id */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="MPO ID (Optional)"
-            name="mpoId"
-            value={formData.mpoId}
+          <Input 
+            label="Credit Limit" 
+            name="creditLimit" 
+            type="number" 
+            value={formData.creditLimit} 
             onChange={handleFormChange}
-            placeholder="Leave empty to use logged-in MPO"
+            required={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode))}
+            placeholder={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode)) ? "Required for Credit/STC/SPIC" : ""}
+            error={getFieldErrorMessage("Credit Limit")}
+          />
+          <Input 
+            label="Day Limit" 
+            name="dayLimit" 
+            type="number" 
+            value={formData.dayLimit} 
+            onChange={handleFormChange}
+            required={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode))}
+            placeholder={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode)) ? "Required for Credit/STC/SPIC" : ""}
+            error={getFieldErrorMessage("Day Limit")}
           />
         </div>
+
+        {/* MPO ID - Only for SuperAdmin */}
+        {isSuperAdmin && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="MPO ID"
+              name="mpoId"
+              value={formData.mpoId}
+              onChange={handleFormChange}
+              placeholder="Leave empty to use logged-in MPO"
+              required={false}
+            />
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Request JSON Preview</label>
@@ -493,30 +656,53 @@ const CreateCustomer = () => {
           </pre>
         </div>
 
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-          disabled={territoriesLoading}
-        >
-          Create Customer
-        </button>
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={territoriesLoading}
+          >
+            Create Customer
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => window.history.back()}
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   );
 };
 
 // Input Component
-const Input = ({ label, ...props }) => (
+const Input = ({ label, required = false, error = null, ...props }) => (
   <div className="mb-2">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-    <input {...props} className="w-full border border-gray-300 rounded p-2 bg-white" />
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+    <input 
+      {...props} 
+      className={`w-full border rounded p-2 bg-white transition-colors ${
+        error
+          ? "border-red-500 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300"
+          : "border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
+      }`}
+    />
+    {error && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠</span>{error}</p>}
   </div>
 );
 
 // Reusable Dropdown Component
-const Dropdown = ({ label, options, value, setValue, displayKey, refElement, isOpen, setIsOpen, disabled }) => (
+const Dropdown = ({ label, options, value, setValue, displayKey, refElement, isOpen, setIsOpen, disabled, required = false, error = null }) => (
   <div ref={refElement} className="relative">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
     <div className="relative">
       <input
         type="text"
@@ -525,12 +711,18 @@ const Dropdown = ({ label, options, value, setValue, displayKey, refElement, isO
         placeholder={`Select ${label.toLowerCase()}`}
         onClick={() => !disabled && setIsOpen((p) => !p)}
         disabled={disabled}
-        className={`w-full border rounded p-2 pr-8 ${disabled ? "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400" : "border-gray-300 cursor-pointer"
-          }`}
+        className={`w-full border rounded p-2 pr-8 transition-colors ${
+          error
+            ? "border-red-500 bg-red-50 cursor-pointer"
+            : disabled
+              ? "border-gray-200 bg-gray-100 cursor-not-allowed text-gray-400"
+              : "border-gray-300 cursor-pointer focus:ring-2 focus:ring-blue-300"
+        }`}
       />
       <svg
-        className={`w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none ${disabled && "text-gray-300"
-          }`}
+        className={`w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none ${
+          error ? "text-red-500" : disabled ? "text-gray-300" : "text-gray-500"
+        }`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -538,6 +730,7 @@ const Dropdown = ({ label, options, value, setValue, displayKey, refElement, isO
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     </div>
+    {error && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><span>⚠</span>{error}</p>}
 
     {isOpen && (
       <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded shadow max-h-40 overflow-y-auto mt-1">
