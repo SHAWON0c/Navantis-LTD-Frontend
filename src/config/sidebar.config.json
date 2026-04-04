@@ -422,6 +422,17 @@
         "icon": "FileText",
         "children": [
           {
+            "key": "depot-approve-return",
+            "label": "Approve Return",
+            "path": "/depot/approve-return",
+            "icon": "CheckCircle",
+            "allowedRoles": [
+              "md",
+              "dm",
+              "superadmin"
+            ]
+          },
+          {
             "key": "depot-sales-returned",
             "label": "Sales Returned",
             "path": "/depot/sales-returned",

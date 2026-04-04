@@ -13,7 +13,7 @@ export const useDecodeJWT = () => {
       }
 
       const decoded = jwtDecode(token);
-      console.log("✅ Decoded JWT Payload:", decoded);
+      // console.log("✅ Decoded JWT Payload:", decoded);
 
       setPayload(decoded);
     } catch (error) {

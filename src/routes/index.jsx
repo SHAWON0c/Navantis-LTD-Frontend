@@ -80,6 +80,7 @@ import VendorDatabasePage from "../pages/HR/VendorDatabasePage";
 import NoticeBoardPage from "../pages/HR/NoticeBoardPage";
 import EmploymentDocsPage from "../pages/HR/EmploymentDocsPage";
 import CustomerList from "../pages/managers/CustomerList";
+import ApproveReturn from "../pages/Depot/ApproveReturn";
 
 
 // ✅ FIXED PATHS
@@ -179,7 +180,8 @@ export default function AppRoutes() {
           <Route path="/depot/stock-in" element={<DepotStockIn />} />
           <Route path="/depot/stock-out" element={<DepotStockOut />} />
           <Route path="/depot/order-delivery" element={<PendingOrders />} />
-          <Route path="/depot/products/returnlist" element={<ReturnRequestList />} />
+          {/* <Route path="/depot/products/returnlist" element={<ReturnRequestList />} /> */}
+          <Route path="/depot/approve-return" element={<ApproveReturn />} />
           <Route path="/invoice-print" element={<HardcodedInvoicePrint />} />
           <Route path="/depot/dispatch-rider" element={<DispatchRidersPage />} />
           <Route path="/depot/invoice-payment" element={<InvoiceAndPayment />} />

@@ -17,9 +17,24 @@ import {
 const CustomerList = () => {
 	const { data: userProfile } = useUserProfile();
 	const userRole = String(userProfile?.role || localStorage.getItem("role") || "").toLowerCase();
-	const isMD = userRole === "md";
 
-	console.log("User role check:", { roleFromProfile: userProfile?.role, userRole, isMD });
+	console.log("User role check:", { roleFromProfile: userProfile?.role, userRole });
+
+	// Map approval levels to role abbreviations
+	const levelToRoleMap = {
+		zonalManager: "zm",
+		managingDirector: "md",
+		areaManager: "am",
+		mpo: "mpo",
+		depositManager: "dm",
+	};
+
+	// Check if user can approve based on currentLevel matching user role
+	const canApprove = (currentLevel) => {
+		if (!userRole) return false;
+		const requiredRole = levelToRoleMap[currentLevel];
+		return userRole === requiredRole;
+	};
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
@@ -445,17 +460,17 @@ const CustomerList = () => {
 								<Button
 									variant="primary"
 									onClick={activateSelectedCustomer}
-									disabled={isActivating || !isMD}
-									title={!isMD ? "Only Managing Director can activate customers" : ""}
+									disabled={isActivating || userRole !== "md"}
+									title={userRole !== "md" ? "Only Managing Director can activate customers" : ""}
 								>
-									{isActivating ? "Activating..." : "Active"}
+									{isActivating ? "Activating..." : "Activate"}
 								</Button>
 							) : (
 								<Button
 									variant="primary"
 									onClick={approveSelectedCustomer}
-									disabled={getDisplayStatus(selectedCustomer) !== "pending" || isApproving || !isMD}
-									title={!isMD ? "Only Managing Director can approve customers" : ""}
+									disabled={getDisplayStatus(selectedCustomer) !== "pending" || isApproving || !canApprove(selectedCustomer?.approvalStatus?.currentLevel)}
+									title={!canApprove(selectedCustomer?.approvalStatus?.currentLevel) ? `Requires ${levelToRoleMap[selectedCustomer?.approvalStatus?.currentLevel]?.toUpperCase()} role` : ""}
 								>
 									{getDisplayStatus(selectedCustomer) === "active"
 										? "Active"

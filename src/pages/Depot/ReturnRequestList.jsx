@@ -1,5 +1,5 @@
 import React from "react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { ChevronRight } from "lucide-react";
 import { MdArrowBack } from "react-icons/md";
 import Loader from "../../component/Loader";
@@ -7,26 +7,19 @@ import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
 import {
 	useApproveReturnMutation,
-	useGetPendingReturnsQuery,
-} from "../../redux/features/orders/orderApi";
-
-const formatDate = (value) => {
-	if (!value) return "-";
-	const parsed = new Date(value);
-	if (Number.isNaN(parsed.getTime())) return "-";
-	return parsed.toLocaleDateString("en-GB");
-};
+	useGetPendingReturnsListQuery,
+} from "../../redux/features/returns/returnsApi";
 
 const formatAmount = (value) => {
 	const amount = Number(value || 0);
-	return amount.toLocaleString(undefined, {
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
+	return amount.toLocaleString("en-BD", {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0,
 	});
 };
 
 const ReturnRequestList = () => {
-	const { data, isLoading, isError, refetch } = useGetPendingReturnsQuery();
+	const { data, isLoading, isError, refetch } = useGetPendingReturnsListQuery();
 	const [approveReturn, { isLoading: isApproving }] = useApproveReturnMutation();
 
 	const returnRequests = data?.data || [];
@@ -59,7 +52,7 @@ const ReturnRequestList = () => {
 	}
 
 	return (
-		<div className="min-h-screen">
+		<div className="min-h-screen bg-gray-50 p-4">
 			<Card className="mb-6">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
@@ -88,73 +81,94 @@ const ReturnRequestList = () => {
 				</div>
 			</Card>
 
-			<div className="overflow-x-auto bg-white shadow rounded-xl">
-				<table className="min-w-full divide-y divide-gray-200 text-sm">
-					<thead className="bg-gray-100">
-						<tr>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">#</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Invoice</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Product</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Customer</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Batches</th>
-							<th className="px-4 py-3 text-center font-semibold text-gray-700">Total Qty</th>
-							<th className="px-4 py-3 text-right font-semibold text-gray-700">Refund Amount</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Reason</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-							<th className="px-4 py-3 text-left font-semibold text-gray-700">Created At</th>
-							<th className="px-4 py-3 text-center font-semibold text-gray-700">Action</th>
-						</tr>
-					</thead>
+			<div className="space-y-4">
+				{returnRequests.length === 0 ? (
+					<Card className="text-center py-12">
+						<p className="text-gray-500 text-lg">No pending return requests found.</p>
+					</Card>
+				) : (
+					returnRequests.map((request, index) => (
+						<Card key={request.returnId} className="hover:shadow-md transition-shadow">
+							{/* Header Section */}
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b">
+								<div>
+									<p className="text-xs text-gray-500 font-semibold">INVOICE</p>
+									<p className="text-lg font-bold text-gray-900">{request.invoice}</p>
+								</div>
+								<div>
+									<p className="text-xs text-gray-500 font-semibold">CUSTOMER</p>
+									<p className="text-sm font-medium text-gray-800">{request.customer?.customerName}</p>
+									<p className="text-xs text-gray-600">{request.customer?.mobile}</p>
+								</div>
+								<div>
+									<p className="text-xs text-gray-500 font-semibold">RETURN DATE</p>
+									<p className="text-sm text-gray-800">{request.returnedDate}</p>
+								</div>
+							</div>
 
-					<tbody className="divide-y divide-gray-200">
-						{returnRequests.length === 0 ? (
-							<tr>
-								<td colSpan="11" className="px-4 py-8 text-center text-gray-500">
-									No pending return requests found.
-								</td>
-							</tr>
-						) : (
-							returnRequests.map((request, index) => (
-								<tr key={request._id} className="hover:bg-gray-50 align-top">
-									<td className="px-4 py-3">{index + 1}</td>
-									<td className="px-4 py-3">{request?.orderId?.invoiceNo || "-"}</td>
-									<td className="px-4 py-3">{request?.productId?.productName || "-"}</td>
-									<td className="px-4 py-3">{request?.customerId?.customerName || "-"}</td>
-									<td className="px-4 py-3">
-										<div className="space-y-1">
-											{(request?.returnedBatches || []).length === 0 ? (
-												<p className="text-gray-500">-</p>
-											) : (
-												(request.returnedBatches || []).map((batch) => (
-													<div key={batch._id || batch.depotProductId} className="text-xs text-gray-700 border rounded p-2">
-														<p>Batch: {batch.batchNo || "-"}</p>
-														<p>Expire: {formatDate(batch.expireDate)}</p>
-														<p>Qty: {batch.quantity || 0}</p>
-													</div>
-												))
-											)}
-										</div>
-									</td>
-									<td className="px-4 py-3 text-center">{request?.totalQuantity || 0}</td>
-									<td className="px-4 py-3 text-right">{formatAmount(request?.refundAmount)}</td>
-									<td className="px-4 py-3 max-w-[220px] break-words">{request?.reason || "-"}</td>
-									<td className="px-4 py-3 capitalize">{request?.status || "-"}</td>
-									<td className="px-4 py-3">{formatDate(request?.createdAt)}</td>
-									<td className="px-4 py-3 text-center">
-										<Button
-											variant="primary"
-											size="small"
-											disabled={isApproving || request?.status !== "pending"}
-											onClick={() => handleApprove(request._id)}
-										>
-											{isApproving ? "Approving..." : "Approve"}
-										</Button>
-									</td>
-								</tr>
-							))
-						)}
-					</tbody>
-				</table>
+							{/* Reason Section */}
+							<div className="mb-4 pb-4 border-b">
+								<p className="text-xs text-gray-500 font-semibold">RETURN REASON</p>
+								<p className="text-sm text-gray-800">{request.returnReason}</p>
+							</div>
+
+							{/* Batches Table */}
+							<div className="mb-4 overflow-x-auto">
+								<p className="text-xs text-gray-500 font-semibold mb-2">RETURNED BATCHES</p>
+								<table className="w-full text-xs">
+									<thead>
+										<tr className="bg-gray-100 border-b">
+											<th className="px-2 py-2 text-left text-gray-700">Product</th>
+											<th className="px-2 py-2 text-left text-gray-700">Batch No</th>
+											<th className="px-2 py-2 text-left text-gray-700">Expire Date</th>
+											<th className="px-2 py-2 text-center text-gray-700">Ordered</th>
+											<th className="px-2 py-2 text-center text-gray-700">Returned</th>
+										</tr>
+									</thead>
+									<tbody>
+										{request.returnedBatches?.map((batch, batchIdx) => (
+											<tr key={batchIdx} className="border-b hover:bg-gray-50">
+												<td className="px-2 py-2 text-gray-800">{batch.product}</td>
+												<td className="px-2 py-2 text-gray-800">{batch.batchNo}</td>
+												<td className="px-2 py-2 text-gray-800">{batch.expireDate}</td>
+												<td className="px-2 py-2 text-center font-semibold text-gray-900">
+													{batch.orderedQuantity}
+												</td>
+												<td className="px-2 py-2 text-center font-semibold text-red-600">
+													{batch.returnedQuantity}
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+
+							{/* Summary and Action */}
+							<div className="flex items-center justify-between pt-4 border-t">
+								<div className="space-y-1">
+									<p className="text-sm text-gray-600">
+										<span className="font-semibold">Total Qty:</span>{" "}
+										<span className="text-lg font-bold text-blue-600">{request.totalQuantity}</span>
+									</p>
+									<p className="text-sm text-gray-600">
+										<span className="font-semibold">Refund Amount:</span>{" "}
+										<span className="text-lg font-bold text-green-600">
+											৳ {formatAmount(request.refundAmount)}
+										</span>
+									</p>
+								</div>
+								<Button
+									variant="primary"
+									disabled={isApproving}
+									onClick={() => handleApprove(request.returnId)}
+									className="bg-blue-600 hover:bg-blue-700"
+								>
+									{isApproving ? "Approving..." : "Approve Return"}
+								</Button>
+							</div>
+						</Card>
+					))
+				)}
 			</div>
 		</div>
 	);

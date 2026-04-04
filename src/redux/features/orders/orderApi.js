@@ -166,8 +166,8 @@ export const orderAPI = baseAPI.injectEndpoints({
 
     // ✅ Return Order Product
     orderReturn: builder.mutation({
-      query: ({ orderId, payload }) => ({
-        url: `/orders/returns/${orderId}`,
+      query: (payload) => ({
+        url: "/orders/returns/request",
         method: "POST",
         body: payload,
       }),
@@ -184,14 +184,14 @@ export const orderAPI = baseAPI.injectEndpoints({
       providesTags: ["Orders"],
     }),
 
-    // ✅ Approve return request
-    approveReturn: builder.mutation({
-      query: (returnId) => ({
-        url: `/orders/returns/approve/${returnId}`,
-        method: "PATCH",
-      }),
-      invalidatesTags: ["Orders"],
-    }),
+    // // ✅ Approve return request
+    // approveReturn: builder.mutation({
+    //   query: (returnId) => ({
+    //     url: `/orders/returns/approve/${returnId}`,
+    //     method: "PATCH",
+    //   }),
+    //   invalidatesTags: ["Orders"],
+    // }),
 
 
     // ✅ Get Orders by Status

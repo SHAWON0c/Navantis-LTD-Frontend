@@ -98,24 +98,28 @@ const OrderReturnModal = ({ isOpen, onClose }) => {
   };
 
   const getOrderReturnSummary = (order) => {
-    const selectedBatches = order?.selectedBatches || [];
+    const products = order?.products || [];
+    const returnedBatches = [];
+    let totalQuantity = 0;
 
-    const returnedBatches = selectedBatches
-      .map((batch, index) => {
+    products.forEach((product) => {
+      const selectedBatches = product?.selectedBatches || [];
+
+      selectedBatches.forEach((batch, index) => {
         const batchKey = getBatchKey(order._id, batch, index);
         const quantity = Number(batchReturnQty[batchKey] || 0);
 
-        return {
-          depotProductId: batch?.depotProductId,
-          quantity,
-        };
-      })
-      .filter((batch) => batch.depotProductId && batch.quantity > 0);
-
-    const totalQuantity = returnedBatches.reduce(
-      (sum, batch) => sum + Number(batch.quantity || 0),
-      0
-    );
+        if (quantity > 0) {
+          returnedBatches.push({
+            depotProductId: batch?.depotProductId,
+            batchNo: batch?.batchNo,
+            expireDate: batch?.expireDate,
+            quantity,
+          });
+          totalQuantity += quantity;
+        }
+      });
+    });
 
     return { returnedBatches, totalQuantity };
   };
@@ -145,15 +149,14 @@ const OrderReturnModal = ({ isOpen, onClose }) => {
     }
 
     const payload = {
-      productId: order.productId,
-      totalQuantity,
+      orderId: order._id,
       reason,
       returnedBatches,
     };
 
     try {
       setSubmittingOrderId(order._id);
-      await orderReturn({ orderId: order._id, payload }).unwrap();
+      await orderReturn(payload).unwrap();
       toast.success("Product return submitted successfully");
 
       setOrderItems((prev) => prev.filter((item) => item._id !== order._id));
@@ -209,73 +212,98 @@ const OrderReturnModal = ({ isOpen, onClose }) => {
           ) : (
             <div className="space-y-5">
               {orderItems.map((order) => {
-                const selectedBatches = order?.selectedBatches || [];
+                const products = order?.products || [];
                 const isSubmitting =
                   isReturnLoading && submittingOrderId === order._id;
 
                 return (
                   <div key={order._id} className="border rounded-lg p-4 bg-gray-50 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 border-b pb-3">
                       <div>
                         <p className="text-xs text-gray-500">Invoice</p>
                         <p className="font-medium">{order.invoiceNo || "-"}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Product Name</p>
-                        <p className="font-medium">{order.productName || "-"}</p>
+                        <p className="text-xs text-gray-500">Customer</p>
+                        <p className="font-medium">{order.customerId?.customerName || "-"}</p>
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm border-collapse">
-                        <thead>
-                          <tr className="bg-white border-b">
-                            <th className="text-left py-2 px-3">Batch</th>
-                            <th className="text-left py-2 px-3">Expire Date</th>
-                            <th className="text-center py-2 px-3">Selected Qty</th>
-                            <th className="text-center py-2 px-3">Return Qty</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedBatches.length === 0 ? (
-                            <tr>
-                              <td colSpan="4" className="text-center py-3 text-gray-500">
-                                No batch details found
-                              </td>
-                            </tr>
-                          ) : (
-                            selectedBatches.map((batch, index) => {
-                              const batchKey = getBatchKey(order._id, batch, index);
-                              const maxQty = Number(batch?.quantity || 0);
+                    <div className="space-y-4">
+                      {products.length === 0 ? (
+                        <p className="text-sm text-gray-500 text-center py-3">
+                          No products found in this order
+                        </p>
+                      ) : (
+                        products.map((product) => {
+                          const selectedBatches = product?.selectedBatches || [];
+                          const productName = product?.productId?.productName || "Unknown";
 
-                              return (
-                                <tr key={batchKey} className="bg-white border-b last:border-b-0">
-                                  <td className="py-2 px-3">{batch?.batchNo || "-"}</td>
-                                  <td className="py-2 px-3">{formatDate(batch?.expireDate)}</td>
-                                  <td className="py-2 px-3 text-center">{maxQty}</td>
-                                  <td className="py-2 px-3 text-center">
-                                    <input
-                                      type="number"
-                                      min={0}
-                                      max={maxQty}
-                                      value={batchReturnQty[batchKey] ?? ""}
-                                      onChange={(e) =>
-                                        handleBatchQtyChange({
-                                          orderId: order._id,
-                                          batch,
-                                          index,
-                                          value: e.target.value,
-                                        })
-                                      }
-                                      className="w-24 border rounded-md px-2 py-1 text-center"
-                                    />
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          )}
-                        </tbody>
-                      </table>
+                          return (
+                            <div key={product._id} className="bg-white rounded-md p-3 space-y-3">
+                              <div>
+                                <p className="text-xs text-gray-500">Product</p>
+                                <p className="font-medium text-sm">{productName}</p>
+                              </div>
+
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-xs border-collapse">
+                                  <thead>
+                                    <tr className="bg-gray-100 border-b">
+                                      <th className="text-left py-2 px-2">Batch No</th>
+                                      <th className="text-left py-2 px-2">Expire Date</th>
+                                      <th className="text-center py-2 px-2">Available</th>
+                                      <th className="text-center py-2 px-2">Return</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {selectedBatches.length === 0 ? (
+                                      <tr>
+                                        <td colSpan="4" className="text-center py-2 text-gray-500">
+                                          No batches available
+                                        </td>
+                                      </tr>
+                                    ) : (
+                                      selectedBatches.map((batch, index) => {
+                                        const batchKey = getBatchKey(order._id, batch, index);
+                                        const maxQty = Number(batch?.quantity || 0);
+
+                                        return (
+                                          <tr key={batchKey} className="border-b last:border-b-0">
+                                            <td className="py-2 px-2">{batch?.batchNo || "-"}</td>
+                                            <td className="py-2 px-2">{formatDate(batch?.expireDate)}</td>
+                                            <td className="py-2 px-2 text-center text-sm font-medium">
+                                              {maxQty}
+                                            </td>
+                                            <td className="py-2 px-2 text-center">
+                                              <input
+                                                type="number"
+                                                min={0}
+                                                max={maxQty}
+                                                value={batchReturnQty[batchKey] ?? ""}
+                                                onChange={(e) =>
+                                                  handleBatchQtyChange({
+                                                    orderId: order._id,
+                                                    batch,
+                                                    index,
+                                                    value: e.target.value,
+                                                  })
+                                                }
+                                                placeholder="0"
+                                                className="w-20 border rounded-md px-2 py-1 text-center text-sm"
+                                              />
+                                            </td>
+                                          </tr>
+                                        );
+                                      })
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
 
                     <div>
@@ -289,21 +317,20 @@ const OrderReturnModal = ({ isOpen, onClose }) => {
                             [order._id]: e.target.value,
                           }))
                         }
-                        placeholder="Write return reason"
-                        className="w-full border rounded-md p-2 mt-1"
+                        placeholder="Write return reason (e.g., Expired batch return)"
+                        className="w-full border rounded-md p-2 mt-1 text-sm"
                       />
                     </div>
 
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                      <p className="text-sm text-gray-700">
-                        Total return quantity: {totalReturnQuantityByOrder[order._id] || 0}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t pt-3">
+                      <p className="text-sm font-medium text-gray-700">
+                        Total return quantity: <span className="text-blue-600">{totalReturnQuantityByOrder[order._id] || 0}</span>
                       </p>
-
                       <button
                         type="button"
                         onClick={() => handleSubmitReturn(order)}
-                        disabled={isSubmitting || selectedBatches.length === 0}
-                        className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 text-white font-semibold px-5 py-2 rounded-md transition"
+                        disabled={isSubmitting || products.length === 0}
+                        className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 text-white font-semibold px-5 py-2 rounded-md transition whitespace-nowrap"
                       >
                         {isSubmitting ? "Submitting..." : "Submit Return"}
                       </button>
