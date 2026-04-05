@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { MdArrowBack } from "react-icons/md";
-import { FaCheck, FaLock } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import Loader from "../../component/Loader";
 import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
-import { useUserProfile } from "../../hooks/useUserProfile";
 import {
 	useGetPendingReturnsListQuery,
 	useApproveReturnMutation,
@@ -20,51 +19,6 @@ const ApproveReturn = () => {
 	const [showApprovedModal, setShowApprovedModal] = useState(false);
 
 	const returnedOrders = data?.data || [];
-
-	// Get user role using hook + localStorage fallback - normalize to lowercase
-	const { data: userProfile } = useUserProfile();
-	const userRole = String(userProfile?.role || localStorage.getItem("role") || "").toLowerCase();
-
-	console.log("User role check:", { roleFromProfile: userProfile?.role, userRole, returnOrders: returnedOrders.length });
-
-	// Map currentLevel to role abbreviation
-	const levelToRoleMap = {
-		zonalManager: "zm",
-		managingDirector: "md",
-		areaManager: "am",
-		mpo: "mpo",
-		depositManager: "dm",
-	};
-
-	// Check if user can approve this specific return based on currentLevel matching user role
-	const canApproveReturn = (returnOrder) => {
-		if (!userRole) return false;
-
-		const currentLevel = returnOrder?.currentLevel;
-		const requiredRole = levelToRoleMap[currentLevel];
-		const canApprove = userRole === requiredRole;
-
-		console.log("✅ [Approval Check]", {
-			returnId: returnOrder?.returnId,
-			userRole,
-			currentLevel,
-			requiredRole,
-			canApprove,
-		});
-
-		return canApprove;
-	};
-
-	// Get button state message
-	const getApprovalMessage = (returnOrder) => {
-		const currentLevel = returnOrder?.currentLevel || returnOrder?.approvalLevel;
-		
-		if (canApproveReturn(returnOrder)) {
-			return null;
-		}
-
-		return `Awaiting approval from ${currentLevel || "appropriate authority"}`;
-	};
 
 	const handleApproveReturn = async (returnId, returnOrder) => {
 		// Show confirmation modal
@@ -150,11 +104,6 @@ const ApproveReturn = () => {
             <div className="text-xs sm:text-sm text-neutral-500">
               Pending: {returnedOrders.length}
             </div>
-            {userRole && (
-              <div className="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded">
-                Your Role: {userRole.toUpperCase()}
-              </div>
-            )}
           </div>
         </div>
       </Card>
@@ -190,25 +139,11 @@ const ApproveReturn = () => {
 
                 {/* Right side - Return details */}
                 <div className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="text-xs text-gray-500 font-semibold">RETURN REASON</p>
-                      <p className="text-sm text-gray-800">
-                        {returnOrder.returnReason}
-                      </p>
-                    </div>
-                    {/* Approval Status Badge */}
-                    <div className="ml-2">
-                      {canApproveReturn(returnOrder) ? (
-                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded whitespace-nowrap">
-                          <FaCheck size={10} /> Can Approve
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1 rounded whitespace-nowrap">
-                          <FaLock size={10} /> Pending
-                        </span>
-                      )}
-                    </div>
+                  <div>
+                    <p className="text-xs text-gray-500 font-semibold">RETURN REASON</p>
+                    <p className="text-sm text-gray-800">
+                      {returnOrder.returnReason}
+                    </p>
                   </div>
                   <div className="flex gap-6">
                     <div>
@@ -275,28 +210,14 @@ const ApproveReturn = () => {
                   <p className="text-lg font-bold text-green-600">
                     ৳ {returnOrder.refundAmount?.toLocaleString("en-BD")}
                   </p>
-                  {getApprovalMessage(returnOrder) && (
-                    <p className="text-xs text-yellow-600 mt-2 flex items-center gap-1">
-                      <FaLock size={12} />
-                      {getApprovalMessage(returnOrder)}
-                    </p>
-                  )}
                 </div>
                 <Button
                   variant="primary"
                   icon={<FaCheck />}
-                  disabled={isApproving || !canApproveReturn(returnOrder)}
+                  disabled={isApproving}
                   onClick={() => handleApproveReturn(returnOrder.returnId, returnOrder)}
-                  className={
-                    canApproveReturn(returnOrder)
-                      ? "bg-green-600 hover:bg-green-700"
-                      : "bg-gray-400 cursor-not-allowed"
-                  }
-                  title={
-                    !canApproveReturn(returnOrder)
-                      ? `Requires ${levelToRoleMap[returnOrder?.currentLevel]?.toUpperCase()} role`
-                      : "Click to approve this return"
-                  }
+                  className="bg-green-600 hover:bg-green-700"
+                  title="Click to approve this return"
                 >
                   {isApproving ? "Approving..." : "Approve Return"}
                 </Button>

@@ -137,6 +137,7 @@
 
 // src/provider/AuthProvider.jsx
 import { createContext, useState, useEffect, useContext, useCallback } from "react";
+import { showToast } from "../component/common/toastService";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -196,14 +197,29 @@ export default function AuthProvider({ children }) {
       if (DEBUG) console.log("✅ Auth re-synced from backend:", syncedUser);
     } catch (error) {
       const status = Number(error?.status || 0);
-      const shouldForceLogout = status === 401 || status === 403;
+      const isNetworkError = error instanceof TypeError;
+      const shouldForceLogout = status === 401 || status === 403 || isNetworkError;
 
       if (!shouldForceLogout) {
         if (DEBUG) console.log("⚠️ verify-token transient failure, keeping session", error);
         return;
       }
 
-      if (DEBUG) console.log("🚨 verify-token unauthorized, clearing auth", error);
+      if (DEBUG) {
+        if (isNetworkError) {
+          console.log("🚨 Backend unreachable, clearing auth", error);
+        } else {
+          console.log("🚨 verify-token unauthorized, clearing auth", error);
+        }
+      }
+
+      // Show notification to user
+      if (isNetworkError) {
+        showToast("Backend server is unreachable. Please try again later.", "error");
+      } else {
+        showToast("Your session has expired. Please login again.", "warn");
+      }
+
       setUser(null);
       clearAuthStorage();
     }
