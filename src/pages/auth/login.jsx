@@ -467,6 +467,7 @@ export default function Login() {
                   setPassword(e.target.value);
                 }}
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                autoComplete="current-password"
                 required
               />
             </div>

@@ -198,30 +198,34 @@ export default function AuthProvider({ children }) {
     } catch (error) {
       const status = Number(error?.status || 0);
       const isNetworkError = error instanceof TypeError;
-      const shouldForceLogout = status === 401 || status === 403 || isNetworkError;
-
-      if (!shouldForceLogout) {
-        if (DEBUG) console.log("⚠️ verify-token transient failure, keeping session", error);
+      
+      // Network errors: Only logout if we don't have a cached user session
+      // This prevents logouts on page refreshes when backend is temporarily down
+      if (isNetworkError) {
+        const hasCachedUser = user !== null;
+        
+        if (hasCachedUser) {
+          // User is already loaded from localStorage, keep them logged in
+          if (DEBUG) console.log("⚠️ Backend unreachable but user cached locally, keeping session", error);
+          return;
+        }
+        
+        // No cached user and backend down: don't logout yet, just skip verification
+        if (DEBUG) console.log("⚠️ Backend unreachable and no cached user, will retry on next check", error);
         return;
       }
 
-      if (DEBUG) {
-        if (isNetworkError) {
-          console.log("🚨 Backend unreachable, clearing auth", error);
-        } else {
-          console.log("🚨 verify-token unauthorized, clearing auth", error);
-        }
-      }
-
-      // Show notification to user
-      if (isNetworkError) {
-        showToast("Backend server is unreachable. Please try again later.", "error");
-      } else {
+      // 401/403: Always logout regardless of cache
+      if (status === 401 || status === 403) {
+        if (DEBUG) console.log("🚨 verify-token unauthorized (401/403), clearing auth", error);
         showToast("Your session has expired. Please login again.", "warn");
+        setUser(null);
+        clearAuthStorage();
+        return;
       }
 
-      setUser(null);
-      clearAuthStorage();
+      // Other errors: keep session
+      if (DEBUG) console.log("⚠️ verify-token error, keeping session", error);
     }
   }, []);
 
