@@ -81,6 +81,8 @@ import NoticeBoardPage from "../pages/HR/NoticeBoardPage";
 import EmploymentDocsPage from "../pages/HR/EmploymentDocsPage";
 import CustomerList from "../pages/managers/CustomerList";
 import ApproveReturn from "../pages/Depot/ApproveReturn";
+import { CreateInstitute, InstituteList, InstitutePendingApproval, InstituteDetails, ApprovePendingInstituteOrders, InstituteOrderInvoiceAndPayment, PlaceInstituteOrder } from "../pages/admin/institutes";
+import PrintInstituteInvoice from "../component/reports/PrintInstituteInvoice";
 
 // ✅ FIXED PATHS
 
@@ -141,6 +143,22 @@ export default function AppRoutes() {
           <Route path="/admin/purchase-order" element={<PurchaseOrder />} />
           <Route path="/admin/purchase-list" element={<PurchaseOrderList />} />
 
+          {/* Institute Management Routes */}
+          <Route path="/admin/institutes" element={<InstituteList />} />
+          <Route path="/admin/institutes/:id" element={<InstituteDetails />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={["admin", "superadmin"]} />}>
+          <Route path="/admin/institutes/create" element={<CreateInstitute />} />
+          <Route path="/admin/institutes/edit/:id" element={<InstituteDetails />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={["superadmin" ,"dm"]} />}>
+          <Route path="/admin/institutes/pending-approval" element={<InstitutePendingApproval />} />
+          <Route path="/institutes/place-order" element={<PlaceInstituteOrder />} />
+          <Route path="/institutes/approve-pending-orders" element={<ApprovePendingInstituteOrders />} />
+          <Route path="/institutes/order-invoice-payment" element={<InstituteOrderInvoiceAndPayment />} />
+          <Route path="/institutes/invoice-print" element={<PrintInstituteInvoice />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["superadmin"]} />}>

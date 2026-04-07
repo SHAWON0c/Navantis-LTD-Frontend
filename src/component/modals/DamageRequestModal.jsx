@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useSubmitDamageRequestMutation } from "../../redux/features/wareHouse/warehouseDamageApi";
 
 const DamageRequestModal = ({
@@ -50,12 +51,12 @@ const DamageRequestModal = ({
 
 const handleSubmit = async () => {
   if (!warehouseReceiveId) {
-    alert("Warehouse Receive ID missing");
+    toast.error("❌ Warehouse Receive ID missing");
     return;
   }
 
   if (!damageQuantity || Number(damageQuantity) <= 0) {
-    alert("Please enter valid damage quantity");
+    toast.error("❌ Please enter valid damage quantity");
     return;
   }
 
@@ -67,7 +68,7 @@ const handleSubmit = async () => {
       addedBy,
     }).unwrap();
 
-    alert("Damage request submitted successfully!");
+    toast.success("✅ Damage request submitted successfully!");
     setDamageQuantity("");
     setRemarks("");
     onClose();
@@ -78,7 +79,7 @@ const handleSubmit = async () => {
     const errorMessage =
       err?.data?.message || "Failed to submit damage request";
 
-    alert(errorMessage);
+    toast.error(`❌ ${errorMessage}`);
   }
 };
 

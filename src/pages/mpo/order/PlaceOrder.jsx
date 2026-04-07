@@ -265,6 +265,7 @@
 // ui okey 
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../provider/AuthProvider";
+import { toast } from "react-toastify";
 import Loader from "../../../component/Loader";
 import Button from "../../../component/common/Button";
 import FormInput from "../../../component/common/FormInput";
@@ -457,8 +458,14 @@ const PlaceOrder = () => {
 
   // ================= SUBMIT =================
   const handleSubmit = async () => {
-    if (!products.length) return alert("Add product first");
-    if (!formData.customerId) return alert("Select customer");
+    if (!products.length) {
+      toast.error("❌ Add product first");
+      return;
+    }
+    if (!formData.customerId) {
+      toast.error("❌ Select customer");
+      return;
+    }
 
     const payload = {
       customerId: formData.customerId,
@@ -468,11 +475,11 @@ const PlaceOrder = () => {
 
     try {
       await createOrder(payload).unwrap();
-      alert("Order placed successfully");
+      toast.success("✅ Order placed successfully");
       setProducts([]);
     } catch (err) {
       console.log(err);
-      alert("Order failed");
+      toast.error("❌ Order failed");
     }
   };
 

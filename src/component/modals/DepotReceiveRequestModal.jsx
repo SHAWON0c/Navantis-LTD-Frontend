@@ -424,6 +424,7 @@
 
 
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useUpdateSendProductRequestStatusMutation } from "../../redux/features/depot/depotStockApi";
 
 const DepotReceiveRequestModal = ({ isOpen, onClose, addedBy, productData, refetch }) => {
@@ -442,7 +443,7 @@ const DepotReceiveRequestModal = ({ isOpen, onClose, addedBy, productData, refet
     const quantityNum = Number(requestQuantity);
 
     if (!quantityNum || quantityNum <= 0) {
-      alert("Please enter a valid quantity");
+      toast.error("❌ Please enter a valid quantity");
       return;
     }
 
@@ -454,13 +455,13 @@ const DepotReceiveRequestModal = ({ isOpen, onClose, addedBy, productData, refet
         quantity: quantityNum
       }).unwrap();
 
-      alert(`Request updated successfully for ${productData?.warehouseProductId?.productName}`);
+      toast.success(`✅ Request updated successfully for ${productData?.warehouseProductId?.productName}`);
       setRequestQuantity("");
       onClose();
       refetch?.(); // refresh the parent list if needed
     } catch (err) {
       console.error(err);
-      alert(err?.data?.message || "Failed to update request");
+      toast.error(`❌ ${err?.data?.message || "Failed to update request"}`);
     }
   };
 

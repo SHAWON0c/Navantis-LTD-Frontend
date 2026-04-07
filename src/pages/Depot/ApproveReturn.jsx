@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { MdArrowBack } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import Loader from "../../component/Loader";
@@ -17,6 +18,8 @@ const ApproveReturn = () => {
 	const [approveReturn, { isLoading: isApproving }] = useApproveReturnMutation();
 	const [approvedReturn, setApprovedReturn] = useState(null);
 	const [showApprovedModal, setShowApprovedModal] = useState(false);
+	const [selectedReturnForDetails, setSelectedReturnForDetails] = useState(null);
+	const [showDetailsModal, setShowDetailsModal] = useState(false);
 
 	const returnedOrders = data?.data || [];
 
@@ -59,6 +62,11 @@ const ApproveReturn = () => {
 				error?.data?.message || error?.message || "Failed to approve return request";
 			toast.error(errMessage);
 		}
+	};
+
+	const handleShowDetails = (returnOrder) => {
+		setSelectedReturnForDetails(returnOrder);
+		setShowDetailsModal(true);
 	};
 
 	if (isLoading) return <Loader />;
@@ -108,122 +116,67 @@ const ApproveReturn = () => {
         </div>
       </Card>
 
-      {/* Pending Returns List */}
-      <div className="space-y-4">
+      {/* Pending Returns List - Simplified View */}
+      <div className="space-y-3">
         {returnedOrders.length === 0 ? (
           <Card className="text-center py-12">
             <p className="text-gray-500 text-lg">No pending return requests</p>
           </Card>
         ) : (
-          returnedOrders.map((returnOrder) => (
-            <Card key={returnOrder.returnId} className="hover:shadow-md transition-shadow">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {/* Left side - Order info */}
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-xs text-gray-500 font-semibold">INVOICE</p>
-                    <p className="text-lg font-bold text-gray-900">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-white border-b-2 border-gray-200">
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Customer Name</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Returned Qty</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Reason</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {returnedOrders.map((returnOrder) => (
+                  <tr key={returnOrder.returnId} className="border-b hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">
                       {returnOrder.invoice}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 font-semibold">CUSTOMER</p>
-                    <p className="text-sm text-gray-800">
-                      {returnOrder.customer?.customerName}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {returnOrder.customer?.mobile}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right side - Return details */}
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-xs text-gray-500 font-semibold">RETURN REASON</p>
-                    <p className="text-sm text-gray-800">
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-800">
+                      <div>
+                        <p className="font-medium">{returnOrder.customer?.customerName}</p>
+                        <p className="text-xs text-gray-500">{returnOrder.customer?.mobile}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-semibold text-red-600">
+                      {returnOrder.totalQuantity}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate">
                       {returnOrder.returnReason}
-                    </p>
-                  </div>
-                  <div className="flex gap-6">
-                    <div>
-                      <p className="text-xs text-gray-500 font-semibold">RETURNED DATE</p>
-                      <p className="text-sm text-gray-800">
-                        {returnOrder.returnedDate}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 font-semibold">TOTAL QTY</p>
-                      <p className="text-lg font-bold text-blue-600">
-                        {returnOrder.totalQuantity}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Batch Details Table */}
-              <div className="border-t pt-4 mb-4">
-                <p className="text-xs text-gray-500 font-semibold mb-2">
-                  RETURNED BATCHES
-                </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-gray-100 border-b">
-                        <th className="px-3 py-2 text-left text-gray-700">Product</th>
-                        <th className="px-3 py-2 text-left text-gray-700">Batch No</th>
-                        <th className="px-3 py-2 text-left text-gray-700">Expire Date</th>
-                        <th className="px-3 py-2 text-center text-gray-700">Ordered</th>
-                        <th className="px-3 py-2 text-center text-gray-700">Returned</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {returnOrder.returnedBatches?.map((batch, idx) => (
-                        <tr key={idx} className="border-b hover:bg-gray-50">
-                          <td className="px-3 py-2 text-gray-800">
-                            {batch.product}
-                          </td>
-                          <td className="px-3 py-2 text-gray-800">
-                            {batch.batchNo}
-                          </td>
-                          <td className="px-3 py-2 text-gray-800">
-                            {batch.expireDate}
-                          </td>
-                          <td className="px-3 py-2 text-center font-semibold text-gray-900">
-                            {batch.orderedQuantity}
-                          </td>
-                          <td className="px-3 py-2 text-center font-semibold text-red-600">
-                            {batch.returnedQuantity}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Refund and Action */}
-              <div className="border-t pt-4 flex items-center justify-between">
-                <div className="flex-1">
-                  <p className="text-xs text-gray-500 font-semibold">REFUND AMOUNT</p>
-                  <p className="text-lg font-bold text-green-600">
-                    ৳ {returnOrder.refundAmount?.toLocaleString("en-BD")}
-                  </p>
-                </div>
-                <Button
-                  variant="primary"
-                  icon={<FaCheck />}
-                  disabled={isApproving}
-                  onClick={() => handleApproveReturn(returnOrder.returnId, returnOrder)}
-                  className="bg-green-600 hover:bg-green-700"
-                  title="Click to approve this return"
-                >
-                  {isApproving ? "Approving..." : "Approve Return"}
-                </Button>
-              </div>
-            </Card>
-          ))
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleShowDetails(returnOrder)}
+                          className="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition"
+                          title="View Details"
+                        >
+                          <FiEye size={18} />
+                        </button>
+                        <Button
+                          variant="primary"
+                          size="small"
+                          disabled={isApproving}
+                          onClick={() => handleApproveReturn(returnOrder.returnId, returnOrder)}
+                          className="bg-green-600 hover:bg-green-700 text-xs"
+                        >
+                          {isApproving ? "..." : "Approve"}
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -337,6 +290,141 @@ const ApproveReturn = () => {
                 className="bg-green-600 hover:bg-green-700"
               >
                 Done
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Details Modal */}
+      {showDetailsModal && selectedReturnForDetails && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6 border-b pb-4 sticky top-0 bg-white">
+              <h3 className="text-lg font-bold text-gray-900">
+                Return Details
+              </h3>
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">INVOICE</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {selectedReturnForDetails.invoice}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">RETURNED DATE</p>
+                  <p className="text-sm text-gray-800">
+                    {selectedReturnForDetails.returnedDate}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">CUSTOMER</p>
+                  <p className="text-sm text-gray-800">
+                    {selectedReturnForDetails.customer?.customerName}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    {selectedReturnForDetails.customer?.mobile}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">ENTITY TYPE</p>
+                  <p className="text-sm font-semibold text-blue-600 uppercase">
+                    {selectedReturnForDetails.entityType}
+                  </p>
+                </div>
+              </div>
+
+              {/* Return Reason */}
+              <div className="border-t pt-4">
+                <p className="text-xs text-gray-500 font-semibold mb-2">RETURN REASON</p>
+                <p className="text-sm text-gray-800 p-3 bg-gray-50 rounded-lg">
+                  {selectedReturnForDetails.returnReason}
+                </p>
+              </div>
+
+              {/* Returned Batches */}
+              <div className="border-t pt-4">
+                <p className="text-xs text-gray-500 font-semibold mb-3">
+                  RETURNED BATCHES
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-gray-100 border-b">
+                        <th className="px-3 py-2 text-left text-gray-700">Product</th>
+                        <th className="px-3 py-2 text-left text-gray-700">Batch No</th>
+                        <th className="px-3 py-2 text-left text-gray-700">Expire Date</th>
+                        <th className="px-3 py-2 text-center text-gray-700">Returned</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedReturnForDetails.returnedBatches?.map((batch, idx) => (
+                        <tr key={idx} className="border-b hover:bg-gray-50">
+                          <td className="px-3 py-2 text-gray-800">
+                            {batch.product}
+                          </td>
+                          <td className="px-3 py-2 text-gray-800">
+                            {batch.batchNo}
+                          </td>
+                          <td className="px-3 py-2 text-gray-800">
+                            {batch.expireDate}
+                          </td>
+                          <td className="px-3 py-2 text-center font-semibold text-red-600">
+                            {batch.returnedQuantity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Summary */}
+              <div className="border-t pt-4 grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 font-semibold">TOTAL QUANTITY</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {selectedReturnForDetails.totalQuantity}
+                  </p>
+                </div>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 font-semibold">REFUND AMOUNT</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    ৳ {selectedReturnForDetails.refundAmount?.toLocaleString("en-BD")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 justify-end mt-6 border-t pt-4 sticky bottom-0 bg-white">
+              <Button
+                variant="ghost"
+                onClick={() => setShowDetailsModal(false)}
+              >
+                Close
+              </Button>
+              <Button
+                variant="primary"
+                icon={<FaCheck />}
+                disabled={isApproving}
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  handleApproveReturn(selectedReturnForDetails.returnId, selectedReturnForDetails);
+                }}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {isApproving ? "Approving..." : "Approve Return"}
               </Button>
             </div>
           </Card>

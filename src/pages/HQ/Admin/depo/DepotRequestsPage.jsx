@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import Card from "../../../../component/common/Card";
 import Button from "../../../../component/common/Button";
 import UniversalSummaryPanel from "../../../../component/common/UniversalSummaryPanel";
@@ -55,7 +56,7 @@ const DepotRequestsPage = () => {
       }));
 
     if (batches.length === 0) {
-      alert("Please select at least one batch");
+      toast.error("❌ Please select at least one batch");
       return;
     }
 
@@ -74,12 +75,12 @@ const DepotRequestsPage = () => {
         payload,
       }).unwrap();
 
-      alert("Request sent to warehouse successfully");
+      toast.success("✅ Request sent to warehouse successfully");
       closeModal();
       refetch();
     } catch (error) {
       console.error(error);
-      alert("Failed to send request");
+      toast.error("❌ Failed to send request");
     }
   };
 

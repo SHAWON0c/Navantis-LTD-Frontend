@@ -38,6 +38,53 @@
             "allowedRoles": ["superadmin"]
           }
         ]
+      },
+      {
+        "key": "superadmin-institutes",
+        "label": "Institute Management",
+        "icon": "Building2",
+        "children": [
+          {
+            "key": "superadmin-institutes-list",
+            "label": "All Institutes",
+            "path": "/admin/institutes",
+            "icon": "List",
+            "allowedRoles": [
+              "superadmin"
+            ]
+          },
+           {
+            "key": "superadmin-institutes-create",
+            "label": "Create Institute",
+            "path": "/admin/institutes/create",
+            "icon": "Plus",
+            "allowedRoles": [
+              "superadmin"
+            ]
+          },
+
+            {
+        "key": "admin-institute-orders",
+        "label": "Institute Orders",
+        "icon": "ShoppingCart",
+        "children": [
+     
+              {
+            "key": "admin-institute-orders-place",
+            "label": "Place Order",
+            "path": "/institutes/place-order",
+            "icon": "Plus",
+            "allowedRoles": [
+              "superadmin"
+            ]
+          }
+  
+       
+        ]
+      }
+        
+         
+        ]
       }
     ]
   },
@@ -235,6 +282,7 @@
           }
         ]
       }
+    
     ]
   },
   {
@@ -591,49 +639,7 @@
       }
     ]
   },
-  {
-    "key": "institute",
-    "label": "Institute",
-    "icon": "FileText",
-    "children": [
-      {
-        "key": "institute-management",
-        "label": "Institute Management",
-        "icon": "FileText",
-        "children": [
-          {
-            "key": "institute-add",
-            "label": "Add New Institute",
-            "path": "/institute/add",
-            "icon": "FileText",
-            "allowedRoles": [
-              "admin",
-              "superadmin"
-            ]
-          },
-          {
-            "key": "institute-list",
-            "label": "Institute List",
-            "path": "/institute/list",
-            "icon": "FileText",
-            "allowedRoles": [
-              "admin"
-            ]
-          },
-          {
-            "key": "institute-place-order",
-            "label": "Place Order",
-            "path": "/institute/place-order",
-            "icon": "FileText",
-            "allowedRoles": [
-              "admin",
-              "superadmin"
-            ]
-          }
-        ]
-      }
-    ]
-  },
+
   {
     "key": "doctorRequisition",
     "label": "Doctor Requisition",

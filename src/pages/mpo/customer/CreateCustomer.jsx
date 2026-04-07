@@ -340,11 +340,16 @@ const CreateCustomer = () => {
     if (!formData.contactPerson?.trim()) errors.push("Contact Person is required");
     if (formData.payMode.length === 0) errors.push("Pay Mode is required (select at least one)");
 
-    // Conditional validation: If credit, stc, or spic is selected, creditLimit and dayLimit are required
-    const hasNonCashMode = formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode));
-    if (hasNonCashMode) {
+    // Conditional validation for Credit/STC/SPIC
+    const hasCreditMode = formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode));
+    const hasCreditOrSpic = formData.payMode.some((mode) => ["credit", "spic"].includes(mode));
+
+    if (hasCreditMode) {
       if (!formData.creditLimit || formData.creditLimit <= 0) errors.push("Credit Limit is required when Credit/STC/SPIC is selected");
-      if (!formData.dayLimit || formData.dayLimit <= 0) errors.push("Day Limit is required when Credit/STC/SPIC is selected");
+    }
+    
+    if (hasCreditOrSpic) {
+      if (!formData.dayLimit || formData.dayLimit <= 0) errors.push("Day Limit is required when Credit/SPIC is selected");
     }
 
     return errors;
@@ -611,29 +616,36 @@ const CreateCustomer = () => {
           </div>
         </div>
 
-        {/* Credit Limit & Day Limit */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input 
-            label="Credit Limit" 
-            name="creditLimit" 
-            type="number" 
-            value={formData.creditLimit} 
-            onChange={handleFormChange}
-            required={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode))}
-            placeholder={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode)) ? "Required for Credit/STC/SPIC" : ""}
-            error={getFieldErrorMessage("Credit Limit")}
-          />
-          <Input 
-            label="Day Limit" 
-            name="dayLimit" 
-            type="number" 
-            value={formData.dayLimit} 
-            onChange={handleFormChange}
-            required={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode))}
-            placeholder={formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode)) ? "Required for Credit/STC/SPIC" : ""}
-            error={getFieldErrorMessage("Day Limit")}
-          />
-        </div>
+        {/* Credit Limit & Day Limit - Conditional Display */}
+        {formData.payMode.some((mode) => ["credit", "stc", "spic"].includes(mode)) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Credit Limit - Show for credit, stc, spic */}
+            <Input 
+              label="Credit Limit" 
+              name="creditLimit" 
+              type="number" 
+              value={formData.creditLimit} 
+              onChange={handleFormChange}
+              required={true}
+              placeholder="Enter credit limit"
+              error={getFieldErrorMessage("Credit Limit")}
+            />
+            
+            {/* Day Limit - Show only for credit and spic (NOT for stc) */}
+            {formData.payMode.some((mode) => ["credit", "spic"].includes(mode)) && (
+              <Input 
+                label="Day Limit" 
+                name="dayLimit" 
+                type="number" 
+                value={formData.dayLimit} 
+                onChange={handleFormChange}
+                required={true}
+                placeholder="Enter day limit"
+                error={getFieldErrorMessage("Day Limit")}
+              />
+            )}
+          </div>
+        )}
 
         {/* MPO ID - Only for SuperAdmin */}
         {isSuperAdmin && (

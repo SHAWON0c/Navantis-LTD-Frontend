@@ -81,11 +81,15 @@ const OrderProductsDetailsModal = ({
 
   const handleApproveClick = () => {
     const payload = productsState.map((p) => {
-      if (p.batchCount === 1) return { productId: p.productId };
+      // Extract product ID if it's an object, otherwise use as string
+      const productId = typeof p.productId === "object" ? p.productId._id : p.productId;
+      
+      if (p.batchCount === 1) return { productId };
+      
       const selectedBatches = p.batches
         .filter((b) => b.selectedQuantity > 0)
         .map((b) => ({ depotProductId: b.depotProductId, quantity: b.selectedQuantity }));
-      return { productId: p.productId, selectedBatches };
+      return { productId, selectedBatches };
     });
 
     onApprove(payload);

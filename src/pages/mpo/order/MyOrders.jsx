@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   useGetMpoPendingOrdersQuery,
   useGetMpoDeliveredOrdersQuery,
@@ -123,7 +124,7 @@ export default function MyOrders() {
         .filter((product) => Boolean(product.productId));
 
       if (products.length === 0) {
-        alert("No valid productId found for update.");
+        toast.error("❌ No valid productId found for update.");
         return;
       }
 
@@ -157,7 +158,7 @@ export default function MyOrders() {
       setIsEditingDetails(false);
     } catch (error) {
       console.error("Update order quantity failed", error);
-      alert(error?.data?.message || "Failed to update order quantities.");
+      toast.error(`❌ ${error?.data?.message || "Failed to update order quantities."}`);
     }
   };
 
@@ -176,7 +177,7 @@ export default function MyOrders() {
       refetchPending();
     } catch (error) {
       console.error("Delete order failed", error);
-      alert(error?.data?.message || "Failed to delete order.");
+      toast.error(`❌ ${error?.data?.message || "Failed to delete order."}`);
     }
   };
 
@@ -201,7 +202,7 @@ export default function MyOrders() {
       refetchPending();
     } catch (error) {
       console.error("Delete order failed", error);
-      alert(error?.data?.message || "Failed to delete order.");
+      toast.error(`❌ ${error?.data?.message || "Failed to delete order."}`);
     }
   };
 

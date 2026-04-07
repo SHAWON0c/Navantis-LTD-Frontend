@@ -1,37 +1,63 @@
-
-
-"use client";
 import React, { useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useAuth } from "../../provider/AuthProvider";
-import { useDeliverOrderMutation, useGetSingleOrderQuery } from "../../redux/features/orders/orderApi";
+import { toast } from "react-toastify";
+import {
+  useGetInstituteOrderByIdQuery,
+  useDeliverInstituteOrderMutation,
+} from "../../redux/features/institutes/instituteOrderApi";
+import {
+  useGetSingleOrderQuery,
+  useDeliverOrderMutation,
+} from "../../redux/features/orders/orderApi";
 import Loader from "../Loader";
 
-const InvoiceViewPage = () => {
+const PrintInstituteInvoice = () => {
   const invoiceRef = useRef();
   const location = useLocation();
   const orderId = location.state?.orderId;
+  const orderType = location.state?.orderType || "institute"; // "customer" or "institute"
   const { userInfo } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch order data using the query hook
+  // Fetch order data using the query hook (Institute)
   const {
-    data: orderData,
-    isLoading: isFetchingOrder,
-    isFetching,
-    error: orderFetchError,
-    refetch,
-  } = useGetSingleOrderQuery(orderId, {
-    skip: !orderId,
+    data: instituteOrderData,
+    isLoading: isFetchingInstituteOrder,
+    isFetching: isFetchingInstitute,
+    error: instituteOrderFetchError,
+    refetch: refetchInstitute,
+  } = useGetInstituteOrderByIdQuery(orderId, {
+    skip: !orderId || orderType !== "institute",
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
+
+  // Fetch order data (Customer)
+  const {
+    data: customerOrderData,
+    isLoading: isFetchingCustomerOrder,
+    isFetching: isFetchingCustomer,
+    error: customerOrderFetchError,
+    refetch: refetchCustomer,
+  } = useGetSingleOrderQuery(orderId, {
+    skip: !orderId || orderType !== "customer",
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
+
   const isDebugMode = import.meta.env.DEV;
 
   const order = useMemo(() => {
-    const raw = orderData?.data || orderData;
+    let raw = null;
+    if (orderType === "institute") {
+      raw = instituteOrderData?.data || instituteOrderData;
+    } else {
+      raw = customerOrderData?.data || customerOrderData;
+    }
+
     if (!raw) return null;
 
     const normalizedProducts = Array.isArray(raw.products)
@@ -56,21 +82,25 @@ const InvoiceViewPage = () => {
 
     return {
       ...raw,
-      customer: raw.customer || raw.customerId || {},
-      mpo: raw.mpo || raw.mpoId || {},
-      territory: raw.territory || raw.territoryId || {},
-      zone: raw.zone || raw.zoneId || {},
-      assignedRider: raw.assignedRider || raw.assignedRiderId || {},
+      institute: raw.customerId || raw.institute || {},
       products: normalizedProducts,
     };
-  }, [orderData]);
+  }, [instituteOrderData, customerOrderData, orderType]);
 
   const [printed, setPrinted] = useState(false);
-  const [deliverOrder, { isLoading }] = useDeliverOrderMutation();
+  const [deliverInstituteOrder, { isLoading: isDeliveringInstitute }] = useDeliverInstituteOrderMutation();
+  const [deliverCustomerOrder, { isLoading: isDeliveringCustomer }] = useDeliverOrderMutation();
+
+  const isLoading = orderType === "institute" ? isDeliveringInstitute : isDeliveringCustomer;
 
   if (!orderId) {
     return <p className="text-center mt-12">No order ID provided</p>;
   }
+
+  const isFetchingOrder = orderType === "institute" ? isFetchingInstituteOrder : isFetchingCustomerOrder;
+  const isFetching = orderType === "institute" ? isFetchingInstitute : isFetchingCustomer;
+  const orderFetchError = orderType === "institute" ? instituteOrderFetchError : customerOrderFetchError;
+  const refetch = orderType === "institute" ? refetchInstitute : refetchCustomer;
 
   if (isFetchingOrder) {
     return <Loader />;
@@ -116,13 +146,13 @@ const InvoiceViewPage = () => {
       return;
     }
 
-    const styleTag = document.getElementById("invoice-style");
+    const styleTag = document.getElementById("institute-invoice-style");
     const styleContent = styleTag ? styleTag.innerHTML : "";
 
     win.document.write(`
       <html>
         <head>
-          <title>Invoice</title>
+          <title>Institute Invoice</title>
           <style>
             ${styleContent}
           </style>
@@ -142,10 +172,9 @@ const InvoiceViewPage = () => {
     const finishPrint = () => {
       if (printedOnce) return;
       printedOnce = true;
-      // Do not auto-close here; some browsers close before showing print dialog.
       win.focus();
       win.print();
-      setPrinted(true); // mark invoice as printed
+      setPrinted(true);
     };
 
     if (images.length === 0) {
@@ -164,7 +193,6 @@ const InvoiceViewPage = () => {
         };
       }
 
-      // Fallback: print anyway if an image event never fires
       setTimeout(finishPrint, 1200);
     }
   };
@@ -176,9 +204,15 @@ const InvoiceViewPage = () => {
     if (!order._id) return;
 
     try {
-      await deliverOrder(order._id).unwrap();
-      toast.success("✅ Order marked as delivered successfully!");
-      navigate("/depot/order-delivery");
+      if (orderType === "institute") {
+        await deliverInstituteOrder(order._id).unwrap();
+        toast.success("✅ Institute order marked as delivered successfully!");
+        navigate("/institutes/approve-pending-orders");
+      } else {
+        await deliverCustomerOrder(order._id).unwrap();
+        toast.success("✅ Customer order marked as delivered successfully!");
+        navigate("/depot/order-delivery");
+      }
     } catch (error) {
       console.error(error);
       toast.error("❌ Failed to deliver the order.");
@@ -192,16 +226,7 @@ const InvoiceViewPage = () => {
   const tradeDiscount = Number(order.customerDiscount || 0);
   const netPayable = Number(order.totalPayable || order.netAmount || 0);
 
-  const customer = order.customer || {};
-  const assignedRider = order?.assignedRider?.riderName
-    ? `${order.assignedRider.riderName} - ${order.assignedRider.riderId || ""}`
-    : order?.assignedRiderId
-    ? `ID - ${order.assignedRiderId}`
-    : "N/A";
-
-  const mpoName = order.mpo?.mpoName || "N/A";
-  const mpoPhone = order.mpo?.mpoPhone || "N/A";
-
+  const institute = order.institute || {};
   const logoUrl = "/images/NPL-Updated-Logo.png";
 
   const productGroups = (order.products || []).map((p) => {
@@ -235,7 +260,7 @@ const InvoiceViewPage = () => {
 
   return (
     <div style={{ background: "#eee", minHeight: "100vh", padding: 20 }}>
-      <style id="invoice-style">{`
+      <style id="institute-invoice-style">{`
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 12px; color: #333; margin: 20px; }
         .container { width: 100%; background:#fff; padding:25px; }
         .invoice-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #2E86C1; padding-bottom:8px; margin-bottom:15px; }
@@ -270,7 +295,7 @@ const InvoiceViewPage = () => {
             padding: "10px 16px",
             border: "none",
             borderRadius: 5,
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           🖨 Print Invoice
@@ -285,7 +310,7 @@ const InvoiceViewPage = () => {
             padding: "10px 16px",
             border: "none",
             borderRadius: 5,
-            cursor: printed ? "pointer" : "not-allowed"
+            cursor: printed ? "pointer" : "not-allowed",
           }}
         >
           ✅ Deliver Order
@@ -308,30 +333,41 @@ const InvoiceViewPage = () => {
           </div>
         </div>
 
-        <div className="invoice-title">INVOICE</div>
+        <div className="invoice-title">
+          {orderType === "institute" ? "INSTITUTE INVOICE" : "CUSTOMER INVOICE"}
+        </div>
 
-        {/* Customer Info */}
+        {/* Institute/Customer Info */}
         <div className="info-box">
           <div>
-            <b>Customer ID:</b> {customer.customerId || "-"} <br />
-            <b>Name:</b> {customer.customerName || "-"} <br />
-            <b>Address:</b> {customer.address || "-"} <br />
-            <b>Phone:</b> {customer.mobile || customer.phoneNumber || "-"} <br />
-            <b>Territory:</b> {order.territory?.territoryName || "-"} <br />
-            <b>Zone:</b> {order.zone?.zoneName || "-"}
+            {orderType === "institute" ? (
+              <>
+                <b>Institute ID:</b> {order.instituteId || institute._id || "-"} <br />
+                <b>Institute Name:</b> {institute.instituteName || "-"} <br />
+                <b>Contact Person:</b> {institute.contactPerson || "-"} <br />
+                <b>Address:</b> {institute.address || "-"} <br />
+                <b>Phone:</b> {institute.mobile || "-"} <br />
+                <b>Email:</b> {institute.email || "-"}
+              </>
+            ) : (
+              <>
+                <b>Customer Name:</b> {institute.customerName || "-"} <br />
+                <b>Customer ID:</b> {institute._id || "-"} <br />
+                <b>Address:</b> {institute.address || "-"} <br />
+                <b>Phone:</b> {institute.mobile || "-"} <br />
+                <b>Email:</b> {institute.email || "-"} <br />
+                <b>Territory:</b> {order.territory?.territoryName || "-"}
+              </>
+            )}
           </div>
 
           <div>
             <b>Invoice No:</b> {order.invoiceNo || "-"} <br />
-            <b>Date:</b>{" "}
-            {order.orderDate
-              ? new Date(order.orderDate).toLocaleDateString("en-GB")
-              : "-"}{" "}
-            <br />
+            <b>Order Date:</b> {order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-GB") : new Date(order.orderDate).toLocaleDateString("en-GB")} <br />
             <b>Payment Mode:</b> {order.payMode || "-"} <br />
-            <b>Ordered By:</b> {mpoName} <br />
-            <b>Phone:</b> {mpoPhone} <br />
-            <b>Delivered By:</b> {assignedRider}
+            <b>Payment Status:</b> {order.paymentStatus || "-"} <br />
+            <b>Ordered By:</b> {orderType === "institute" ? (institute.instituteName || "-") : (institute.customerName || "-")} <br />
+            <b>Assigned Rider:</b> {order.assignedRiderId ? `ID - ${order.assignedRiderId}` : "N/A"}
           </div>
         </div>
 
@@ -356,7 +392,9 @@ const InvoiceViewPage = () => {
               product.batches.map((batch, batchIndex) => (
                 <tr key={`${product.productId}-${batch.batchNo}-${productIndex}-${batchIndex}`}>
                   {batchIndex === 0 && (
-                    <td className="center" rowSpan={product.batches.length}>{productIndex + 1}</td>
+                    <td className="center" rowSpan={product.batches.length}>
+                      {productIndex + 1}
+                    </td>
                   )}
                   {batchIndex === 0 && (
                     <td rowSpan={product.batches.length}>{product.productId || "-"}</td>
@@ -365,13 +403,17 @@ const InvoiceViewPage = () => {
                     <td rowSpan={product.batches.length}>{product.productName || "-"}</td>
                   )}
                   {batchIndex === 0 && (
-                    <td className="center" rowSpan={product.batches.length}>{product.packSize || "-"}</td>
+                    <td className="center" rowSpan={product.batches.length}>
+                      {product.packSize || "-"}
+                    </td>
                   )}
                   <td className="center">{batch.batchNo || "-"}</td>
                   <td className="center">{batch.expireDate || "-"}</td>
                   <td className="right">{(batch.tradePrice || 0).toLocaleString()}</td>
                   <td className="right">{batch.qty || 0}</td>
-                  <td className="right">{((batch.tradePrice || 0) * (batch.qty || 0)).toLocaleString()}</td>
+                  <td className="right">
+                    {((batch.tradePrice || 0) * (batch.qty || 0)).toLocaleString()}
+                  </td>
                 </tr>
               ))
             )}
@@ -384,7 +426,7 @@ const InvoiceViewPage = () => {
               Debug Payload {isFetching ? "(refreshing...)" : ""}
             </summary>
             <pre style={{ fontSize: 11, background: "#f7f7f7", padding: 12, overflow: "auto" }}>
-              {JSON.stringify(orderData, null, 2)}
+              {JSON.stringify(order, null, 2)}
             </pre>
           </details>
         )}
@@ -399,11 +441,11 @@ const InvoiceViewPage = () => {
                   <td className="right">{grossTradePrice.toLocaleString()}</td>
                 </tr>
                 <tr>
-                  <td>Trade Discount</td>
-                  <td className="right">{tradeDiscount.toLocaleString()}</td>
+                  <td>Customer Discount</td>
+                  <td className="right">- {tradeDiscount.toLocaleString()}</td>
                 </tr>
-                <tr style={{ background: "#f1f1f1", fontWeight: "bold" }}>
-                  <td>Net Payable Amount</td>
+                <tr className="totals-row">
+                  <td>Net Payable</td>
                   <td className="right">{netPayable.toLocaleString()}</td>
                 </tr>
               </tbody>
@@ -411,23 +453,21 @@ const InvoiceViewPage = () => {
           </div>
         </div>
 
-        {/* Signature */}
-        <div className="signature">
-          <div>Customer</div>
-          <div>Depot In-charge</div>
-          <div>Accounts</div>
-          <div>Authorized by</div>
+        {/* Signature Area */}
+        <div className="signature" style={{ marginTop: "80px" }}>
+          <div>Prepared By</div>
+          <div>Authorized By</div>
+          <div>Institution Stamp</div>
+          <div>Received By</div>
         </div>
 
-        {/* Footer */}
         <div className="footer-info">
-          <span>Print Date: {new Date().toLocaleDateString("en-GB")}</span>
-          <span>Prepared by: {userInfo?.name}</span>
-          <span>Printed by: {userInfo?.name}</span>
+          <div>Invoice Generated on: {new Date().toLocaleString()}</div>
+          <div>Prepared by: {userInfo?.name || "System"}</div>
         </div>
       </div>
     </div>
   );
 };
 
-export default InvoiceViewPage;
+export default PrintInstituteInvoice;
