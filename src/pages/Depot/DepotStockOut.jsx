@@ -67,7 +67,6 @@ const DepotStockOut = () => {
   // ---------------- PAGINATION ----------------
   const totalPages = Math.ceil(stockList.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
-  console.log (startIndex)
   const currentItems = stockList.slice(startIndex, startIndex + productsPerPage);
 
   const changePage = (page) => {
@@ -85,11 +84,11 @@ const DepotStockOut = () => {
     { key: 'category', label: 'Category', sortable: true },
     { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'batch', label: 'Batch', sortable: true },
-    { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
     { key: 'quantityOut', label: 'Quantity Out', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
     { key: 'stockAvailableBefore', label: 'Stock Before', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
     { key: 'stockAvailableAfter', label: 'Stock After', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
-    { key: 'stockOutDate', label: 'Stock Out Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'stockOutDate', label: 'Stock Out Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
   ];
 
   return (

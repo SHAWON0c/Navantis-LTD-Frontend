@@ -10,6 +10,7 @@ const Button = ({
   onClick,
   type = 'button',
   className = '',
+  iconPosition = 'left',
   ...props
 }) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
@@ -30,6 +31,9 @@ const Button = ({
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
+  // Render icon properly - if it's a component, render it; if it's JSX, render it
+  const IconComponent = icon && typeof icon === 'function' ? icon : null;
+
   return (
     <button
       type={type}
@@ -38,9 +42,14 @@ const Button = ({
       onClick={onClick}
       {...props}
     >
-      {icon && (
-        <span className="mr-2">
-          {typeof icon === 'function' ? <icon /> : icon}
+      {IconComponent && (
+        <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>
+          <IconComponent />
+        </span>
+      )}
+      {icon && typeof icon !== 'function' && (
+        <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>
+          {icon}
         </span>
       )}
       {children}

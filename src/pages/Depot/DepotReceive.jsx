@@ -84,8 +84,8 @@ const DepotReceive = () => {
     { key: 'pricePerUnit', label: 'Price/Unit', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'actualPrice', label: 'Actual Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'totalPrice', label: 'Total Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
-    { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
-    { key: 'stockInDate', label: 'Stock In Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'expireDate', label: 'Expire Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
+    { key: 'stockInDate', label: 'Stock In Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
   ];
 
   return (

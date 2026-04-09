@@ -474,7 +474,7 @@ const OrderTable = ({ modalTitle }) => {
   const columns = [
     { title: "SL No", key: "serial", render: (_, __, index) => index + 1, width: 80 },
     { title: "Invoice", dataIndex: "invoiceNo" },
-    { title: "Order Date", dataIndex: "orderDate", render: (text) => new Date(text).toLocaleDateString() },
+    { title: "Order Date", dataIndex: "orderDate", render: (text) => text ? new Date(text).toLocaleDateString() : 'N/A' },
     { title: "Total Payable", dataIndex: "totalPayable" },
   ];
 

@@ -131,7 +131,7 @@ const Table = ({
                     column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'
                   } ${column.className || ''}`}
                 >
-                  {column.render ? column.render(row[column.key], row) : row[column.key]}
+                  {column.render ? column.render(row[column.key], row, rowIndex) : row[column.key]}
                 </td>
               ))}
             </tr>

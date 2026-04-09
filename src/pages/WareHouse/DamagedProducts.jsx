@@ -94,7 +94,7 @@ const DamagedProducts = () => {
     { key: 'receivedQty', label: 'Received Qty', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
     { key: 'damageQty', label: 'Damage Qty', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
     { key: 'remainingStock', label: 'Remaining Stock', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
-    { key: 'createdAt', label: 'Damage Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'createdAt', label: 'Damage Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
     { key: 'addedBy', label: 'Added By', sortable: false, render: (value) => value?.name || 'N/A' },
     {
       key: 'actions',

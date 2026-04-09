@@ -10,7 +10,7 @@ export const useUserProfile = () => {
     if (token) {
       const decoded = jwtDecode(token);
       userId = decoded.userId;
-     console.log("Decoded JWT Payload:", decoded);
+    //  console.log("Decoded JWT Payload:", decoded);
     }
   } catch (err) {
     console.error("Failed to decode JWT:", err);

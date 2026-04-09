@@ -142,7 +142,8 @@ import { showToast } from "../component/common/toastService";
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
-const DEBUG = import.meta.env.DEV; // true only in development
+// Debug mode: true in development, can be overridden by VITE_DEBUG_MODE
+const DEBUG = import.meta.env.DEV || import.meta.env.VITE_DEBUG_MODE === 'true';
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

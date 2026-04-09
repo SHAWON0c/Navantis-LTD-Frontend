@@ -205,7 +205,7 @@ const PendingOrdersCard = () => {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            👥 Customer Orders
+           Customer Orders ({customerOrders.length})
           </button>
           <button
             onClick={() => setOrderType("institute")}
@@ -215,7 +215,7 @@ const PendingOrdersCard = () => {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            🏫 Institute Orders
+             Institute Orders ({instituteOrders.length})
           </button>
         </div>
       </Card>

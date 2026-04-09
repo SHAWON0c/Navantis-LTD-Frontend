@@ -33,6 +33,9 @@ import SetTerritoryTarget from "../pages/SetTerritoryTarget";
 import UserProfile from "../pages/UserProfile";
 import Customer from "../pages/mpo/customer/Customer";
 import CreateCustomer from "../pages/mpo/customer/CreateCustomer";
+import CreateDoctor from "../pages/mpo/doctor/CreateDoctor";
+import Doctor from "../pages/mpo/doctor/Doctor";
+import EditDoctor from "../pages/mpo/doctor/EditDoctor";
 import PlaceOrder from "../pages/mpo/order/PlaceOrder";
 import PendingOrders from "../pages/Depot/approveOrder";
 
@@ -83,6 +86,7 @@ import CustomerList from "../pages/managers/CustomerList";
 import ApproveReturn from "../pages/Depot/ApproveReturn";
 import { CreateInstitute, InstituteList, InstitutePendingApproval, InstituteDetails, ApprovePendingInstituteOrders, InstituteOrderInvoiceAndPayment, PlaceInstituteOrder } from "../pages/admin/institutes";
 import PrintInstituteInvoice from "../component/reports/PrintInstituteInvoice";
+import NetSales from "../pages/reports/NetSales";
 
 // ✅ FIXED PATHS
 
@@ -215,6 +219,10 @@ export default function AppRoutes() {
           <Route path="/customer/list" element={<Customer />} />
           <Route path="/customer/add" element={<CreateCustomer />} />
 
+          <Route path="/mpo/doctor" element={<Doctor />} />
+          <Route path="/mpo/doctor/create" element={<CreateDoctor />} />
+          <Route path="/mpo/doctor/edit/:id" element={<EditDoctor />} />
+
           <Route path="orders/place" element={<PlaceOrder />} />
           <Route path="/orders/my-orders" element={<MyOrders/>} />
 
@@ -227,6 +235,14 @@ export default function AppRoutes() {
 
           <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"zm","am","superadmin"]} />}>
           <Route path="/zm/customers" element={<CustomerList />} />
+
+
+    
+        </Route>
+
+
+           <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"zm","am","superadmin"]} />}>
+          <Route path="/reports/net-sales" element={<NetSales />} />
 
 
     

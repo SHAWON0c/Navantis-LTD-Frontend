@@ -84,11 +84,11 @@ const WarehouseStockOut = () => {
     { key: 'PackSize', label: 'Pack Size', sortable: true },
     { key: 'Batch', label: 'Batch', sortable: true },
     { key: 'Quantity', label: 'Quantity', sortable: true, render: (value) => Number(value || 0).toLocaleString() },
-    { key: 'Expire', label: 'Expire Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'Expire', label: 'Expire Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
     { key: 'PriceUnitTP', label: 'TP', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'TotalPrice', label: 'Total Price', sortable: true, render: (value) => `৳${Number(value || 0).toLocaleString()}` },
     { key: 'stockStatus', label: 'Stock Status', sortable: true },
-    { key: 'Date', label: 'Stock Out Date', sortable: true, render: (value) => new Date(value).toLocaleDateString() },
+    { key: 'Date', label: 'Stock Out Date', sortable: true, render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A' },
   ];
 
   return (

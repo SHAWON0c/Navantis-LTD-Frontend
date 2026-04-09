@@ -147,9 +147,9 @@ const DepotReceiveRequest = () => {
                                             <tr key={b.warehouseProductId}>
                                               <td className="px-2 py-1 border text-center">{b.batch}</td>
                                               <td className="px-2 py-1 border text-center">
-                                                {new Date(b.expireDate).toLocaleDateString()}
+                                                {b.expireDate ? new Date(b.expireDate).toLocaleDateString() : 'N/A'}
                                               </td>
-                                              <td className="px-2 py-1 border text-center">Not available to Show</td>    {/*{b.totalQuantity}*/}
+                                              <td className="px-2 py-1 border text-center">Not available to Show</td>
                                               {req.status !== "pending" && (
                                                 <td className="px-2 py-1 border text-center">
                                                   {b.requestedQuantity || 0}
@@ -175,7 +175,7 @@ const DepotReceiveRequest = () => {
                                             <tr key={b.depotProductId}>
                                               <td className="px-2 py-1 border text-center">{b.batch}</td>
                                               <td className="px-2 py-1 border text-center">
-                                                {new Date(b.expireDate).toLocaleDateString()}
+                                                {b.expireDate ? new Date(b.expireDate).toLocaleDateString() : 'N/A'}
                                               </td>
                                               <td className="px-2 py-1 border text-center">{b.totalQuantity}</td>
                                             </tr>
