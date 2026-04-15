@@ -87,6 +87,7 @@ import ApproveReturn from "../pages/Depot/ApproveReturn";
 import { CreateInstitute, InstituteList, InstitutePendingApproval, InstituteDetails, ApprovePendingInstituteOrders, InstituteOrderInvoiceAndPayment, PlaceInstituteOrder } from "../pages/admin/institutes";
 import PrintInstituteInvoice from "../component/reports/PrintInstituteInvoice";
 import NetSales from "../pages/reports/NetSales";
+import ProductSummary from "../pages/reports/ProductSummary";
 
 // ✅ FIXED PATHS
 
@@ -243,6 +244,8 @@ export default function AppRoutes() {
 
            <Route element={<ProtectedRoute allowedRoles={["amdin", "md" ,"zm","am","superadmin"]} />}>
           <Route path="/reports/net-sales" element={<NetSales />} />
+          <Route path="/reports/unified-net-sales" element={<NetSales />} />
+          <Route path="/reports/product-summary" element={<ProductSummary />} />
 
 
     

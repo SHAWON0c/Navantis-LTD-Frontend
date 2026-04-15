@@ -28,11 +28,11 @@ const Table = ({
     lg: 'text-base',
   };
 
-  const tableClasses = `w-full text-left border-collapse ${sizeClasses[size]} ${className}`;
+  const tableClasses = `min-w-full w-full text-left border-collapse table-auto ${sizeClasses[size]} ${className}`;
 
-  const headerClasses = 'px-4 py-3 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b-2 border-gray-200';
+  const headerClasses = 'px-4 py-3 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b-2 border-gray-200 whitespace-nowrap align-middle';
 
-  const cellClasses = 'px-4 py-3 text-gray-900 border-b border-gray-200';
+  const cellClasses = 'px-4 py-3 text-gray-900 border-b border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis align-middle tabular-nums';
 
   const rowClasses = `${striped ? 'even:bg-gray-50' : ''} ${hover ? 'hover:bg-blue-50 transition-colors duration-150' : ''}`;
 
@@ -93,15 +93,15 @@ const Table = ({
       <table className={tableClasses} {...props}>
         <thead>
           <tr className="bg-gray-50">
-            {columns.map((column, index) => (
+              {columns.map((column, index) => (
               <th
                 key={index}
-                className={`${headerClasses} ${
+                  className={`${headerClasses} ${column.align === 'right' ? 'text-right' : column.align === 'center' ? 'text-center' : 'text-left'} ${column.className || ''} ${
                   column.sortable ? 'cursor-pointer select-none hover:bg-gray-100' : ''
-                } ${column.width ? `w-${column.width}` : ''}`}
+                }`}
                 onClick={() => column.sortable && handleSort(column.key)}
               >
-                <div className="flex items-center justify-between">
+                <div className={`flex items-center ${column.align === 'right' ? 'justify-end' : column.align === 'center' ? 'justify-center' : 'justify-between'}`}>
                   <span>{column.label}</span>
                   {column.sortable && (
                     <span className="ml-2 opacity-50">

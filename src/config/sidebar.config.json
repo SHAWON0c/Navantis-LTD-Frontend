@@ -727,7 +727,7 @@
           {
             "key": "report-products-summary",
             "label": "Products Summary",
-            "path": "/reports/products-summary",
+            "path": "/reports/product-summary",
             "icon": "FileText",
             "allowedRoles": [
               "admin",
@@ -735,28 +735,7 @@
               "superadmin"
             ]
           },
-          {
-            "key": "report-product-summary-all",
-            "label": "Product Summary (All)",
-            "path": "/reports/product-summary-all",
-            "icon": "FileText",
-            "allowedRoles": [
-              "admin",
-              "accountant",
-              "superadmin"
-            ]
-          },
-          {
-            "key": "report-product-summary-customer",
-            "label": "Product Summary (Customer)",
-            "path": "/reports/product-summary-customer",
-            "icon": "FileText",
-            "allowedRoles": [
-              "admin",
-              "accountant",
-              "superadmin"
-            ]
-          },
+
           {
             "key": "report-product-sales-returns",
             "label": "Product Sales Returns",

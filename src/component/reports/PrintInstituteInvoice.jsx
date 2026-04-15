@@ -207,7 +207,7 @@ const PrintInstituteInvoice = () => {
       if (orderType === "institute") {
         await deliverInstituteOrder(order._id).unwrap();
         toast.success("✅ Institute order marked as delivered successfully!");
-        navigate("/institutes/approve-pending-orders");
+        navigate("/depot/order-delivery");
       } else {
         await deliverCustomerOrder(order._id).unwrap();
         toast.success("✅ Customer order marked as delivered successfully!");

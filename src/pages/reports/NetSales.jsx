@@ -1,168 +1,167 @@
-import { useState, useRef } from "react";
-import { MdDownload, MdPrint, MdFileDownload } from "react-icons/md";
+import { useEffect, useMemo, useState } from "react";
+import { MdPrint, MdRefresh, MdExpandMore, MdExpandLess } from "react-icons/md";
 import Card from "../../component/common/Card";
 import Table from "../../component/common/Table";
 import Button from "../../component/common/Button";
 import FormInput from "../../component/common/FormInput";
 import FormSelect from "../../component/common/FormSelect";
+import { useLazyGetNetSalesReportQuery } from "../../redux/features/reports/netSalesReportApi";
 import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
 
+const BASE_LIMIT_OPTIONS = [
+  { value: 10, label: "10" },
+  { value: 20, label: "20" },
+  { value: 50, label: "50" },
+  { value: 100, label: "100" },
+];
+
+const EMPTY_TEXT = "--";
+
 export default function NetSales() {
-  // Filter States
-  const [filters, setFilters] = useState({
+  const initialFilters = {
+    reportType: "overview",
+    filter: "",
+    value: "",
+    entityType: "",
     startDate: "",
     endDate: "",
-    month: "",
-    area: "",
-    zone: "",
-    territory: "",
-    areaManager: "",
-    zoneManager: "",
+    sort: "amount",
+    limit: 20,
+    skip: 0,
+  };
+
+  const [filters, setFilters] = useState(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters);
+  const [isTopDataExpanded, setIsTopDataExpanded] = useState(false);
+
+  const [fetchNetSalesReport, reportState] = useLazyGetNetSalesReportQuery();
+  const [fetchDashboardReport, dashboardState] = useLazyGetNetSalesReportQuery();
+
+  const reportTypeOptions = [
+    { value: "overview", label: "Overview" },
+    { value: "all", label: "All Orders" },
+    { value: "territory", label: "By Territory" },
+    { value: "zone", label: "By Zone" },
+    { value: "area", label: "By Area" },
+    { value: "marketpoint", label: "By Market Point" },
+    { value: "areaManager", label: "By Area Manager" },
+    { value: "zonalManager", label: "By Zonal Manager" },
+    { value: "creator", label: "By Creator" },
+    { value: "detailed", label: "Detailed Dashboard" },
+  ];
+
+  const filterByOptions = [
+    { value: "", label: "No Dimension Filter" },
+    { value: "customerId", label: "Customer ID" },
+    { value: "territoryId", label: "Territory ID" },
+    { value: "zoneId", label: "Zone ID" },
+    { value: "areaId", label: "Area ID" },
+    { value: "marketPointId", label: "Market Point ID" },
+    { value: "areaManagerId", label: "Area Manager ID" },
+    { value: "zonalManagerId", label: "Zonal Manager ID" },
+    { value: "createdBy", label: "Creator ID" },
+    { value: "dateRange", label: "Date Range" },
+  ];
+
+  const entityTypeOptions = [
+    { value: "", label: "All Entities" },
+    { value: "customer", label: "Customer" },
+    { value: "institute", label: "Institute" },
+  ];
+
+  const sortOptions = [
+    { value: "amount", label: "Amount (High to Low)" },
+    { value: "orders", label: "Orders (High to Low)" },
+    { value: "name", label: "Name (A-Z)" },
+  ];
+
+  const formatCurrency = (value) => {
+    const amount = Number(value || 0);
+    return `৳${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const formatDate = (value) => {
+    if (!value) return EMPTY_TEXT;
+    const parsedDate = new Date(value);
+    if (Number.isNaN(parsedDate.getTime())) return String(value || EMPTY_TEXT);
+    return parsedDate.toLocaleDateString();
+  };
+
+  const formatText = (value, fallback = EMPTY_TEXT) => {
+    if (value === undefined || value === null) return fallback;
+    const text = String(value).trim();
+    return text.length ? text : fallback;
+  };
+
+  const getErrorMessage = (error) => {
+    if (!error) return "";
+    return error?.data?.error || error?.data?.message || "Failed to load report data.";
+  };
+
+  const toNumber = (value, fallback) => {
+    const parsedValue = Number(value);
+    if (Number.isNaN(parsedValue) || parsedValue < 0) return fallback;
+    return parsedValue;
+  };
+
+  const pickLabel = (...values) => {
+    const found = values.find((value) => {
+      if (value === undefined || value === null) return false;
+      return String(value).trim().length > 0;
+    });
+
+    return found === undefined || found === null ? "Total" : String(found).trim();
+  };
+
+  const buildParams = (sourceFilters) => {
+    const params = {
+      reportType: sourceFilters.reportType,
+      filter: sourceFilters.filter,
+      value: sourceFilters.value,
+      entityType: sourceFilters.entityType,
+      startDate: sourceFilters.startDate,
+      endDate: sourceFilters.endDate,
+      sort: sourceFilters.sort,
+      limit: toNumber(sourceFilters.limit, 20),
+      skip: toNumber(sourceFilters.skip, 0),
+    };
+
+    if (["overview", "detailed"].includes(sourceFilters.reportType)) {
+      delete params.sort;
+    }
+
+    return params;
+  };
+
+  const buildDashboardParams = (sourceFilters) => ({
+    reportType: "detailed",
+    entityType: sourceFilters.entityType,
+    startDate: sourceFilters.startDate,
+    endDate: sourceFilters.endDate,
+    limit: 10,
+    skip: 0,
   });
 
-  const [groupBy, setGroupBy] = useState("all"); // all, zone, area, zonalManager, manager, orderCreator
-  const reportRef = useRef(null);
+  const loadReports = (nextFilters, resetPage = false) => {
+    const mergedFilters = {
+      ...nextFilters,
+      limit: toNumber(nextFilters.limit, 20),
+      skip: resetPage ? 0 : toNumber(nextFilters.skip, 0),
+    };
 
-  // Summary Data
-  const [summary] = useState({
-    totalSales: 245000,
-    totalReturn: 12500,
-    totalMPOs: 145,
-    marketPointsOrderValue: 89500,
-  });
+    setFilters(mergedFilters);
+    setAppliedFilters(mergedFilters);
 
-  // Sample Sales Data - in real app, this would come from API
-  const [salesData] = useState([
-    {
-      id: 1,
-      date: "2026-04-01",
-      mpo: "MPO-001",
-      area: "Area A",
-      zone: "Zone 1",
-      territory: "Territory 1",
-      areaManager: "Ahmed Khan",
-      zoneManager: "Fatima Ali",
-      orderCreator: "Salma Akter",
-      totalSales: 15000,
-      returns: 500,
-      count: 5,
-    },
-    {
-      id: 2,
-      date: "2026-04-02",
-      mpo: "MPO-002",
-      area: "Area A",
-      zone: "Zone 1",
-      territory: "Territory 2",
-      areaManager: "Ahmed Khan",
-      zoneManager: "Fatima Ali",
-      orderCreator: "Rafiq Hasan",
-      totalSales: 12500,
-      returns: 300,
-      count: 4,
-    },
-    {
-      id: 3,
-      date: "2026-04-03",
-      mpo: "MPO-003",
-      area: "Area B",
-      zone: "Zone 2",
-      territory: "Territory 3",
-      areaManager: "Karim Uddin",
-      zoneManager: "Aisha Begum",
-      orderCreator: "Hassan Ali",
-      totalSales: 18000,
-      returns: 800,
-      count: 6,
-    },
-    {
-      id: 4,
-      date: "2026-04-04",
-      mpo: "MPO-004",
-      area: "Area B",
-      zone: "Zone 2",
-      territory: "Territory 4",
-      areaManager: "Karim Uddin",
-      zoneManager: "Aisha Begum",
-      orderCreator: "Nasrin Jahan",
-      totalSales: 19500,
-      returns: 650,
-      count: 7,
-    },
-    {
-      id: 5,
-      date: "2026-04-05",
-      mpo: "MPO-005",
-      area: "Area C",
-      zone: "Zone 3",
-      territory: "Territory 5",
-      areaManager: "Rashid Ahmed",
-      zoneManager: "Nadia Khan",
-      orderCreator: "Tariq Hassan",
-      totalSales: 22000,
-      returns: 950,
-      count: 8,
-    },
-  ]);
+    fetchNetSalesReport(buildParams(mergedFilters));
+    fetchDashboardReport(buildDashboardParams(mergedFilters));
+  };
 
-  // Filter Options - in real app, these would come from API
-  const monthOptions = [
-    { value: "01", label: "January" },
-    { value: "02", label: "February" },
-    { value: "03", label: "March" },
-    { value: "04", label: "April" },
-    { value: "05", label: "May" },
-    { value: "06", label: "June" },
-    { value: "07", label: "July" },
-    { value: "08", label: "August" },
-    { value: "09", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
+  useEffect(() => {
+    loadReports(initialFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const areaOptions = [
-    { value: "area-a", label: "Area A" },
-    { value: "area-b", label: "Area B" },
-    { value: "area-c", label: "Area C" },
-  ];
-
-  const zoneOptions = [
-    { value: "zone-1", label: "Zone 1" },
-    { value: "zone-2", label: "Zone 2" },
-    { value: "zone-3", label: "Zone 3" },
-  ];
-
-  const territoryOptions = [
-    { value: "terr-1", label: "Territory 1" },
-    { value: "terr-2", label: "Territory 2" },
-    { value: "terr-3", label: "Territory 3" },
-    { value: "terr-4", label: "Territory 4" },
-    { value: "terr-5", label: "Territory 5" },
-  ];
-
-  const mpoOptions = [
-    { value: "mpo-001", label: "MPO-001" },
-    { value: "mpo-002", label: "MPO-002" },
-    { value: "mpo-003", label: "MPO-003" },
-    { value: "mpo-004", label: "MPO-004" },
-    { value: "mpo-005", label: "MPO-005" },
-  ];
-
-  const managerOptions = [
-    { value: "ahmed-khan", label: "Ahmed Khan" },
-    { value: "karim-uddin", label: "Karim Uddin" },
-    { value: "rashid-ahmed", label: "Rashid Ahmed" },
-  ];
-
-  const zoneManagerOptions = [
-    { value: "fatima-ali", label: "Fatima Ali" },
-    { value: "aisha-begum", label: "Aisha Begum" },
-    { value: "nadia-khan", label: "Nadia Khan" },
-  ];
-
-  // Handle Filter Changes
   const handleFilterChange = (field, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -170,158 +169,614 @@ export default function NetSales() {
     }));
   };
 
-  // Apply Filters
-  const getFilteredData = () => {
-    return salesData.filter((item) => {
-      if (filters.startDate && item.date < filters.startDate) return false;
-      if (filters.endDate && item.date > filters.endDate) return false;
-      if (filters.month && !item.date.includes(`-${filters.month}`)) return false;
-      if (filters.area && item.area.toLowerCase() !== filters.area.split("-")[1]) return false;
-      if (filters.zone && item.zone.toLowerCase() !== filters.zone.split("-")[1]) return false;
-      return true;
-    });
+  const handleApply = () => {
+    loadReports(filters, true);
   };
 
-  const filteredData = getFilteredData();
+  const handleReset = () => {
+    setFilters(initialFilters);
+    loadReports(initialFilters);
+  };
 
-  // Group Data
-  const groupData = (data) => {
-    if (groupBy === "all") return [{ title: "All Sales", items: data }];
+  const handlePageChange = (direction) => {
+    const limit = toNumber(appliedFilters.limit, 20);
+    const currentSkip = toNumber(appliedFilters.skip, 0);
+    const nextSkip = direction === "next" ? currentSkip + limit : Math.max(0, currentSkip - limit);
 
-    const grouped = {};
-    const groupKey = {
-      zone: "zone",
-      area: "area",
-      zonalManager: "zoneManager",
-      manager: "areaManager",
-      orderCreator: "orderCreator",
-    }[groupBy];
+    loadReports({ ...appliedFilters, skip: nextSkip });
+  };
 
-    data.forEach((item) => {
-      const key = item[groupKey];
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(item);
+  const reportPayload = reportState.data || {};
+  const dashboardPayload = dashboardState.data || {};
+  const reportRows = useMemo(() => {
+    return Array.isArray(reportPayload.data) ? reportPayload.data : [];
+  }, [reportPayload.data]);
+  const summary = reportPayload.grandTotals || reportPayload.summary || {};
+  const dashboardSummary = dashboardPayload.summary || {};
+  const totalOrderCount = Number(summary.totalOrders ?? summary.totalRecords ?? 0);
+  const isAllOrdersReport = filters.reportType === "all";
+  const limitOptions = useMemo(() => {
+    const options = [...BASE_LIMIT_OPTIONS];
+
+    if (
+      isAllOrdersReport &&
+      totalOrderCount > 0 &&
+      !options.some((option) => Number(option.value) === totalOrderCount)
+    ) {
+      options.push({ value: totalOrderCount, label: "All" });
+    }
+
+    return options;
+  }, [isAllOrdersReport, totalOrderCount]);
+  const canGoNext = reportRows.length >= toNumber(appliedFilters.limit, 20);
+  const isAllOrdersLimitSelected =
+    appliedFilters.reportType === "all" &&
+    totalOrderCount > 0 &&
+    Number(appliedFilters.limit) === totalOrderCount;
+  const canExportAllOrders = isAllOrdersLimitSelected && reportRows.length > 0 && !reportState.isFetching;
+  const isPrintEnabled = canExportAllOrders;
+
+  const normalizedReportRows = useMemo(() => {
+    return reportRows.map((row, index) => {
+      const fallbackLabel = pickLabel(
+        row?.reportLabel,
+        row?._id,
+        row?.entityType,
+        row?.territoryName,
+        row?.zoneName,
+        row?.areaName,
+        row?.marketPointName,
+        row?.areaManagerName,
+        row?.zonalManagerName,
+        row?.createdByName,
+        row?.entityName,
+        index === 0 ? "Total" : EMPTY_TEXT
+      );
+
+      return {
+        ...row,
+        reportLabel: fallbackLabel,
+      };
+    });
+  }, [reportRows]);
+
+  const primaryColumns = useMemo(() => {
+    if (appliedFilters.reportType === "all") {
+      return [
+        { key: "invoiceNo", label: "Invoice", render: (value) => formatText(value) },
+        { key: "entityType", label: "Type", render: (value) => formatText(value) },
+        { key: "entityName", label: "Customer Name", render: (value) => formatText(value) },
+        { key: "territoryName", label: "Territory", render: (value) => formatText(value) },
+        { key: "zoneName", label: "Zone", render: (value) => formatText(value) },
+        { key: "areaName", label: "Area", render: (value) => formatText(value) },
+        { key: "marketPointName", label: "Market Point", render: (value) => formatText(value) },
+        { key: "createdByName", label: "Creator", render: (value) => formatText(value) },
+        { key: "createdAt", label: "Created", render: (value) => formatDate(value) },
+        { key: "soldAmount", label: "Sold", align: "right", render: (value) => formatCurrency(value) },
+        { key: "discount", label: "Discount", align: "right", render: (value) => formatCurrency(value) },
+        { key: "adjustedAmount", label: "Adjustment", align: "right", render: (value) => formatCurrency(value) },
+        { key: "refundApplied", label: "Refund", align: "right", render: (value) => formatCurrency(value) },
+        { key: "netSales", label: "Net Sales", align: "right", render: (value) => formatCurrency(value) },
+      ];
+    }
+
+    if (appliedFilters.reportType === "overview") {
+      return [
+        {
+          key: "_id",
+          label: "Entity",
+          className: "min-w-[180px]",
+          render: (_value, row) => pickLabel(row?.reportLabel, row?._id, row?.entityType, "Total"),
+        },
+        { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
+        { key: "totalSoldAmount", label: "Sold", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+        { key: "totalDiscount", label: "Discount", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+        { key: "totalAdjustment", label: "Adjustment", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+        { key: "totalRefund", label: "Refund", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+        { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+      ];
+    }
+
+    if (appliedFilters.reportType === "detailed") {
+      return [
+        {
+          key: "_id",
+          label: "Entity",
+          className: "min-w-[180px]",
+          render: (_value, row) => pickLabel(row?.reportLabel, row?._id, row?.entityType, EMPTY_TEXT),
+        },
+        { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
+        { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+      ];
+    }
+
+    const nameFieldMap = {
+      territory: "territoryName",
+      zone: "zoneName",
+      area: "areaName",
+      marketpoint: "marketPointName",
+      areaManager: "areaManagerName",
+      zonalManager: "zonalManagerName",
+      creator: "createdByName",
+    };
+
+    return [
+      {
+        key: nameFieldMap[appliedFilters.reportType] || "_id",
+        label: "Name",
+        className: "min-w-[180px]",
+        render: (_value, row) =>
+          pickLabel(row?.reportLabel, row?.[nameFieldMap[appliedFilters.reportType]], row?._id, EMPTY_TEXT),
+      },
+      { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
+      { key: "totalSoldAmount", label: "Sold", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+      { key: "totalDiscount", label: "Discount", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+      { key: "totalAdjustment", label: "Adjustment", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+      { key: "totalRefund", label: "Refund", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
+      { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+      { key: "averageOrderValue", label: "Avg Order", align: "right", className: "min-w-[150px]", render: (value) => (value ? formatCurrency(value) : EMPTY_TEXT) },
+    ];
+  }, [appliedFilters.reportType]);
+
+  const detailEntityRows =
+    appliedFilters.reportType === "detailed"
+      ? dashboardPayload.byEntityType || reportPayload.byEntityType || []
+      : [];
+
+  const topSections = [
+    { title: "Top Territories", items: dashboardPayload.topTerritories || [], key: "territoryName" },
+    { title: "Top Zones", items: dashboardPayload.topZones || [], key: "zoneName" },
+    { title: "Top Areas", items: dashboardPayload.topAreas || [], key: "areaName" },
+    { title: "Top Market Points", items: dashboardPayload.topMarketPoints || [], key: "marketPointName" },
+    { title: "Top Area Managers", items: dashboardPayload.topAreaManagers || [], key: "areaManagerName" },
+    { title: "Top Zonal Managers", items: dashboardPayload.topZonalManagers || [], key: "zonalManagerName" },
+    { title: "Top Creators", items: dashboardPayload.topCreators || [], key: "createdByName" },
+  ];
+
+  const renderTopTable = (title, items, nameKey) => {
+    if (!items.length) {
+      return null;
+    }
+
+    return (
+      <Card key={title} title={title} className="print:break-inside-avoid">
+        <Table
+          columns={[
+            { key: nameKey, label: "Name", className: "min-w-[180px]" },
+            { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+            { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
+          ]}
+          data={items}
+          striped
+          hover
+          size="sm"
+          emptyMessage="No data"
+        />
+      </Card>
+    );
+  };
+
+  const buildAllOrdersPrintHtml = (rows) => {
+    const safeText = (value) => {
+      const text = value === null || value === undefined ? EMPTY_TEXT : String(value).trim() || EMPTY_TEXT;
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    };
+
+    const createTotals = () => ({
+      soldAmount: 0,
+      adjustedAmount: 0,
+      discount: 0,
+      refundApplied: 0,
+      netSales: 0,
+      orderCount: 0,
     });
 
-    return Object.entries(grouped).map(([title, items]) => ({
-      title: `${title} (${items.length} records)`,
-      items,
+    const addTotals = (target, source) => {
+      target.soldAmount += source.soldAmount;
+      target.adjustedAmount += source.adjustedAmount;
+      target.discount += source.discount;
+      target.refundApplied += source.refundApplied;
+      target.netSales += source.netSales;
+      target.orderCount += source.orderCount;
+    };
+
+    const normalizeEntityType = (value) => String(value || "customer").trim().toLowerCase();
+
+    const getSectionTitle = (entityType) => {
+      if (entityType === "institute") return "Institute Orders";
+      if (entityType === "customer") return "Customer Orders";
+      return `${entityType.charAt(0).toUpperCase()}${entityType.slice(1)} Orders`;
+    };
+
+    const buildEntitySection = (entityType, sectionRows) => {
+      const isInstitute = entityType === "institute";
+      const totals = createTotals();
+      let serial = 1;
+      let rowsHtml = "";
+
+      if (isInstitute) {
+        const instituteMap = new Map();
+
+        sectionRows.forEach((row) => {
+          const instituteName = pickLabel(row?.entityName, row?.customerName, row?.customerId, EMPTY_TEXT);
+
+          if (!instituteMap.has(instituteName)) {
+            instituteMap.set(instituteName, createTotals());
+          }
+
+          const currentTotals = instituteMap.get(instituteName);
+          currentTotals.soldAmount += Number(row?.soldAmount || 0);
+          currentTotals.adjustedAmount += Number(row?.adjustedAmount || 0);
+          currentTotals.discount += Number(row?.discount || 0);
+          currentTotals.refundApplied += Number(row?.refundApplied || 0);
+          currentTotals.netSales += Number(row?.netSales || 0);
+          currentTotals.orderCount += 1;
+        });
+
+        Array.from(instituteMap.entries()).forEach(([instituteName, currentTotals]) => {
+          rowsHtml += `
+            <tr>
+              <td>${serial++}</td>
+              <td>${EMPTY_TEXT}</td>
+              <td>${EMPTY_TEXT}</td>
+              <td>${safeText(instituteName)}</td>
+              <td style="text-align:right">${formatCurrency(currentTotals.soldAmount)}</td>
+              <td style="text-align:right">${formatCurrency(currentTotals.adjustedAmount)}</td>
+              <td style="text-align:right">${formatCurrency(currentTotals.discount)}</td>
+              <td style="text-align:right">${formatCurrency(currentTotals.refundApplied)}</td>
+              <td style="text-align:right">${formatCurrency(currentTotals.netSales)}</td>
+            </tr>
+          `;
+
+          addTotals(totals, currentTotals);
+        });
+
+        return { rowsHtml, totals };
+      }
+
+      const groups = new Map();
+
+      sectionRows.forEach((row) => {
+        const zoneName = pickLabel(row?.zoneName, EMPTY_TEXT);
+        const territoryName = pickLabel(row?.territoryName, EMPTY_TEXT);
+        const customerName = pickLabel(row?.entityName, row?.customerName, row?.customerId, EMPTY_TEXT);
+
+        if (!groups.has(zoneName)) {
+          groups.set(zoneName, new Map());
+        }
+
+        const territoryMap = groups.get(zoneName);
+        if (!territoryMap.has(territoryName)) {
+          territoryMap.set(territoryName, new Map());
+        }
+
+        const customerMap = territoryMap.get(territoryName);
+        if (!customerMap.has(customerName)) {
+          customerMap.set(customerName, createTotals());
+        }
+
+        const currentTotals = customerMap.get(customerName);
+        currentTotals.soldAmount += Number(row?.soldAmount || 0);
+        currentTotals.adjustedAmount += Number(row?.adjustedAmount || 0);
+        currentTotals.discount += Number(row?.discount || 0);
+        currentTotals.refundApplied += Number(row?.refundApplied || 0);
+        currentTotals.netSales += Number(row?.netSales || 0);
+        currentTotals.orderCount += 1;
+      });
+
+      Array.from(groups.entries()).forEach(([zoneName, territoryMap]) => {
+        const zoneTotals = createTotals();
+        const zoneCustomerCount = Array.from(territoryMap.values()).reduce(
+          (count, customerMap) => count + customerMap.size,
+          0
+        );
+
+        let zonePrinted = false;
+
+        Array.from(territoryMap.entries()).forEach(([territoryName, customerMap]) => {
+          const customers = Array.from(customerMap.entries());
+          customers.forEach(([customerName, currentTotals], index) => {
+            rowsHtml += `
+              <tr>
+                <td>${serial++}</td>
+                ${!zonePrinted && index === 0 ? `<td rowspan="${zoneCustomerCount}">${safeText(zoneName)}</td>` : ""}
+                ${index === 0 ? `<td rowspan="${customers.length}">${safeText(territoryName)}</td>` : ""}
+                <td>${safeText(customerName)}</td>
+                <td style="text-align:right">${formatCurrency(currentTotals.soldAmount)}</td>
+                <td style="text-align:right">${formatCurrency(currentTotals.adjustedAmount)}</td>
+                <td style="text-align:right">${formatCurrency(currentTotals.discount)}</td>
+                <td style="text-align:right">${formatCurrency(currentTotals.refundApplied)}</td>
+                <td style="text-align:right">${formatCurrency(currentTotals.netSales)}</td>
+              </tr>
+            `;
+
+            addTotals(zoneTotals, currentTotals);
+          });
+
+          zonePrinted = true;
+        });
+
+        rowsHtml += `
+          <tr class="subtotal zone-subtotal">
+            <td colspan="4">Zone Total</td>
+            <td style="text-align:right">${formatCurrency(zoneTotals.soldAmount)}</td>
+            <td style="text-align:right">${formatCurrency(zoneTotals.adjustedAmount)}</td>
+            <td style="text-align:right">${formatCurrency(zoneTotals.discount)}</td>
+            <td style="text-align:right">${formatCurrency(zoneTotals.refundApplied)}</td>
+            <td style="text-align:right">${formatCurrency(zoneTotals.netSales)}</td>
+          </tr>
+        `;
+
+        addTotals(totals, zoneTotals);
+      });
+
+      return { rowsHtml, totals };
+    };
+
+    const sections = new Map();
+    const todayText = new Date().toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    rows.forEach((row) => {
+      const entityType = normalizeEntityType(row?.entityType);
+
+      if (!sections.has(entityType)) {
+        sections.set(entityType, []);
+      }
+
+      sections.get(entityType).push(row);
+    });
+
+    const grandTotals = createTotals();
+    const sectionOrder = ["customer", "institute"];
+    const orderedSections = [
+      ...sectionOrder.filter((entityType) => sections.has(entityType)),
+      ...Array.from(sections.keys()).filter((entityType) => !sectionOrder.includes(entityType)),
+    ];
+
+    let bodyRows = "";
+
+    orderedSections.forEach((entityType) => {
+      const sectionRows = sections.get(entityType) || [];
+      if (!sectionRows.length) return;
+
+      const section = buildEntitySection(entityType, sectionRows);
+      bodyRows += `
+        <tr class="section-row">
+          <td colspan="9">${safeText(getSectionTitle(entityType))}</td>
+        </tr>
+      `;
+      bodyRows += section.rowsHtml;
+      addTotals(grandTotals, section.totals);
+    });
+
+    return `
+      <!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>All Orders - Net Sales Print</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 18px; color: #111827; }
+            h1 { margin: 0 0 8px; font-size: 20px; }
+            .meta { font-size: 12px; margin-bottom: 12px; color: #4b5563; }
+            .header-wrap { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid #000; padding-bottom:10px; }
+            .header-right { text-align:right; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+            .header-right h2 { margin:0; font-size:20px; font-weight:bold; color:#1a1a1a; }
+            .header-right p { margin:2px 0; font-size:10px; color:#555; }
+            .report-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+            .report-title { font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #d1d5db; padding: 7px 8px; font-size: 12px; vertical-align: top; }
+            th { background: #f3f4f6; text-align: left; }
+            .section-row td { font-weight: 700; background: #e5e7eb; text-transform: uppercase; letter-spacing: 0.04em; }
+            .subtotal td { font-weight: 700; background: #f9fafb; }
+            tfoot td { font-weight: 700; background: #f9fafb; }
+            @media print { body { margin: 0; } }
+          </style>
+        </head>
+        <body>
+          <div class="header-wrap">
+            <div>
+              <img src='/images/NPL-Updated-Logo.png' alt='Company Logo' style='width:150px; height:auto;' />
+            </div>
+            <div class="header-right">
+              <h2>Navantis Pharma Limited</h2>
+              <p>Haque Villa, House No - 4, Block - C, Road No - 3, Section - 1, Kolwalapara, Mirpur - 1, Dhaka - 1216</p>
+              <p>Hotline: +880 1322-852183</p>
+            </div>
+          </div>
+
+          <div class="report-row">
+            <div class="report-title">All Orders Net Sales Report</div>
+            <div class="meta">Printed on: <b>${todayText}</b></div>
+          </div>
+
+          <div class="meta">Total Orders: ${rows.length}</div>
+          <table>
+            <thead>
+              <tr>
+                <th>SL</th>
+                <th>Zone</th>
+                <th>Territory</th>
+                <th>Customer</th>
+                <th>Sold Amount</th>
+                <th>Adjustment</th>
+                <th>Discount</th>
+                <th>Return Amount</th>
+                <th>Net Sales</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${bodyRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">Grand Total</td>
+                <td style="text-align:right">${formatCurrency(grandTotals.soldAmount)}</td>
+                <td style="text-align:right">${formatCurrency(grandTotals.adjustedAmount)}</td>
+                <td style="text-align:right">${formatCurrency(grandTotals.discount)}</td>
+                <td style="text-align:right">${formatCurrency(grandTotals.refundApplied)}</td>
+                <td style="text-align:right">${formatCurrency(grandTotals.netSales)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+      </html>
+    `;
+  };
+
+  const buildAllOrdersFlatRows = (rows) => {
+    const safeValue = (value) => (value === null || value === undefined || value === "" ? EMPTY_TEXT : String(value));
+
+    return rows.map((row, index) => ({
+      "SL": index + 1,
+      "Invoice": safeValue(row?.invoiceNo),
+      "Zone": safeValue(row?.zoneName),
+      "Territory": safeValue(row?.territoryName),
+      "Customer": safeValue(row?.entityName),
+      "Sold Amount": Number(row?.soldAmount || 0),
+      "Adjustment": Number(row?.adjustedAmount || 0),
+      "Discount": Number(row?.discount || 0),
+      "Return Amount": Number(row?.refundApplied || 0),
+      "Net Sales": Number(row?.netSales || 0),
     }));
   };
 
-  const groupedData = groupData(filteredData);
+  const handleDownloadPdf = async () => {
+    if (!canExportAllOrders) return;
 
-  // Table Columns
-  const tableColumns = [
-    { key: "id", label: "SL", sortable: true, render: (value) => value },
-    { key: "date", label: "Date", sortable: true },
-    { key: "mpo", label: "MPO", sortable: true },
-    { key: "area", label: "Area", sortable: true },
-    { key: "zone", label: "Zone", sortable: true },
-    { key: "territory", label: "Territory", sortable: true },
-    { key: "areaManager", label: "Area Manager", sortable: true },
-    { key: "zoneManager", label: "Zone Manager", sortable: true },
-    { key: "orderCreator", label: "Order Creator", sortable: true },
-    { key: "totalSales", label: "Total Sales", sortable: true, render: (value) => `৳${value.toLocaleString()}` },
-    { key: "returns", label: "Returns", sortable: true, render: (value) => `৳${value.toLocaleString()}` },
-    { key: "count", label: "Count", sortable: true },
-  ];
+    const tempFrame = document.createElement("iframe");
+    tempFrame.style.position = "fixed";
+    tempFrame.style.left = "-10000px";
+    tempFrame.style.top = "0";
+    tempFrame.style.width = "1200px";
+    tempFrame.style.height = "900px";
+    tempFrame.style.border = "0";
+    document.body.appendChild(tempFrame);
 
-  // Export to PDF
-  const exportToPDF = () => {
-    const element = document.createElement("div");
-    element.innerHTML = `
-      <div style="padding: 20px; font-family: Arial;">
-        <h1 style="text-align: center; margin-bottom: 20px;">Net Sales Report</h1>
-        <div style="margin-bottom: 20px;">
-          <p><strong>Total Sales:</strong> ৳${summary.totalSales.toLocaleString()}</p>
-          <p><strong>Total Returns:</strong> ৳${summary.totalReturn.toLocaleString()}</p>
-          <p><strong>Total MPOs:</strong> ${summary.totalMPOs}</p>
-          <p><strong>Market Points Order Value:</strong> ৳${summary.marketPointsOrderValue.toLocaleString()}</p>
-        </div>
-        <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
-          <thead>
-            <tr style="background-color: #f0f0f0;">
-              <th style="border: 1px solid #ddd; padding: 8px;">SL</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Date</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">MPO</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Area</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Zone</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Territory</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Area Mgr</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Zone Mgr</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Creator</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Sales</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">Return</th>
-              <th style="border: 1px solid #ddd; padding: 8px;">MPO</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filteredData.map((item, idx) => `
-              <tr>
-                <td style="border: 1px solid #ddd; padding: 8px;">${idx + 1}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.date}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.mpo}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.area}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.zone}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.territory}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.areaManager}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.zoneManager}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.orderCreator}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">৳${item.totalSales.toLocaleString()}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">৳${item.returns.toLocaleString()}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${item.count}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
+    const printHtml = buildAllOrdersPrintHtml(reportRows);
 
-    const opt = {
-      margin: 10,
-      filename: "net-sales-report.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { orientation: "landscape", unit: "mm", format: "a4" },
+    try {
+      const frameDoc = tempFrame.contentDocument || tempFrame.contentWindow?.document;
+      if (!frameDoc) return;
+
+      frameDoc.open();
+      frameDoc.write(printHtml);
+      frameDoc.close();
+
+      await new Promise((resolve) => {
+        tempFrame.onload = () => resolve(true);
+        setTimeout(() => resolve(true), 500);
+      });
+
+      await html2pdf()
+        .set({
+          margin: 8,
+          filename: "all-orders-net-sales-report.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { orientation: "landscape", unit: "mm", format: "a4" },
+        })
+        .from(frameDoc.body)
+        .save();
+    } finally {
+      document.body.removeChild(tempFrame);
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    if (!canExportAllOrders) return;
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(buildAllOrdersFlatRows(reportRows));
+    const columnWidths = [
+      { wch: 6 },
+      { wch: 16 },
+      { wch: 18 },
+      { wch: 20 },
+      { wch: 28 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 14 },
+    ];
+    worksheet["!cols"] = columnWidths;
+    XLSX.utils.book_append_sheet(workbook, worksheet, "All Orders Net Sales");
+    XLSX.writeFile(workbook, "all-orders-net-sales-report.xlsx");
+  };
+
+  const handlePrint = () => {
+    if (!isPrintEnabled) {
+      return;
+    }
+
+    const printWindow = window.open("", "_blank", "width=1200,height=900");
+    if (!printWindow) {
+      return;
+    }
+
+    const html = buildAllOrdersPrintHtml(reportRows);
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+
+    const trigger = () => {
+      try {
+        printWindow.print();
+      } catch {
+        return;
+      }
     };
 
-    html2pdf().set(opt).from(element).save();
+    printWindow.onload = trigger;
+    setTimeout(trigger, 500);
   };
 
-  // Export to Excel
-  const exportToExcel = () => {
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(
-      filteredData.map((item, index) => ({
-        SL: index + 1,
-        Date: item.date,
-        "MPO": item.mpo,
-        Area: item.area,
-        Zone: item.zone,
-        Territory: item.territory,
-        "Area Manager": item.areaManager,
-        "Zone Manager": item.zoneManager,
-        "Order Creator": item.orderCreator,
-        "Total Sales": item.totalSales,
-        Returns: item.returns,
-        "Count": item.count,
-      }))
-    );
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Net Sales");
-    XLSX.writeFile(workbook, "net-sales-report.xlsx");
-  };
-
-  // Print Report
-  const handlePrint = () => {
-    window.print();
+  const topSummary = {
+    totalOrders: dashboardSummary.totalOrders,
+    totalSoldAmount: dashboardSummary.totalSoldAmount,
+    totalDiscount: dashboardSummary.totalDiscount,
+    totalAdjustment: dashboardSummary.totalAdjustment,
+    totalRefund: dashboardSummary.totalRefund,
+    totalNetSales: dashboardSummary.totalNetSales,
   };
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-6 space-y-6 print:bg-white print:p-2">
+      <style>
+        {`
+          @media print {
+            .no-print { display: none !important; }
+            .print-title { display: block !important; }
+            .print\\:break-inside-avoid { break-inside: avoid; }
+            .print\\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+        `}
+      </style>
+
+      <div className="hidden print-title text-center mb-4">
+        <h1 className="text-2xl font-bold">Unified Net Sales Report</h1>
+        <p className="text-sm">Printed on: {new Date().toLocaleString()}</p>
+      </div>
+
+      <div className="flex items-center justify-between no-print">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
           Net Sales Report
         </h1>
@@ -329,36 +784,81 @@ export default function NetSales() {
           <Button
             variant="outline"
             size="small"
+            onClick={handleDownloadPdf}
+            disabled={!canExportAllOrders}
+          >
+            Download PDF
+          </Button>
+          <Button
+            variant="outline"
+            size="small"
+            onClick={handleDownloadExcel}
+            disabled={!canExportAllOrders}
+          >
+            Download Excel
+          </Button>
+          <Button
+            variant="outline"
+            size="small"
             icon={MdPrint}
             onClick={handlePrint}
+            disabled={!isPrintEnabled}
           >
             Print
           </Button>
           <Button
             variant="outline"
             size="small"
-            icon={MdDownload}
-            onClick={exportToPDF}
+            icon={MdRefresh}
+            onClick={() => loadReports(appliedFilters)}
+            loading={reportState.isFetching || dashboardState.isFetching}
           >
-            PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            icon={MdFileDownload}
-            onClick={exportToExcel}
-          >
-            Excel
+            Refresh
           </Button>
         </div>
       </div>
 
-      {/* Filters */}
-      <Card className="p-6">
+      <Card className="p-6 no-print">
         <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
           Filters
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <FormSelect
+            label="Report Type"
+            value={filters.reportType}
+            options={reportTypeOptions}
+            onChange={(e) => handleFilterChange("reportType", e.target.value)}
+            placeholder="Select report type"
+          />
+          <FormSelect
+            label="Filter By"
+            value={filters.filter}
+            options={filterByOptions}
+            onChange={(e) => handleFilterChange("filter", e.target.value)}
+            placeholder="Choose dimension"
+            className="hidden"
+          />
+          <FormInput
+            label="Filter Value (ID)"
+            value={filters.value}
+            onChange={(e) => handleFilterChange("value", e.target.value)}
+            placeholder="MongoDB ObjectId"
+            className="hidden"
+          />
+          <FormSelect
+            label="Entity Type"
+            value={filters.entityType}
+            options={entityTypeOptions}
+            onChange={(e) => handleFilterChange("entityType", e.target.value)}
+            placeholder="All entities"
+          />
+          <FormSelect
+            label="Sort"
+            value={filters.sort}
+            options={sortOptions}
+            onChange={(e) => handleFilterChange("sort", e.target.value)}
+            placeholder="Sort by"
+          />
           <FormInput
             label="Start Date"
             type="date"
@@ -372,161 +872,171 @@ export default function NetSales() {
             onChange={(e) => handleFilterChange("endDate", e.target.value)}
           />
           <FormSelect
-            label="Month"
-            value={filters.month}
-            options={monthOptions}
-            onChange={(e) => handleFilterChange("month", e.target.value)}
-            placeholder="Select Month"
+            label="Limit"
+            value={filters.limit}
+            options={limitOptions}
+            onChange={(e) => handleFilterChange("limit", Number(e.target.value || 20))}
+            placeholder="Rows"
           />
-          <FormSelect
-            label="Area"
-            value={filters.area}
-            options={areaOptions}
-            onChange={(e) => handleFilterChange("area", e.target.value)}
-            placeholder="Select Area"
+          <FormInput
+            label="Skip"
+            type="number"
+            min="0"
+            value={filters.skip}
+            onChange={(e) => handleFilterChange("skip", Number(e.target.value || 0))}
           />
-          <FormSelect
-            label="Zone"
-            value={filters.zone}
-            options={zoneOptions}
-            onChange={(e) => handleFilterChange("zone", e.target.value)}
-            placeholder="Select Zone"
-          />
-          <FormSelect
-            label="Territory"
-            value={filters.territory}
-            options={territoryOptions}
-            onChange={(e) => handleFilterChange("territory", e.target.value)}
-            placeholder="Select Territory"
-          />
-          <FormSelect
-            label="MPO"
-            value={filters.mpo}
-            options={mpoOptions}
-            onChange={(e) => handleFilterChange("mpo", e.target.value)}
-            placeholder="Select MPO"
-          />
-          <FormSelect
-            label="Area Manager"
-            value={filters.areaManager}
-            options={managerOptions}
-            onChange={(e) => handleFilterChange("areaManager", e.target.value)}
-            placeholder="Select Area Manager"
-          />
-          <FormSelect
-            label="Zone Manager"
-            value={filters.zoneManager}
-            options={zoneManagerOptions}
-            onChange={(e) => handleFilterChange("zoneManager", e.target.value)}
-            placeholder="Select Zone Manager"
-          />
+        </div>
+        <div className="mt-4 flex gap-2">
+          <Button size="small" onClick={handleApply}>Apply Filters</Button>
+          <Button size="small" variant="outline" onClick={handleReset}>Reset</Button>
         </div>
       </Card>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="text-center">
-          <h3 className="text-neutral-600 dark:text-neutral-400 text-sm uppercase tracking-wide mb-2">
-            Total Sales
-          </h3>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-            ৳{summary.totalSales.toLocaleString()}
+      {(reportState.error || dashboardState.error) && (
+        <Card className="p-4 border-red-200" borderColor="red">
+          <p className="text-red-600 text-sm">
+            {getErrorMessage(reportState.error) || getErrorMessage(dashboardState.error)}
           </p>
         </Card>
-        <Card className="text-center">
-          <h3 className="text-neutral-600 dark:text-neutral-400 text-sm uppercase tracking-wide mb-2">
-            Total Returns
-          </h3>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-            ৳{summary.totalReturn.toLocaleString()}
-          </p>
-        </Card>
-        <Card className="text-center">
-          <h3 className="text-neutral-600 dark:text-neutral-400 text-sm uppercase tracking-wide mb-2">
-            Total MPOs
-          </h3>
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {summary.totalMPOs}
-          </p>
-        </Card>
-        <Card className="text-center">
-          <h3 className="text-neutral-600 dark:text-neutral-400 text-sm uppercase tracking-wide mb-2">
-            Market Points Order Value
-          </h3>
-          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            ৳{summary.marketPointsOrderValue.toLocaleString()}
-          </p>
-        </Card>
-      </div>
+      )}
 
-      {/* Group By Buttons */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-          View By
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant={groupBy === "all" ? "primary" : "outline"}
-            size="small"
-            onClick={() => setGroupBy("all")}
-          >
-            All Sales
-          </Button>
-          <Button
-            variant={groupBy === "zone" ? "primary" : "outline"}
-            size="small"
-            onClick={() => setGroupBy("zone")}
-          >
-            By Zone
-          </Button>
-          <Button
-            variant={groupBy === "area" ? "primary" : "outline"}
-            size="small"
-            onClick={() => setGroupBy("area")}
-          >
-            By Area
-          </Button>
-          <Button
-            variant={groupBy === "zonalManager" ? "primary" : "outline"}
-            size="small"
-            onClick={() => setGroupBy("zonalManager")}
-          >
-            By Zone Manager
-          </Button>
-          <Button
-            variant={groupBy === "manager" ? "primary" : "outline"}
-            size="small"
-            onClick={() => setGroupBy("manager")}
-          >
-            By Area Manager
-          </Button>
-          <Button
-            variant={groupBy === "orderCreator" ? "primary" : "outline"}
-            size="small"
-            onClick={() => setGroupBy("orderCreator")}
-          >
-            By Order Creator
-          </Button>
-        </div>
+      <Card className="print:break-inside-avoid rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <button
+          onClick={() => setIsTopDataExpanded(!isTopDataExpanded)}
+          className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+              Top Data
+            </h2>
+            <span className="text-sm text-gray-500">
+              {isTopDataExpanded ? "Hide" : "Show"} key metrics and top performers
+            </span>
+          </div>
+          <div className="text-gray-500">
+            {isTopDataExpanded ? (
+              <MdExpandLess size={24} />
+            ) : (
+              <MdExpandMore size={24} />
+            )}
+          </div>
+        </button>
+
+        {isTopDataExpanded && (
+          <div className="border-t border-slate-200 p-6 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="rounded-xl border border-blue-100 bg-blue-50/70 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-600 mb-1">
+                  Orders
+                </p>
+                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                  {topSummary.totalOrders || 0}
+                </p>
+              </div>
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-600 mb-1">
+                  Sold
+                </p>
+                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                  {formatCurrency(topSummary.totalSoldAmount)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-violet-100 bg-violet-50/70 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-600 mb-1">
+                  Net Sales
+                </p>
+                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                  {formatCurrency(topSummary.totalNetSales)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600 mb-1">
+                  Discount
+                </p>
+                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                  {formatCurrency(topSummary.totalDiscount)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-pink-100 bg-pink-50/70 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-600 mb-1">
+                  Adjustment
+                </p>
+                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                  {formatCurrency(topSummary.totalAdjustment)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-cyan-100 bg-cyan-50/70 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-600 mb-1">
+                  Return
+                </p>
+                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                  {formatCurrency(topSummary.totalRefund)}
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-200 pt-6">
+              <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+                Top Performers
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 print:grid-cols-1">
+                {topSections.map((section) => renderTopTable(section.title, section.items, section.key))}
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
 
-      {/* Data Tables */}
-      <div className="space-y-6">
-        {groupedData.map((group, index) => (
-          <Card key={index} className="p-6">
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-              {group.title}
-            </h3>
-            <Table
-              columns={tableColumns}
-              data={group.items}
-              striped
-              hover
-              emptyMessage="No sales data available"
-            />
-          </Card>
-        ))}
-      </div>
+      {detailEntityRows.length > 0 && (
+        <Card title="Entity Breakdown" className="print:break-inside-avoid">
+          <Table
+            columns={[
+              { key: "_id", label: "Entity" },
+              { key: "totalOrders", label: "Orders", align: "right" },
+              { key: "totalNetSales", label: "Net Sales", align: "right", render: (value) => formatCurrency(value) },
+            ]}
+            data={detailEntityRows}
+            striped
+            hover
+            emptyMessage="No entity breakdown"
+          />
+        </Card>
+      )}
+
+      <Card title="Report Data" className="print:break-inside-avoid" subtitle={`Type: ${appliedFilters.reportType}`}>
+        <Table
+          columns={primaryColumns}
+          data={normalizedReportRows}
+          striped
+          hover
+          loading={reportState.isFetching}
+          emptyMessage="No records found"
+        />
+
+        <div className="mt-4 flex items-center justify-between no-print">
+          <p className="text-sm text-gray-600">
+            Skip: {appliedFilters.skip} | Limit: {appliedFilters.limit} | Rows: {reportRows.length}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="small"
+              onClick={() => handlePageChange("prev")}
+              disabled={appliedFilters.skip === 0 || reportState.isFetching}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="small"
+              onClick={() => handlePageChange("next")}
+              disabled={!canGoNext || reportState.isFetching}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }
