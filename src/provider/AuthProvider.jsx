@@ -137,7 +137,9 @@
 
 // src/provider/AuthProvider.jsx
 import { createContext, useState, useEffect, useContext, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { showToast } from "../component/common/toastService";
+import { baseAPI } from "../redux/services/baseApi";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -146,6 +148,7 @@ export const useAuth = () => useContext(AuthContext);
 const DEBUG = import.meta.env.DEV || import.meta.env.VITE_DEBUG_MODE === 'true';
 
 export default function AuthProvider({ children }) {
+  const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -160,6 +163,11 @@ export default function AuthProvider({ children }) {
     if (!token) return;
 
     try {
+      if (DEBUG) console.log("🔐 Verifying token with backend...", {
+        tokenLength: token.length,
+        tokenStart: token.substring(0, 20) + "...",
+      });
+
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
         method: "GET",
         headers: {
@@ -167,9 +175,16 @@ export default function AuthProvider({ children }) {
         },
       });
 
+      if (res.status === 404) {
+        // Backend doesn't have verify-token endpoint, skip verification
+        if (DEBUG) console.log("ℹ️ verify-token endpoint not available on backend, skipping");
+        return;
+      }
+
       if (!res.ok) {
         const err = new Error("Token verification failed");
         err.status = res.status;
+        if (DEBUG) console.log(`⚠️ verify-token returned HTTP ${res.status}`, res.statusText);
         throw err;
       }
 
@@ -203,7 +218,11 @@ export default function AuthProvider({ children }) {
       // Network errors: Only logout if we don't have a cached user session
       // This prevents logouts on page refreshes when backend is temporarily down
       if (isNetworkError) {
-        const hasCachedUser = user !== null;
+        // Check localStorage directly (not state, which may be stale due to closure)
+        const hasCachedUser = !!(
+          localStorage.getItem("token") && 
+          localStorage.getItem("role")
+        );
         
         if (hasCachedUser) {
           // User is already loaded from localStorage, keep them logged in
@@ -218,7 +237,16 @@ export default function AuthProvider({ children }) {
 
       // 401/403: Always logout regardless of cache
       if (status === 401 || status === 403) {
-        if (DEBUG) console.log("🚨 verify-token unauthorized (401/403), clearing auth", error);
+        if (DEBUG) {
+          console.log("🚨 verify-token unauthorized (401/403), clearing auth", error);
+          // Try to parse error response from backend for debugging
+          try {
+            // The response body was already consumed, we can't read it again
+            console.log("💡 Check backend console for JWT error details (TOKEN_EXPIRED, INVALID_SIGNATURE, etc.)");
+          } catch (e) {
+            // ignore
+          }
+        }
         showToast("Your session has expired. Please login again.", "warn");
         setUser(null);
         clearAuthStorage();
@@ -315,6 +343,8 @@ export default function AuthProvider({ children }) {
 
     setUser(null);
     clearAuthStorage();
+    // Reset RTK Query cache to prevent data leakage on next login
+    dispatch(baseAPI.util.resetApiState());
   };
 
   return (

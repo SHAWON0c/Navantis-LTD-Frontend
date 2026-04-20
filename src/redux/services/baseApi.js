@@ -76,14 +76,16 @@ const baseQueryWithAuth = async (args, api, extraOptions) => {
     localStorage.removeItem("role");
     localStorage.removeItem("employeeId");
 
-    // reset all RTK Query cached data so next login never sees stale previous-user data
-    api.dispatch(baseAPI.util.resetApiState());
-
-    // reset redux auth
+    // reset redux auth first
     api.dispatch(resetAuthState());
 
-    // redirect to login
-    window.location.replace("/login");
+    // Use setTimeout to ensure baseAPI is defined before resetting cache
+    setTimeout(() => {
+      api.dispatch(baseAPI.util.resetApiState());
+      window.location.replace("/login");
+    }, 0);
+
+    return result;
   }
 
   return result;

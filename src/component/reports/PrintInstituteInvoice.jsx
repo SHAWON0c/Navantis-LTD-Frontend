@@ -72,6 +72,7 @@ const PrintInstituteInvoice = () => {
                 ? p.productId
                 : productDetails?._id || "-",
             productName: p?.productName || productDetails?.productName || "-",
+            productShortCode: p?.productShortCode || "-",
             packSize: p?.packSize || productDetails?.packSize || "-",
             tradePrice: safePrice,
             quantity: safeQty,
@@ -84,6 +85,8 @@ const PrintInstituteInvoice = () => {
       ...raw,
       institute: raw.customerId || raw.institute || {},
       products: normalizedProducts,
+      previousPendingOrders: raw.previousPendingOrders || [],
+      totalPreviousPendingAmount: raw.totalPreviousPendingAmount || 0,
     };
   }, [instituteOrderData, customerOrderData, orderType]);
 
@@ -223,8 +226,47 @@ const PrintInstituteInvoice = () => {
   // CALCULATIONS
   // ---------------------------
   const grossTradePrice = Number(order.totalAmount || 0);
-  const tradeDiscount = Number(order.customerDiscount || 0);
   const netPayable = Number(order.totalPayable || order.netAmount || 0);
+  const tradeDiscount = grossTradePrice - netPayable;
+
+  // Number to Words Function
+  const numberToWords = (num) => {
+    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+    const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+    const scales = ["", "Thousand", "Lakh", "Crore"];
+
+    const convertToWords = (n) => {
+      if (n === 0) return "";
+      if (n < 10) return ones[n];
+      if (n < 20) return teens[n - 10];
+      if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
+      return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 ? " " + convertToWords(n % 100) : "");
+    };
+
+    if (num === 0) return "Zero Taka Only";
+    const taka = Math.floor(num);
+    const paisa = Math.round((num - taka) * 100);
+
+    let result = "";
+    let scaleIndex = 0;
+
+    let crore = Math.floor(taka / 10000000);
+    let lakh = Math.floor((taka % 10000000) / 100000);
+    let thousand = Math.floor((taka % 100000) / 1000);
+    let remainder = taka % 1000;
+
+    if (crore > 0) result += convertToWords(crore) + " Crore ";
+    if (lakh > 0) result += convertToWords(lakh) + " Lakh ";
+    if (thousand > 0) result += convertToWords(thousand) + " Thousand ";
+    if (remainder > 0) result += convertToWords(remainder);
+
+    result = result.trim();
+    if (paisa > 0) result += " and " + paisa + " Paisa";
+    return result + " Taka Only";
+  };
+
+  const amountInWords = numberToWords(netPayable);
 
   const institute = order.institute || {};
   const logoUrl = "/images/NPL-Updated-Logo.png";
@@ -263,24 +305,33 @@ const PrintInstituteInvoice = () => {
       <style id="institute-invoice-style">{`
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 12px; color: #333; margin: 20px; }
         .container { width: 100%; background:#fff; padding:25px; }
-        .invoice-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #2E86C1; padding-bottom:8px; margin-bottom:15px; }
+        .invoice-header { display:flex; justify-content:space-between; align-items:center; border-bottom:0.5px solid #000; padding-bottom:8px; margin-bottom:15px; }
         .invoice-header img { width:150px; }
         .company-info { text-align:right; font-size:11px; }
         .company-name { font-size:20px; font-weight:bold; }
-        .invoice-title { text-align:center; font-size:18px; font-weight:700; color:#2E86C1; margin:20px 0 10px; border-bottom:2px solid #ccc; }
-        .info-box { display:flex; justify-content:space-between; border:2px solid #ccc; padding:12px; margin-bottom:20px; border-radius:4px; }
+        .invoice-title { text-align:center; font-size:18px; font-weight:700; color:#2E86C1; margin:20px 0 10px; border-bottom:0.5px solid #000; }
+        .info-box { display:flex; justify-content:space-between; border:0.5px solid #000; padding:12px; margin-bottom:20px; border-radius:4px; }
         .info-box div { width:48%; }
+        .previous-dues-box { margin-bottom:20px; border:0.5px solid #000; border-radius:4px; padding:12px; background-color:#f9f9f9; }
+        .previous-dues-title { font-size:14px; font-weight:700; color:#2E86C1; margin-bottom:10px; padding-bottom:8px; border-bottom:0.5px solid #000; }
+        .previous-dues-table { width:100%; border-collapse:collapse; font-size:12px; }
+        .previous-dues-table thead { background-color:#e8f4f8; }
+        .previous-dues-table th { border:0.5px solid #000; padding:6px 8px; text-align:left; font-weight:600; }
+        .previous-dues-table td { border:0.5px solid #000; padding:6px 8px; }
+        .previous-dues-table .amount { text-align:right; }
+        .previous-dues-table .days { text-align:center; }
+        .previous-dues-table .total-row { background-color:#f1f1f1; font-weight:600; }
         table { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:15px; }
-        th,td { border:1px solid #ddd; padding:6px 8px; }
+        th,td { border:0.5px solid #000; padding:6px 8px; }
         th { background:#f7f7f7; text-align:center; }
-        .product-table { font-size:11px; margin-bottom:10px; }
+        .product-table { font-size:11px; margin: 0; padding: 0; }
         .product-table th, .product-table td { padding:4px 6px; }
         tr:nth-child(even){ background:#fafafa; }
         .right { text-align:right; }
         .center { text-align:center; }
         .totals-row td { background:#f1f1f1; font-weight:600; }
         .signature { display:flex; justify-content:space-between; margin-top:50px; }
-        .signature div { width:22%; text-align:center; border-top:1px solid #333; padding-top:5px; font-weight:600; }
+        .signature div { width:22%; text-align:center; border-top:0.5px solid #000; padding-top:5px; font-weight:600; }
         .footer-info { display:flex; justify-content:space-between; font-size:10px; color:#555; margin-top:15px; }
         @media print { button { display:none; } }
       `}</style>
@@ -371,12 +422,12 @@ const PrintInstituteInvoice = () => {
           </div>
         </div>
 
-        {/* Product Table */}
-        <table className="product-table">
+        {/* Product Table with Slim Black Borders */}
+        <table className="product-table" style={{ borderLeft: "0.5px solid #000", borderRight: "0.5px solid #000", borderTop: "0.5px solid #000", borderBottom: "0.5px solid #000", marginBottom: "12px", margin: "0", padding: "0", width: "100%", boxSizing: "border-box", borderCollapse: "collapse" }}>
           <thead>
             <tr>
               <th>Sl</th>
-              <th>Product ID</th>
+              <th>Short Code</th>
               <th>Product</th>
               <th>Pack</th>
               <th>Batch</th>
@@ -397,7 +448,7 @@ const PrintInstituteInvoice = () => {
                     </td>
                   )}
                   {batchIndex === 0 && (
-                    <td rowSpan={product.batches.length}>{product.productId || "-"}</td>
+                    <td rowSpan={product.batches.length}>{product.productShortCode || "-"}</td>
                   )}
                   {batchIndex === 0 && (
                     <td rowSpan={product.batches.length}>{product.productName || "-"}</td>
@@ -417,41 +468,84 @@ const PrintInstituteInvoice = () => {
                 </tr>
               ))
             )}
+            {/* Summary Rows with Amount in Words and Discounts */}
+            <tr style={{ borderTop: "0.5px solid #000", fontWeight: "600" }}>
+              <td colSpan="5" rowSpan="2" style={{ textAlign: "left", padding: "8px 8px", verticalAlign: "middle", fontSize: "12px" }}>
+                <b>Amount in Words:</b> {amountInWords}
+              </td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>Less Discount:</td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>{tradeDiscount.toLocaleString()}</td>
+            </tr>
+            <tr style={{ background: "#f1f1f1", fontWeight: "600" }}>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>Net Payable Amount:</td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>{netPayable.toLocaleString()}</td>
+            </tr>
           </tbody>
         </table>
 
-        {isDebugMode && (
-          <details style={{ marginTop: 16 }}>
-            <summary style={{ cursor: "pointer", fontWeight: 600 }}>
-              Debug Payload {isFetching ? "(refreshing...)" : ""}
-            </summary>
-            <pre style={{ fontSize: 11, background: "#f7f7f7", padding: 12, overflow: "auto" }}>
-              {JSON.stringify(order, null, 2)}
-            </pre>
-          </details>
-        )}
-
-        {/* Totals Section */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <div style={{ width: "360px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        {/* Middle Section: Outstanding Summary (LEFT BORDER BOX) and Empty Right */}
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginBottom: "8px" }}>
+          {/* Left: Outstanding Summary - NO BORDER */}
+          <div style={{ width: "auto", minWidth: "280px" }}>
+            <div style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "4px", color: "#333" }}>Previous Outstanding</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
               <tbody>
                 <tr>
-                  <td>Gross Trade Price</td>
-                  <td className="right">{grossTradePrice.toLocaleString()}</td>
+                  <td style={{ padding: "3px 6px", borderBottom: "0.5px solid #000" }}>Previous Outstanding</td>
+                  <td style={{ padding: "3px 6px", borderBottom: "0.5px solid #000", textAlign: "right" }}>{previousOutstanding.toLocaleString()}</td>
                 </tr>
                 <tr>
-                  <td>Customer Discount</td>
-                  <td className="right">- {tradeDiscount.toLocaleString()}</td>
+                  <td style={{ padding: "3px 6px", borderBottom: "0.5px solid #000" }}>Current Invoice Value</td>
+                  <td style={{ padding: "3px 6px", borderBottom: "0.5px solid #000", textAlign: "right" }}>{netPayable.toLocaleString()}</td>
                 </tr>
-                <tr className="totals-row">
-                  <td>Net Payable</td>
-                  <td className="right">{netPayable.toLocaleString()}</td>
+                <tr style={{ fontWeight: "bold" }}>
+                  <td style={{ padding: "3px 6px", borderTop: "0.5px solid #000" }}>Total Outstanding</td>
+                  <td style={{ padding: "3px 6px", borderTop: "0.5px solid #000", textAlign: "right" }}>{totalOutstanding.toLocaleString()}</td>
                 </tr>
               </tbody>
             </table>
           </div>
+          {/* Right: Empty Space */}
+          <div style={{ flex: 1 }}></div>
         </div>
+
+        {/* Previous Outstanding Invoices Table */}
+        {order.previousPendingOrders && Array.isArray(order.previousPendingOrders) && order.previousPendingOrders.length > 0 && (
+          <div style={{ marginBottom: "8px" }}>
+            <div style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "4px", color: "#333" }}>Previous Outstanding Invoices</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "10px" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#f0f0f0" }}>
+                  <th style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontWeight: "bold", fontSize: "10px" }}>Sl. No.</th>
+                  <th style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontWeight: "bold", fontSize: "10px" }}>Date</th>
+                  <th style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "left", fontWeight: "bold", fontSize: "10px" }}>Invoice No.</th>
+                  <th style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontWeight: "bold", fontSize: "10px" }}>Terms</th>
+                  <th style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "right", fontWeight: "bold", fontSize: "10px" }}>Net Outstanding</th>
+                  <th style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontWeight: "bold", fontSize: "10px" }}>Aging (Days)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.previousPendingOrders.map((prevOrder, idx) => (
+                  <tr key={idx}>
+                    <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontSize: "10px" }}>{idx + 1}</td>
+                    <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontSize: "10px" }}>
+                      {prevOrder.orderDate ? new Date(prevOrder.orderDate).toLocaleDateString("en-GB") : "-"}
+                    </td>
+                    <td style={{ padding: "3px 4px", border: "1px solid #999", fontSize: "10px" }}>{prevOrder.invoiceNo || "-"}</td>
+                    <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontSize: "10px" }}>{prevOrder.payMode || "-"}</td>
+                    <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "right", fontSize: "10px" }}>{(prevOrder.amount || 0).toLocaleString()}</td>
+                    <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontSize: "10px" }}>{prevOrder.aging || 0}</td>
+                  </tr>
+                ))}
+                <tr style={{ fontWeight: "bold" }}>
+                  <td colSpan="4" style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "right", fontSize: "10px" }}>Total</td>
+                  <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "right", fontSize: "10px" }}>{(order.totalPreviousPendingAmount || 0).toLocaleString()}</td>
+                  <td style={{ padding: "3px 4px", border: "1px solid #999", textAlign: "center", fontSize: "10px" }}>-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Signature Area */}
         <div className="signature" style={{ marginTop: "80px" }}>
@@ -459,6 +553,18 @@ const PrintInstituteInvoice = () => {
           <div>Authorized By</div>
           <div>Institution Stamp</div>
           <div>Received By</div>
+        </div>
+
+        {/* Note Section */}
+        <div style={{ marginTop: "20px", padding: "10px", border: "0.5px solid #000", backgroundColor: "#fffacd", fontSize: "11px", lineHeight: "1.4" }}>
+          <strong>Note:</strong> Please be advised that all purchases are considered final. Once goods have been sold, they are not eligible for return, refund, or exchange under any circumstances, as per our company policy.
+        </div>
+
+        {/* Footer */}
+        <div style={{ marginTop: "15px", fontSize: "11px", color: "#555", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>Print Date & Time: {new Date().toLocaleDateString("en-GB")} at {new Date().toLocaleTimeString("en-GB")}</span>
+          <span>Prepared by: {userInfo?.name}</span>
+          <span>Printed by: {userInfo?.name}</span>
         </div>
 
         <div className="footer-info">
