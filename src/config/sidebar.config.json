@@ -690,8 +690,18 @@
             "path": "/reports/net-sales",
             "icon": "FileText",
             "allowedRoles": [
-              "admin",
-              "accountant",
+              "md",
+              "superadmin"
+            ]
+          },
+          {
+            "key": "report-daily-collection",
+            "label": "Daily Collection",
+            "path": "/reports/daily-collection",
+            "icon": "FileText",
+            "allowedRoles": [
+              "md",
+              "dm",
               "superadmin"
             ]
           },
@@ -730,8 +740,7 @@
             "path": "/reports/product-summary",
             "icon": "FileText",
             "allowedRoles": [
-              "admin",
-              "accountant",
+              "md",
               "superadmin"
             ]
           },
@@ -756,6 +765,22 @@
               "admin",
               "accountant",
               "superadmin"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "reports-customers",
+        "label": "Customer Reports",
+        "icon": "Users",
+        "children": [
+          {
+            "key": "report-customer-details",
+            "label": "Customer Details",
+            "path": "/reports/customer-details",
+            "icon": "FileText",
+            "allowedRoles": [
+              "md"
             ]
           }
         ]

@@ -405,20 +405,20 @@ export default function Login() {
         pauseOnHover
       />
 
-      <div className="flex-1 flex items-center justify-center px-8 py-16">
-        <div className="w-full max-w-md bg-white p-10 rounded-2xl shadow-2xl border border-gray-100">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
+        <div className="w-full max-w-md bg-white p-6 sm:p-8 md:p-10 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-2xl border border-gray-100">
 
           {/* Header */}
-          <div className="space-y-4 text-center">
+          <div className="space-y-3 sm:space-y-4 text-center">
             <div className="flex justify-center">
-              <img src={logo} alt="Company Logo" className="h-16 w-auto" />
+              <img src={logo} alt="Company Logo" className="h-12 sm:h-14 md:h-16 w-auto" />
             </div>
 
-            <h2 className="text-2xl font-semibold text-gray-800">
+            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">
               Sign in
             </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
               Use your corporate credentials
             </p>
           </div>
@@ -470,6 +470,16 @@ export default function Login() {
                 autoComplete="current-password"
                 required
               />
+            </div>
+
+            {/* Forgot Password Link */}
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-blue-700 font-medium hover:underline"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             {/* Login Button */}

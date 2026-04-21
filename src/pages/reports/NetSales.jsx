@@ -20,7 +20,7 @@ const EMPTY_TEXT = "--";
 
 export default function NetSales() {
   const initialFilters = {
-    reportType: "overview",
+    reportType: "all",
     filter: "",
     value: "",
     entityType: "",
@@ -123,7 +123,7 @@ export default function NetSales() {
       startDate: sourceFilters.startDate,
       endDate: sourceFilters.endDate,
       sort: sourceFilters.sort,
-      limit: toNumber(sourceFilters.limit, 20),
+      limit: toNumber(sourceFilters.limit, 50),
       skip: toNumber(sourceFilters.skip, 0),
     };
 
@@ -146,7 +146,7 @@ export default function NetSales() {
   const loadReports = (nextFilters, resetPage = false) => {
     const mergedFilters = {
       ...nextFilters,
-      limit: toNumber(nextFilters.limit, 20),
+      limit: toNumber(nextFilters.limit, 50),
       skip: resetPage ? 0 : toNumber(nextFilters.skip, 0),
     };
 
@@ -179,7 +179,7 @@ export default function NetSales() {
   };
 
   const handlePageChange = (direction) => {
-    const limit = toNumber(appliedFilters.limit, 20);
+    const limit = toNumber(appliedFilters.limit, 50);
     const currentSkip = toNumber(appliedFilters.skip, 0);
     const nextSkip = direction === "next" ? currentSkip + limit : Math.max(0, currentSkip - limit);
 
@@ -208,12 +208,23 @@ export default function NetSales() {
 
     return options;
   }, [isAllOrdersReport, totalOrderCount]);
-  const canGoNext = reportRows.length >= toNumber(appliedFilters.limit, 20);
+
+  // Auto-set limit to "all" when reportType is "all"
+  useEffect(() => {
+    if (filters.reportType === "all" && totalOrderCount > 0 && Number(filters.limit) !== totalOrderCount) {
+      setFilters((prev) => ({
+        ...prev,
+        limit: totalOrderCount,
+      }));
+    }
+  }, [filters.reportType, totalOrderCount]);
+
+  const canGoNext = reportRows.length >= toNumber(appliedFilters.limit, 50);
   const isAllOrdersLimitSelected =
     appliedFilters.reportType === "all" &&
     totalOrderCount > 0 &&
     Number(appliedFilters.limit) === totalOrderCount;
-  const canExportAllOrders = isAllOrdersLimitSelected && reportRows.length > 0 && !reportState.isFetching;
+  const canExportAllOrders = appliedFilters.reportType === "all" && reportRows.length > 0 && !reportState.isFetching;
   const isPrintEnabled = canExportAllOrders;
 
   const normalizedReportRows = useMemo(() => {
@@ -818,77 +829,34 @@ export default function NetSales() {
         </div>
       </div>
 
-      <Card className="p-6 no-print">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-          Filters
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <Card className="p-2 no-print">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           <FormSelect
             label="Report Type"
             value={filters.reportType}
             options={reportTypeOptions}
             onChange={(e) => handleFilterChange("reportType", e.target.value)}
             placeholder="Select report type"
-          />
-          <FormSelect
-            label="Filter By"
-            value={filters.filter}
-            options={filterByOptions}
-            onChange={(e) => handleFilterChange("filter", e.target.value)}
-            placeholder="Choose dimension"
-            className="hidden"
-          />
-          <FormInput
-            label="Filter Value (ID)"
-            value={filters.value}
-            onChange={(e) => handleFilterChange("value", e.target.value)}
-            placeholder="MongoDB ObjectId"
-            className="hidden"
-          />
-          <FormSelect
-            label="Entity Type"
-            value={filters.entityType}
-            options={entityTypeOptions}
-            onChange={(e) => handleFilterChange("entityType", e.target.value)}
-            placeholder="All entities"
-          />
-          <FormSelect
-            label="Sort"
-            value={filters.sort}
-            options={sortOptions}
-            onChange={(e) => handleFilterChange("sort", e.target.value)}
-            placeholder="Sort by"
+            className="text-xs"
           />
           <FormInput
             label="Start Date"
             type="date"
             value={filters.startDate}
             onChange={(e) => handleFilterChange("startDate", e.target.value)}
+            className="text-xs"
           />
           <FormInput
             label="End Date"
             type="date"
             value={filters.endDate}
             onChange={(e) => handleFilterChange("endDate", e.target.value)}
+            className="text-xs"
           />
-          <FormSelect
-            label="Limit"
-            value={filters.limit}
-            options={limitOptions}
-            onChange={(e) => handleFilterChange("limit", Number(e.target.value || 20))}
-            placeholder="Rows"
-          />
-          <FormInput
-            label="Skip"
-            type="number"
-            min="0"
-            value={filters.skip}
-            onChange={(e) => handleFilterChange("skip", Number(e.target.value || 0))}
-          />
-        </div>
-        <div className="mt-4 flex gap-2">
-          <Button size="small" onClick={handleApply}>Apply Filters</Button>
-          <Button size="small" variant="outline" onClick={handleReset}>Reset</Button>
+          <div className="flex gap-1 items-end">
+            <Button size="small" onClick={handleApply} className="text-xs py-1 px-2">Apply</Button>
+            <Button size="small" variant="outline" onClick={handleReset} className="text-xs py-1 px-2">Reset</Button>
+          </div>
         </div>
       </Card>
 

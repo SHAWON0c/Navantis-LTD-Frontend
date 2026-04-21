@@ -1,67 +1,54 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { useVerifyEmailMutation, useResendOtpMutation } from "../../redux/features/auth/authAPI";
+import { useVerifyPasswordOtpMutation } from "../../redux/features/auth/authAPI";
 import logo from "../../assets/react.svg";
 
-export default function VerifyEmail() {
+export default function VerifyForgotPasswordOtp() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Email passed from Register page
+  // Email passed from Forgot Password page
   const email = location.state?.email || "";
 
   // OTP state
   const [otp, setOtp] = useState("");
   const [employeeId, setEmployeeId] = useState("");
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(900); // 15 minutes in seconds
   const [resendDisabled, setResendDisabled] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
 
   // RTK Query mutation for verifying OTP
-  const [verifyEmail, { isLoading, isSuccess, isError, error }] = useVerifyEmailMutation();
-
-  // RTK Query mutation for resending OTP
-  const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
+  const [verifyPasswordOtp, { isLoading, isError, error }] = useVerifyPasswordOtpMutation();
 
   // Handle OTP submit
   const handleVerify = async (e) => {
     e.preventDefault();
     const errors = {};
-    
+
     // Validation
     if (!email) errors.email = "Email is required";
     if (!otp) errors.otp = "OTP is required";
     if (!employeeId) errors.employeeId = "Employee ID is required";
-    
+
     setValidationErrors(errors);
-    
+
     if (Object.keys(errors).length > 0) {
       return;
     }
-    
-    try {
-      await verifyEmail({ email, otp, employeeId }).unwrap();
-    } catch (err) {
-      console.error("Verification failed:", err);
-    }
-  };
 
-  // Handle Resend OTP
-  const handleResendOtp = async () => {
     try {
-      await resendOtp({ email }).unwrap();
-      setCountdown(60);
-      setResendDisabled(true);
-      console.log("OTP resent to:", email);
+      await verifyPasswordOtp({ email, otp, employeeId }).unwrap();
+      // Navigate to reset password page with email
+      navigate("/reset-password", { state: { email } });
     } catch (err) {
-      console.error("Resend OTP failed:", err);
+      console.error("OTP verification failed:", err);
     }
   };
 
   // Countdown timer effect
   useEffect(() => {
     let interval;
-    if (resendDisabled && countdown > 0) {
+    if (countdown > 0) {
       interval = setInterval(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
@@ -69,14 +56,14 @@ export default function VerifyEmail() {
       setResendDisabled(false);
     }
     return () => clearInterval(interval);
-  }, [resendDisabled, countdown]);
+  }, [countdown]);
 
-  // Redirect to login after successful verification
-  useEffect(() => {
-    if (isSuccess) {
-      navigate("/login");
-    }
-  }, [isSuccess, navigate]);
+  // Format countdown time
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   return (
     <div className="flex w-full min-h-screen bg-gray-50">
@@ -88,9 +75,9 @@ export default function VerifyEmail() {
             <div className="flex justify-center">
               <img src={logo} alt="Company Logo" className="h-12 sm:h-14 md:h-16 w-auto" />
             </div>
-            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">Verify Your Email</h2>
+            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">Verify OTP</h2>
             <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-              We sent a verification code to <span className="font-medium break-all">{email}</span>. Enter it below to activate your account.
+              We sent a verification code to <span className="font-medium break-all">{email}</span>. Enter it below to reset your password.
             </p>
           </div>
 
@@ -108,7 +95,7 @@ export default function VerifyEmail() {
               <p>Required fields marked with <span className="text-red-600">*</span></p>
             </div>
 
-            {/* Email Field */}
+            {/* Email Field (Display only) */}
             <div className="space-y-2">
               <label className="text-xs sm:text-sm text-gray-600 font-medium">
                 Email <span className="text-red-600">*</span>
@@ -119,9 +106,6 @@ export default function VerifyEmail() {
                 disabled
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm border rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
               />
-              {validationErrors.email && (
-                <p className="text-red-600 text-xs font-medium">{validationErrors.email}</p>
-              )}
             </div>
 
             {/* Employee ID Field */}
@@ -158,7 +142,7 @@ export default function VerifyEmail() {
               <input
                 type="text"
                 inputMode="numeric"
-                placeholder="Enter OTP"
+                placeholder="Enter 6-digit OTP"
                 value={otp}
                 onChange={(e) => {
                   setOtp(e.target.value);
@@ -176,23 +160,10 @@ export default function VerifyEmail() {
               )}
             </div>
 
-            {/* Resend OTP */}
+            {/* OTP Timer */}
             <div className="flex items-center justify-between text-xs sm:text-sm bg-orange-50 border border-orange-200 rounded-lg p-3 gap-2">
-              <span className="text-gray-600">
-                {resendDisabled ? (
-                  <span className="text-orange-600 font-medium">
-                    Resend OTP in {countdown}s
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    className="text-blue-700 font-medium hover:underline active:text-blue-900"
-                  >
-                    Resend OTP
-                  </button>
-                )}
-              </span>
+              <span className="text-orange-800 font-medium">OTP expires in:</span>
+              <span className="text-orange-600 font-bold text-base sm:text-lg">{formatTime(countdown)}</span>
             </div>
 
             <button
@@ -205,11 +176,18 @@ export default function VerifyEmail() {
           </form>
 
           {/* Footer Navigation */}
-          <div className="mt-6 text-center text-xs sm:text-sm leading-relaxed">
-            Back to{" "}
-            <Link to="/login" className="text-blue-700 font-medium hover:underline active:text-blue-900">
-              Sign in
-            </Link>
+          <div className="mt-6 text-center text-xs sm:text-sm space-y-3 sm:space-y-2">
+            <div className="leading-relaxed">
+              <Link to="/forgot-password" className="text-blue-700 font-medium hover:underline active:text-blue-900">
+                ← Back to Forgot Password
+              </Link>
+            </div>
+            <div className="leading-relaxed">
+              Remember your password?{" "}
+              <Link to="/login" className="text-blue-700 font-medium hover:underline active:text-blue-900">
+                Sign in
+              </Link>
+            </div>
           </div>
 
           {/* Footer */}
