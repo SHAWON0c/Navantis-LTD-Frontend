@@ -8,7 +8,7 @@ import SidebarLogo from "./SidebarLogo";
 
 export default function Sidebar({ isOpen, setSidebarOpen }) {
   const { user, loading } = useAuth();
-  const [openSections, setOpenSections] = useState({});
+  const [openSectionKey, setOpenSectionKey] = useState(null);
   const expandIfCollapsed = () => {
     if (!isOpen) setSidebarOpen(true);
   };
@@ -74,7 +74,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
     .filter((section) => section.items.length > 0);
 
   const toggleSection = (key) => {
-    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+    setOpenSectionKey((prev) => (prev === key ? null : key));
   };
 
   return (
@@ -89,7 +89,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
                 type="button"
                 onClick={() => toggleSection(section.key)}
                 className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] uppercase tracking-[0.08em] text-slate-500 hover:text-slate-300 transition-colors"
-                aria-expanded={!!openSections[section.key]}
+                aria-expanded={openSectionKey === section.key}
               >
                 <span className="flex items-center gap-2">
                   <section.Icon className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
                 </span>
                 <ChevronRight
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    openSections[section.key] ? "rotate-90" : ""
+                    openSectionKey === section.key ? "rotate-90" : ""
                   }`}
                 />
               </button>
@@ -112,8 +112,15 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
               </button>
             )}
 
-            {isOpen && openSections[section.key] && (
-              <div className="space-y-1">
+            {isOpen && (
+              <div
+                className={`overflow-hidden transition-[max-height,opacity,transform,margin] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] origin-top ${
+                  openSectionKey === section.key
+                    ? "max-h-[1200px] opacity-100 mt-1 translate-y-0 scale-y-100"
+                    : "max-h-0 opacity-0 -translate-y-1 scale-y-95"
+                }`}
+              >
+                <div className="space-y-1 pb-1">
                 {section.items.map((item) => (
                   <NavLink
                     key={item.key}
@@ -133,6 +140,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
                     {isOpen && <span className="truncate">{item.label}</span>}
                   </NavLink>
                 ))}
+                </div>
               </div>
             )}
           </div>

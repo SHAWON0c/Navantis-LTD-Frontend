@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MdPrint, MdRefresh, MdDownload, MdExpandMore, MdExpandLess } from "react-icons/md";
+import { MdArrowBack, MdExpandMore, MdExpandLess } from "react-icons/md";
 import Card from "../../component/common/Card";
 import Table from "../../component/common/Table";
 import Button from "../../component/common/Button";
@@ -8,6 +8,7 @@ import FormSelect from "../../component/common/FormSelect";
 import { useLazyGetProductSummaryReportQuery } from "../../redux/features/reports/productSummaryReportApi";
 import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
+import { ChevronRight } from "lucide-react";
 
 const EMPTY_TEXT = "--";
 
@@ -430,7 +431,7 @@ export default function ProductSummary() {
   };
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-6 space-y-6 print:bg-white print:p-2">
+    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-0 space-y-3 print:bg-white print:p-2">
       <style>
         {`
           @media print {
@@ -447,89 +448,80 @@ export default function ProductSummary() {
         <p className="text-xs">Printed on: {new Date().toLocaleString()}</p>
       </div>
 
-      <div className="flex items-center justify-between no-print">
-        <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-          Product Summary Report
-        </h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="small"
-            onClick={handleDownloadPdf}
-            disabled={tableData.length === 0}
-            icon={MdDownload}
-          >
-            Download PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            onClick={handleDownloadExcel}
-            disabled={tableData.length === 0}
-            icon={MdDownload}
-          >
-            Download Excel
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            icon={MdPrint}
-            onClick={handlePrint}
-            disabled={tableData.length === 0}
-          >
-            Print
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            icon={MdRefresh}
-            onClick={() => loadReport(appliedFilters, true)}
-            loading={reportState.isFetching}
-          >
-            Refresh
-          </Button>
+      <Card className="mb-2 no-print">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="small" onClick={() => window.history.back()} className="ml-2">
+              <MdArrowBack className="inline mr-1" />
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:h-10">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>REPORTS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">PRODUCT SUMMARY</span>
+              </h2>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="small" onClick={handleDownloadPdf} disabled={tableData.length === 0}>
+              Download PDF
+            </Button>
+            <Button variant="outline" size="small" onClick={handleDownloadExcel} disabled={tableData.length === 0}>
+              Download Excel
+            </Button>
+            <Button variant="outline" size="small" onClick={handlePrint} disabled={tableData.length === 0}>
+              Print
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
 
-      <Card className="p-6 no-print">
-        <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-          Filters
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <FormSelect
-            label="Entity Type"
-            value={filters.entityType}
-            options={entityTypeOptions}
-            onChange={(e) => handleFilterChange("entityType", e.target.value)}
-            placeholder="All entities"
-          />
-          <FormSelect
-            label="Order Status"
-            value={filters.orderStatus}
-            options={orderStatusOptions}
-            onChange={(e) => handleFilterChange("orderStatus", e.target.value)}
-            placeholder="Select status"
-          />
-          <FormInput
-            label="From Date"
-            type="date"
-            value={filters.fromDate}
-            onChange={(e) => handleFilterChange("fromDate", e.target.value)}
-          />
-          <FormInput
-            label="To Date"
-            type="date"
-            value={filters.toDate}
-            onChange={(e) => handleFilterChange("toDate", e.target.value)}
-          />
-        </div>
-        <div className="mt-4 flex gap-2">
-          <Button size="small" onClick={handleApply}>
-            Apply Filters
-          </Button>
-          <Button size="small" variant="outline" onClick={handleReset}>
-            Reset
-          </Button>
+      <Card className="p-2 no-print">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1">
+            <FormSelect
+              label="Entity Type"
+              value={filters.entityType}
+              options={entityTypeOptions}
+              onChange={(e) => handleFilterChange("entityType", e.target.value)}
+              placeholder="All entities"
+              className="text-xs"
+            />
+            <FormSelect
+              label="Order Status"
+              value={filters.orderStatus}
+              options={orderStatusOptions}
+              onChange={(e) => handleFilterChange("orderStatus", e.target.value)}
+              placeholder="Select status"
+              className="text-xs"
+            />
+            <FormInput
+              label="From Date"
+              type="date"
+              value={filters.fromDate}
+              onChange={(e) => handleFilterChange("fromDate", e.target.value)}
+              className="text-xs"
+            />
+            <FormInput
+              label="To Date"
+              type="date"
+              value={filters.toDate}
+              onChange={(e) => handleFilterChange("toDate", e.target.value)}
+              className="text-xs"
+            />
+          </div>
+
+          <div className="flex gap-1.5 lg:ml-2">
+            <Button size="small" onClick={handleApply}>
+              Apply Filters
+            </Button>
+            <Button size="small" variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+          </div>
         </div>
       </Card>
 

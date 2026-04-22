@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { MdPrint, MdRefresh, MdExpandMore, MdExpandLess } from "react-icons/md";
+import { MdArrowBack, MdExpandMore, MdExpandLess } from "react-icons/md";
+import { ChevronRight } from "lucide-react";
 import Card from "../../component/common/Card";
 import Table from "../../component/common/Table";
 import Button from "../../component/common/Button";
@@ -776,7 +777,7 @@ export default function NetSales() {
   };
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-6 space-y-6 print:bg-white print:p-2">
+    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-0 space-y-3 print:bg-white print:p-2">
       <style>
         {`
           @media print {
@@ -794,47 +795,33 @@ export default function NetSales() {
         <p className="text-xs">Printed on: {new Date().toLocaleString()}</p>
       </div>
 
-      <div className="flex items-center justify-between no-print">
-        <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-          Net Sales Report
-        </h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="small"
-            onClick={handleDownloadPdf}
-            disabled={!canExportAllOrders}
-          >
-            Download PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            onClick={handleDownloadExcel}
-            disabled={!canExportAllOrders}
-          >
-            Download Excel
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            icon={MdPrint}
-            onClick={handlePrint}
-            disabled={!isPrintEnabled}
-          >
-            Print
-          </Button>
-          <Button
-            variant="outline"
-            size="small"
-            icon={MdRefresh}
-            onClick={() => loadReports(appliedFilters)}
-            loading={reportState.isFetching || dashboardState.isFetching}
-          >
-            Refresh
-          </Button>
+      <Card className="mb-2 no-print">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="small" onClick={() => window.history.back()} className="ml-2">
+              <MdArrowBack className="inline mr-1" />
+              Back
+            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:h-10">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>REPORTS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">NET SALES</span>
+              </h2>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="small" onClick={handleDownloadPdf} disabled={!canExportAllOrders}>
+              Download PDF
+            </Button>
+            <Button variant="outline" size="small" onClick={handleDownloadExcel} disabled={!canExportAllOrders}>
+              Download Excel
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
 
       <Card className="p-2 no-print">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">

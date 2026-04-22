@@ -112,6 +112,38 @@ html:not(.dark) .border-slate-200 {
   border-color: var(--app-border) !important;
 }
 
+/* Dashboard page spacing standardization (based on Purchase List spacing rhythm) */
+.dashboard-page-shell {
+  padding: 10px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-page-shell {
+    padding: 12px;
+  }
+}
+
+/* Normalize common oversized top-level wrappers in routed pages */
+.dashboard-page-shell > .min-h-screen,
+.dashboard-page-shell > [class^="min-h-screen"],
+.dashboard-page-shell > [class*=" min-h-screen"],
+.dashboard-page-shell > [class*="min-h-[calc(100vh"] {
+  min-height: auto !important;
+}
+
+.dashboard-page-shell > [class*=" p-6"],
+.dashboard-page-shell > [class*=" p-8"],
+.dashboard-page-shell > [class*=" p-10"],
+.dashboard-page-shell > [class*=" p-4"],
+.dashboard-page-shell > [class^="p-6"],
+.dashboard-page-shell > [class^="p-8"],
+.dashboard-page-shell > [class^="p-10"],
+.dashboard-page-shell > [class^="p-4"],
+.dashboard-page-shell > [class*=" md:p-6"],
+.dashboard-page-shell > [class*=" md:p-8"] {
+  padding: 0 !important;
+}
+
 html,
 body,
 #root,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MdPrint, MdRefresh } from "react-icons/md";
+import { MdArrowBack } from "react-icons/md";
 import { useGetDailyCollectionReportQuery } from "../../redux/features/reports/reportsAPI";
 import * as XLSX from "xlsx";
 import html2pdf from "html2pdf.js";
@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Card from "../../component/common/Card";
 import Button from "../../component/common/Button";
 import FormInput from "../../component/common/FormInput";
+import { ChevronRight } from "lucide-react";
 
 export default function DailyCollectionReport() {
   const today = new Date().toISOString().split("T")[0];
@@ -278,7 +279,7 @@ export default function DailyCollectionReport() {
   };
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-6 space-y-6 print:bg-white print:p-2">
+    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-0 space-y-3 print:bg-white print:p-2">
       <style>
         {`
           @media print {
@@ -294,53 +295,35 @@ export default function DailyCollectionReport() {
         <p className="text-sm">Printed on: {new Date().toLocaleString()}</p>
       </div>
 
-      {/* Header with Title and Action Buttons */}
-      <div className="flex items-center justify-between no-print">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            Daily Collection Report
-          </h1>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-            Monitor and analyze daily payment collections
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        {reportData?.data && (
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="small"
-              onClick={handlePdfExport}
-            >
-              Download PDF
+      <Card className="mb-2 no-print">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="small" onClick={() => window.history.back()} className="ml-2">
+              <MdArrowBack className="inline mr-1" />
+              Back
             </Button>
-            <Button
-              variant="outline"
-              size="small"
-              onClick={handleExcelExport}
-            >
-              Download Excel
-            </Button>
-            <Button
-              variant="outline"
-              size="small"
-              icon={MdPrint}
-              onClick={handlePrint}
-            >
-              Print
-            </Button>
-            <Button
-              variant="outline"
-              size="small"
-              icon={MdRefresh}
-              onClick={() => window.location.reload()}
-            >
-              Refresh
-            </Button>
+            <div className="bg-white text-gray-500 flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:h-10">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
+                <span>EMS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span>REPORTS</span>
+                <ChevronRight size={14} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">DAILY COLLECTION</span>
+              </h2>
+            </div>
           </div>
-        )}
-      </div>
+          {reportData?.data && (
+            <div className="flex gap-2">
+              <Button variant="outline" size="small" onClick={handlePdfExport}>
+                Download PDF
+              </Button>
+              <Button variant="outline" size="small" onClick={handleExcelExport}>
+                Download Excel
+              </Button>
+            </div>
+          )}
+        </div>
+      </Card>
 
       {/* Filters Card */}
       <Card className="p-2 no-print">
