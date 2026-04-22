@@ -11,7 +11,7 @@
 //   const [searchParams, setSearchParams] = useSearchParams();
 
 //   const currentPage = parseInt(searchParams.get("page")) || 1;
-//   const productsPerPage = parseInt(searchParams.get("limit")) || 10;
+//   const productsPerPage = parseInt(searchParams.get("limit")) || 20;
 //   const year = searchParams.get("year") || "";
 //   const month = searchParams.get("month") || "";
 //   const fromDate = searchParams.get("fromDate") || "";
@@ -109,32 +109,32 @@
 //         <table className="table-auto w-full text-left border-collapse">
 //           <thead>
 //             <tr className="bg-gray-100">
-//               <th className="px-4 py-2 text-center">Sl. No.</th>
-//               <th className="px-4 py-2">Product Name</th>
-//               <th className="px-4 py-2">Pack Size</th>
-//               <th className="px-4 py-2">Batch</th>
-//               <th className="px-4 py-2 text-center">Quantity</th>
-//               <th className="px-4 py-2 text-center">Expire Date</th>
-//               <th className="px-4 py-2 text-right">TP</th>
-//               <th className="px-4 py-2 text-right">Total Price</th>
-//               <th className="px-4 py-2 text-center">Warehouse Status</th>
-//               <th className="px-4 py-2">Purchase Date</th>
+//               <th className="px-3 py-1.5 text-center">Sl. No.</th>
+//               <th className="px-3 py-1.5">Product Name</th>
+//               <th className="px-3 py-1.5">Pack Size</th>
+//               <th className="px-3 py-1.5">Batch</th>
+//               <th className="px-3 py-1.5 text-center">Quantity</th>
+//               <th className="px-3 py-1.5 text-center">Expire Date</th>
+//               <th className="px-3 py-1.5 text-right">TP</th>
+//               <th className="px-3 py-1.5 text-right">Total Price</th>
+//               <th className="px-3 py-1.5 text-center">Warehouse Status</th>
+//               <th className="px-3 py-1.5">Purchase Date</th>
 //             </tr>
 //           </thead>
 
 //           <tbody>
 //             {purchaseOrders.map((order, idx) => (
 //               <tr key={order.productId + idx} className="border-b hover:bg-gray-50">
-//                 <td className="px-4 py-2 text-center">{(currentPage - 1) * productsPerPage + idx + 1}</td>
-//                 <td className="px-4 py-2">{order.Name}</td>
-//                 <td className="px-4 py-2">{order.PackSize}</td>
-//                 <td className="px-4 py-2">{order.Batch}</td>
-//                 <td className="px-4 py-2 text-center">{order.Quantity}</td>
-//                 <td className="px-4 py-2 text-center">{new Date(order.Expire).toLocaleDateString()}</td>
-//                 <td className="px-4 py-2 text-right">{order?.PriceUnitTP?.toLocaleString()}</td>
-//                 <td className="px-4 py-2 text-right">{order?.TotalPrice?.toLocaleString()}</td>
-//                 <td className="px-4 py-2 text-center">{order.warehouseStatus}</td>
-//                 <td className="px-4 py-2">{new Date(order.Date).toLocaleDateString()}</td>
+//                 <td className="px-3 py-1.5 text-center">{(currentPage - 1) * productsPerPage + idx + 1}</td>
+//                 <td className="px-3 py-1.5">{order.Name}</td>
+//                 <td className="px-3 py-1.5">{order.PackSize}</td>
+//                 <td className="px-3 py-1.5">{order.Batch}</td>
+//                 <td className="px-3 py-1.5 text-center">{order.Quantity}</td>
+//                 <td className="px-3 py-1.5 text-center">{new Date(order.Expire).toLocaleDateString()}</td>
+//                 <td className="px-3 py-1.5 text-right">{order?.PriceUnitTP?.toLocaleString()}</td>
+//                 <td className="px-3 py-1.5 text-right">{order?.TotalPrice?.toLocaleString()}</td>
+//                 <td className="px-3 py-1.5 text-center">{order.warehouseStatus}</td>
+//                 <td className="px-3 py-1.5">{new Date(order.Date).toLocaleDateString()}</td>
 //               </tr>
 //             ))}
 //           </tbody>
@@ -183,7 +183,7 @@
 //   const [searchParams, setSearchParams] = useSearchParams();
 
 //   const currentPage = parseInt(searchParams.get("page")) || 1;
-//   const productsPerPage = parseInt(searchParams.get("limit")) || 10;
+//   const productsPerPage = parseInt(searchParams.get("limit")) || 20;
 
 //   // ---------------- Filters state ----------------
 //   const [filters, setFilters] = useState({
@@ -293,32 +293,32 @@
 //         <table className="table-auto w-full text-left border-collapse">
 //           <thead>
 //             <tr className="bg-gray-100">
-//               <th className="px-4 py-2 text-center">Sl. No.</th>
-//               <th className="px-4 py-2">Product Name</th>
-//               <th className="px-4 py-2">Pack Size</th>
-//               <th className="px-4 py-2">Batch</th>
-//               <th className="px-4 py-2 text-center">Quantity</th>
-//               <th className="px-4 py-2 text-center">Expire Date</th>
-//               <th className="px-4 py-2 text-right">TP</th>
-//               <th className="px-4 py-2 text-right">Total Price</th>
-//               <th className="px-4 py-2 text-center">Warehouse Status</th>
-//               <th className="px-4 py-2">Purchase Date</th>
+//               <th className="px-3 py-1.5 text-center">Sl. No.</th>
+//               <th className="px-3 py-1.5">Product Name</th>
+//               <th className="px-3 py-1.5">Pack Size</th>
+//               <th className="px-3 py-1.5">Batch</th>
+//               <th className="px-3 py-1.5 text-center">Quantity</th>
+//               <th className="px-3 py-1.5 text-center">Expire Date</th>
+//               <th className="px-3 py-1.5 text-right">TP</th>
+//               <th className="px-3 py-1.5 text-right">Total Price</th>
+//               <th className="px-3 py-1.5 text-center">Warehouse Status</th>
+//               <th className="px-3 py-1.5">Purchase Date</th>
 //             </tr>
 //           </thead>
 
 //           <tbody>
 //             {filteredOrders.map((order, idx) => (
 //               <tr key={order.productId + idx} className="border-b hover:bg-gray-50">
-//                 <td className="px-4 py-2 text-center">{(currentPage - 1) * productsPerPage + idx + 1}</td>
-//                 <td className="px-4 py-2">{order.Name}</td>
-//                 <td className="px-4 py-2">{order.PackSize}</td>
-//                 <td className="px-4 py-2">{order.Batch}</td>
-//                 <td className="px-4 py-2 text-center">{order.Quantity}</td>
-//                 <td className="px-4 py-2 text-center">{new Date(order.Expire).toLocaleDateString()}</td>
-//                 <td className="px-4 py-2 text-right">{order?.PriceUnitTP?.toLocaleString()}</td>
-//                 <td className="px-4 py-2 text-right">{order?.TotalPrice?.toLocaleString()}</td>
-//                 <td className="px-4 py-2 text-center">{order.warehouseStatus}</td>
-//                 <td className="px-4 py-2">{new Date(order.Date).toLocaleDateString()}</td>
+//                 <td className="px-3 py-1.5 text-center">{(currentPage - 1) * productsPerPage + idx + 1}</td>
+//                 <td className="px-3 py-1.5">{order.Name}</td>
+//                 <td className="px-3 py-1.5">{order.PackSize}</td>
+//                 <td className="px-3 py-1.5">{order.Batch}</td>
+//                 <td className="px-3 py-1.5 text-center">{order.Quantity}</td>
+//                 <td className="px-3 py-1.5 text-center">{new Date(order.Expire).toLocaleDateString()}</td>
+//                 <td className="px-3 py-1.5 text-right">{order?.PriceUnitTP?.toLocaleString()}</td>
+//                 <td className="px-3 py-1.5 text-right">{order?.TotalPrice?.toLocaleString()}</td>
+//                 <td className="px-3 py-1.5 text-center">{order.warehouseStatus}</td>
+//                 <td className="px-3 py-1.5">{new Date(order.Date).toLocaleDateString()}</td>
 //               </tr>
 //             ))}
 //           </tbody>
@@ -371,7 +371,7 @@ const PurchaseOrderList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = parseInt(searchParams.get("page")) || 1;
-  const productsPerPage = parseInt(searchParams.get("limit")) || 10;
+  const productsPerPage = parseInt(searchParams.get("limit")) || 20;
   const year = searchParams.get("year") || "";
   const month = searchParams.get("month") || "";
   const fromDate = searchParams.get("fromDate") || "";
@@ -445,16 +445,16 @@ const PurchaseOrderList = () => {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <Card className="mb-6">
+      <Card className="mb-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button variant="ghost" size="small"  onClick={() => window.history.back()}
               className="ml-2">
                  <MdArrowBack className="inline mr-1" />
               Back
             </Button>
-            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+            <div className="bg-white text-gray-500 flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:h-10">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>ADMIN</span>
@@ -463,14 +463,14 @@ const PurchaseOrderList = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-1 sm:mr-2 md:mr-3">
             Total Products: {totalUniqueProducts}
           </div>
         </div>
       </Card>
 
       {/* Filters + Summary */}
-      <div className="mb-6">
+      <div className="mb-3">
         <FiltersAndSummaryPanel
           filters={filters}
           setFilters={setFilters}
@@ -492,34 +492,34 @@ const PurchaseOrderList = () => {
       {/* Data Table */}
       <Card title="Purchase Order Records" subtitle={`Showing ${purchaseOrders.length} records`}>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Pack Size</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Batch</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Quantity</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire Date</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">TP</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Total Price</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Warehouse Status</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Purchase Date</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Product Name</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Pack Size</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Quantity</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Expire Date</th>
+                <th className="text-right py-2 px-2 font-semibold text-gray-700">TP</th>
+                <th className="text-right py-2 px-2 font-semibold text-gray-700">Total Price</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Warehouse Status</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Purchase Date</th>
               </tr>
             </thead>
             <tbody>
               {purchaseOrders.map((order, idx) => (
                 <tr key={order.productId + idx} className="border-b border-gray-200 hover:bg-gray-50">
-                  <td className="text-center py-3 px-4">{(currentPage - 1) * productsPerPage + idx + 1}</td>
-                  <td className="text-left py-3 px-4">{order.Name}</td>
-                  <td className="text-left py-3 px-4">{order.PackSize}</td>
-                  <td className="text-left py-3 px-4">{order.Batch}</td>
-                  <td className="text-center py-3 px-4">{Number(order.Quantity || 0).toLocaleString()}</td>
-                  <td className="text-center py-3 px-4">{new Date(order.Expire).toLocaleDateString()}</td>
-                  <td className="text-right py-3 px-4">৳{Number(order?.PriceUnitTP || 0).toLocaleString()}</td>
-                  <td className="text-right py-3 px-4">৳{Number(order?.TotalPrice || 0).toLocaleString()}</td>
-                  <td className="text-center py-3 px-4">{order.warehouseStatus}</td>
-                  <td className="text-left py-3 px-4">{new Date(order.Date).toLocaleDateString()}</td>
+                  <td className="text-center py-2 px-2">{(currentPage - 1) * productsPerPage + idx + 1}</td>
+                  <td className="text-left py-2 px-2">{order.Name}</td>
+                  <td className="text-left py-2 px-2">{order.PackSize}</td>
+                  <td className="text-left py-2 px-2">{order.Batch}</td>
+                  <td className="text-center py-2 px-2">{Number(order.Quantity || 0).toLocaleString()}</td>
+                  <td className="text-center py-2 px-2">{new Date(order.Expire).toLocaleDateString()}</td>
+                  <td className="text-right py-2 px-2 font-semibold text-blue-600">৳{Number(order?.PriceUnitTP || 0).toLocaleString()}</td>
+                  <td className="text-right py-2 px-2 font-semibold text-blue-600">৳{Number(order?.TotalPrice || 0).toLocaleString()}</td>
+                  <td className="text-center py-2 px-2">{order.warehouseStatus}</td>
+                  <td className="text-left py-2 px-2">{new Date(order.Date).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -531,7 +531,7 @@ const PurchaseOrderList = () => {
       {totalPages > 1 && (
         <Card className="mt-6">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
+            <div className="text-xs text-neutral-600">
               Page {currentPage} of {totalPages}
             </div>
             <div className="flex items-center gap-2">

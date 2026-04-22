@@ -27,7 +27,7 @@ export default function DashboardLayout() {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div className="flex h-screen w-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
+    <div className="flex h-screen w-full bg-slate-100 overflow-hidden">
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full bg-primary-800 z-50 transition-all duration-300
@@ -56,7 +56,7 @@ export default function DashboardLayout() {
           ${!isMobile ? (sidebarOpen ? "md:ml-64" : "md:ml-20") : ""}`}
       >
         <Topbar onMenuClick={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 overflow-y-auto p-2 bg-slate-50">
           <Outlet />
         </main>
         <Footer />

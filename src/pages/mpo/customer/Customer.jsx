@@ -13,7 +13,7 @@ const Customer = () => {
   const [statusFilter, setStatusFilter] = useState("pending");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [customersPerPage, setCustomersPerPage] = useState(5);
+  const [customersPerPage, setCustomersPerPage] = useState(20);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   // Fetch customers by status
@@ -126,7 +126,7 @@ const Customer = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
                 <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl</th>

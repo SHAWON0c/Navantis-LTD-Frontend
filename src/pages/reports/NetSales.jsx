@@ -81,6 +81,10 @@ export default function NetSales() {
     return `৳${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  const renderAmount = (value) => (
+    <span className="text-blue-600 dark:text-blue-400 font-semibold">{formatCurrency(value)}</span>
+  );
+
   const formatDate = (value) => {
     if (!value) return EMPTY_TEXT;
     const parsedDate = new Date(value);
@@ -139,7 +143,7 @@ export default function NetSales() {
     entityType: sourceFilters.entityType,
     startDate: sourceFilters.startDate,
     endDate: sourceFilters.endDate,
-    limit: 10,
+    limit: 20,
     skip: 0,
   });
 
@@ -263,11 +267,11 @@ export default function NetSales() {
         { key: "marketPointName", label: "Market Point", render: (value) => formatText(value) },
         { key: "createdByName", label: "Creator", render: (value) => formatText(value) },
         { key: "createdAt", label: "Created", render: (value) => formatDate(value) },
-        { key: "soldAmount", label: "Sold", align: "right", render: (value) => formatCurrency(value) },
-        { key: "discount", label: "Discount", align: "right", render: (value) => formatCurrency(value) },
-        { key: "adjustedAmount", label: "Adjustment", align: "right", render: (value) => formatCurrency(value) },
-        { key: "refundApplied", label: "Refund", align: "right", render: (value) => formatCurrency(value) },
-        { key: "netSales", label: "Net Sales", align: "right", render: (value) => formatCurrency(value) },
+        { key: "soldAmount", label: "Sold", align: "right", render: (value) => renderAmount(value) },
+        { key: "discount", label: "Discount", align: "right", render: (value) => renderAmount(value) },
+        { key: "adjustedAmount", label: "Adjustment", align: "right", render: (value) => renderAmount(value) },
+        { key: "refundApplied", label: "Refund", align: "right", render: (value) => renderAmount(value) },
+        { key: "netSales", label: "Net Sales", align: "right", render: (value) => renderAmount(value) },
       ];
     }
 
@@ -280,11 +284,11 @@ export default function NetSales() {
           render: (_value, row) => pickLabel(row?.reportLabel, row?._id, row?.entityType, "Total"),
         },
         { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
-        { key: "totalSoldAmount", label: "Sold", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-        { key: "totalDiscount", label: "Discount", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-        { key: "totalAdjustment", label: "Adjustment", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-        { key: "totalRefund", label: "Refund", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-        { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+        { key: "totalSoldAmount", label: "Sold", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+        { key: "totalDiscount", label: "Discount", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+        { key: "totalAdjustment", label: "Adjustment", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+        { key: "totalRefund", label: "Refund", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+        { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => renderAmount(value) },
       ];
     }
 
@@ -297,7 +301,7 @@ export default function NetSales() {
           render: (_value, row) => pickLabel(row?.reportLabel, row?._id, row?.entityType, EMPTY_TEXT),
         },
         { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
-        { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+        { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => renderAmount(value) },
       ];
     }
 
@@ -320,12 +324,12 @@ export default function NetSales() {
           pickLabel(row?.reportLabel, row?.[nameFieldMap[appliedFilters.reportType]], row?._id, EMPTY_TEXT),
       },
       { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
-      { key: "totalSoldAmount", label: "Sold", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-      { key: "totalDiscount", label: "Discount", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-      { key: "totalAdjustment", label: "Adjustment", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-      { key: "totalRefund", label: "Refund", align: "right", className: "min-w-[140px]", render: (value) => formatCurrency(value) },
-      { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
-      { key: "averageOrderValue", label: "Avg Order", align: "right", className: "min-w-[150px]", render: (value) => (value ? formatCurrency(value) : EMPTY_TEXT) },
+      { key: "totalSoldAmount", label: "Sold", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+      { key: "totalDiscount", label: "Discount", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+      { key: "totalAdjustment", label: "Adjustment", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+      { key: "totalRefund", label: "Refund", align: "right", className: "min-w-[140px]", render: (value) => renderAmount(value) },
+      { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => renderAmount(value) },
+      { key: "averageOrderValue", label: "Avg Order", align: "right", className: "min-w-[150px]", render: (value) => (value ? renderAmount(value) : EMPTY_TEXT) },
     ];
   }, [appliedFilters.reportType]);
 
@@ -344,6 +348,8 @@ export default function NetSales() {
     { title: "Top Creators", items: dashboardPayload.topCreators || [], key: "createdByName" },
   ];
 
+  const compactTableClass = "[&_th]:px-2 [&_th]:py-1.5 [&_td]:px-2 [&_td]:py-1.5";
+
   const renderTopTable = (title, items, nameKey) => {
     if (!items.length) {
       return null;
@@ -354,13 +360,14 @@ export default function NetSales() {
         <Table
           columns={[
             { key: nameKey, label: "Name", className: "min-w-[180px]" },
-            { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => formatCurrency(value) },
+            { key: "totalNetSales", label: "Net Sales", align: "right", className: "min-w-[150px]", render: (value) => renderAmount(value) },
             { key: "totalOrders", label: "Orders", align: "right", className: "min-w-[100px]" },
           ]}
           data={items}
           striped
           hover
           size="sm"
+          className={compactTableClass}
           emptyMessage="No data"
         />
       </Card>
@@ -783,12 +790,12 @@ export default function NetSales() {
       </style>
 
       <div className="hidden print-title text-center mb-4">
-        <h1 className="text-2xl font-bold">Unified Net Sales Report</h1>
-        <p className="text-sm">Printed on: {new Date().toLocaleString()}</p>
+        <h1 className="text-xl font-bold">Unified Net Sales Report</h1>
+        <p className="text-xs">Printed on: {new Date().toLocaleString()}</p>
       </div>
 
       <div className="flex items-center justify-between no-print">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+        <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
           Net Sales Report
         </h1>
         <div className="flex gap-2">
@@ -862,7 +869,7 @@ export default function NetSales() {
 
       {(reportState.error || dashboardState.error) && (
         <Card className="p-4 border-red-200" borderColor="red">
-          <p className="text-red-600 text-sm">
+          <p className="text-red-600 text-xs">
             {getErrorMessage(reportState.error) || getErrorMessage(dashboardState.error)}
           </p>
         </Card>
@@ -871,13 +878,13 @@ export default function NetSales() {
       <Card className="print:break-inside-avoid rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <button
           onClick={() => setIsTopDataExpanded(!isTopDataExpanded)}
-          className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
               Top Data
             </h2>
-            <span className="text-sm text-gray-500">
+            <span className="text-xs text-gray-500">
               {isTopDataExpanded ? "Hide" : "Show"} key metrics and top performers
             </span>
           </div>
@@ -891,60 +898,60 @@ export default function NetSales() {
         </button>
 
         {isTopDataExpanded && (
-          <div className="border-t border-slate-200 p-6 space-y-6">
+          <div className="border-t border-slate-200 p-4 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-blue-100 bg-blue-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Orders
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-neutral-900 dark:text-neutral-100 tabular-nums leading-tight">
                   {topSummary.totalOrders || 0}
                 </p>
               </div>
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Sold
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-tight">
                   {formatCurrency(topSummary.totalSoldAmount)}
                 </p>
               </div>
-              <div className="rounded-xl border border-violet-100 bg-violet-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Net Sales
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-tight">
                   {formatCurrency(topSummary.totalNetSales)}
                 </p>
               </div>
-              <div className="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Discount
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-tight">
                   {formatCurrency(topSummary.totalDiscount)}
                 </p>
               </div>
-              <div className="rounded-xl border border-pink-100 bg-pink-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-pink-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Adjustment
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-tight">
                   {formatCurrency(topSummary.totalAdjustment)}
                 </p>
               </div>
-              <div className="rounded-xl border border-cyan-100 bg-cyan-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Return
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-tight">
                   {formatCurrency(topSummary.totalRefund)}
                 </p>
               </div>
             </div>
 
-            <div className="border-t border-slate-200 pt-6">
-              <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+            <div className="border-t border-slate-200 pt-4">
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
                 Top Performers
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 print:grid-cols-1">
@@ -961,11 +968,13 @@ export default function NetSales() {
             columns={[
               { key: "_id", label: "Entity" },
               { key: "totalOrders", label: "Orders", align: "right" },
-              { key: "totalNetSales", label: "Net Sales", align: "right", render: (value) => formatCurrency(value) },
+              { key: "totalNetSales", label: "Net Sales", align: "right", render: (value) => renderAmount(value) },
             ]}
             data={detailEntityRows}
             striped
             hover
+            size="sm"
+            className={compactTableClass}
             emptyMessage="No entity breakdown"
           />
         </Card>
@@ -977,12 +986,14 @@ export default function NetSales() {
           data={normalizedReportRows}
           striped
           hover
+          size="sm"
+          className={compactTableClass}
           loading={reportState.isFetching}
           emptyMessage="No records found"
         />
 
         <div className="mt-4 flex items-center justify-between no-print">
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-600">
             Skip: {appliedFilters.skip} | Limit: {appliedFilters.limit} | Rows: {reportRows.length}
           </p>
           <div className="flex gap-2">

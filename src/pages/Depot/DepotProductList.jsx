@@ -19,7 +19,7 @@ const DepotProductsList = () => {
   const whProducts = data?.data || [];
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage, setProductsPerPage] = useState(5);
+  const [productsPerPage, setProductsPerPage] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [returnModalOpen, setReturnModalOpen] = useState(false);
@@ -83,7 +83,7 @@ const DepotProductsList = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
@@ -92,7 +92,7 @@ const DepotProductsList = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Total Products: {filteredProducts.length}
           </div>
         </div>
@@ -117,17 +117,17 @@ const DepotProductsList = () => {
       <Card title="Depot Product List" subtitle={`Showing ${currentProducts.length} of ${filteredProducts.length} products`}>
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2 p-2">
-            <label className="text-sm font-medium">Show</label>
+            <label className="text-xs font-medium">Show</label>
             <select
               value={productsPerPage}
               onChange={handleProductsPerPageChange}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
+              className="border border-gray-300 rounded px-2 py-1 text-xs"
             >
               {[5, 10, 15, 20, 50].map(v => (
                 <option key={v} value={v}>{v}</option>
               ))}
             </select>
-            <span className="text-sm font-medium">products per page</span>
+            <span className="text-xs font-medium">products per page</span>
           </div>
 
           <div className="flex border border-gray-300 rounded-lg overflow-hidden">
@@ -139,25 +139,25 @@ const DepotProductsList = () => {
               placeholder="Search products"
               value={searchTerm}
               onChange={handleSearch}
-              className="px-3 py-2 flex-1 focus:outline-none text-sm"
+              className="px-2.5 py-1.5 flex-1 focus:outline-none text-xs"
             />
           </div>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Pack Size</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Batch</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Quantity</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Price/Unit</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Total Price</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Action</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Pack Size</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Quantity</th>
+                <th className="text-right py-2 px-2 font-semibold text-gray-700">Price/Unit</th>
+                <th className="text-right py-2 px-2 font-semibold text-gray-700">Total Price</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -170,21 +170,21 @@ const DepotProductsList = () => {
               ) : (
                 currentProducts.map((product, idx) => (
                   <tr key={product._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="text-center py-3 px-4">{startIndex + idx + 1}</td>
-                    <td className="text-left py-3 px-4">{product.productName}</td>
-                    <td className="text-center py-3 px-4">{product.packSize || "-"}</td>
-                    <td className="text-center py-3 px-4">{product.batch || "-"}</td>
-                    <td className="text-center py-3 px-4">
+                    <td className="text-center py-2 px-2">{startIndex + idx + 1}</td>
+                    <td className="text-left py-2 px-2">{product.productName}</td>
+                    <td className="text-center py-2 px-2">{product.packSize || "-"}</td>
+                    <td className="text-center py-2 px-2">{product.batch || "-"}</td>
+                    <td className="text-center py-2 px-2">
                       {product.expireDate ? new Date(product.expireDate).toLocaleDateString() : "-"}
                     </td>
-                    <td className="text-center py-3 px-4">{product.totalQuantity || 0}</td>
-                    <td className="text-right py-3 px-4">
+                    <td className="text-center py-2 px-2">{product.totalQuantity || 0}</td>
+                    <td className="text-right py-2 px-2">
                       {(product.tradePrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="text-right py-3 px-4">
+                    <td className="text-right py-2 px-2">
                       {((product.tradePrice || 0) * (product.totalQuantity || 0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="text-center py-3 px-4">
+                    <td className="text-center py-2 px-2">
                       <Button
                         variant="primary"
                         size="small"
@@ -205,7 +205,7 @@ const DepotProductsList = () => {
       {totalPages > 1 && (
         <Card className="mt-6">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
+            <div className="text-xs text-neutral-600">
               Page {currentPage} of {totalPages}
             </div>
             <div className="flex items-center gap-2">

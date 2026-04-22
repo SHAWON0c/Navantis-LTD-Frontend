@@ -51,7 +51,7 @@ const DispatchRidersPage = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
@@ -75,16 +75,16 @@ const DispatchRidersPage = () => {
       {/* Data Table */}
       <Card title="Riders List" subtitle={`Total Riders: ${riders.length}`}>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Rider ID</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Mobile</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Document</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Actions</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Rider ID</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Name</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Mobile</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Email</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Document</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -97,13 +97,13 @@ const DispatchRidersPage = () => {
               ) : (
                 riders.map((rider, index) => (
                   <tr key={rider._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="text-center py-3 px-4">{index + 1}</td>
-                    <td className="text-left py-3 px-4 font-medium">{rider.riderId}</td>
-                    <td className="text-left py-3 px-4">{rider.name}</td>
-                    <td className="text-left py-3 px-4">{rider.mobile}</td>
-                    <td className="text-left py-3 px-4">{rider.email || "-"}</td>
-                    <td className="text-left py-3 px-4">{rider.nidOrLicense}</td>
-                    <td className="text-center py-3 px-4">
+                    <td className="text-center py-2 px-2">{index + 1}</td>
+                    <td className="text-left py-2 px-2 font-medium">{rider.riderId}</td>
+                    <td className="text-left py-2 px-2">{rider.name}</td>
+                    <td className="text-left py-2 px-2">{rider.mobile}</td>
+                    <td className="text-left py-2 px-2">{rider.email || "-"}</td>
+                    <td className="text-left py-2 px-2">{rider.nidOrLicense}</td>
+                    <td className="text-center py-2 px-2">
                       <div className="flex justify-center gap-2">
                         <Button
                           variant="primary"

@@ -42,7 +42,7 @@ const DepotReceiveRequest = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
@@ -51,7 +51,7 @@ const DepotReceiveRequest = () => {
               </h2>
             </div>
           </div>
-          <div className="text-sm text-neutral-500 mt-2 md:mt-0">
+          <div className="text-xs text-neutral-500 mt-2 md:mt-0">
             Total: {totalRequests}
           </div>
         </div>
@@ -86,16 +86,16 @@ const DepotReceiveRequest = () => {
               subtitle={`${requests.length} item(s)`}
             >
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-sm">
+                <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr className="bg-gray-100 border-b border-gray-200">
-                      <th className="text-center py-3 px-4 font-semibold">#</th>
-                      <th className="py-3 px-4 font-semibold">Product Name</th>
-                      <th className="text-center py-3 px-4 font-semibold">Pack Size</th>
-                      <th className="text-center py-3 px-4 font-semibold">Requested Qty</th>
-                      <th className="text-center py-3 px-4 font-semibold">Warehouse Qty</th>
-                      <th className="text-center py-3 px-4 font-semibold">Depot Qty</th>
-                      <th className="text-center py-3 px-4 font-semibold">Batches</th>
+                      <th className="text-center py-2 px-2 font-semibold">#</th>
+                      <th className="py-2 px-2 font-semibold">Product Name</th>
+                      <th className="text-center py-2 px-2 font-semibold">Pack Size</th>
+                      <th className="text-center py-2 px-2 font-semibold">Requested Qty</th>
+                      <th className="text-center py-2 px-2 font-semibold">Warehouse Qty</th>
+                      <th className="text-center py-2 px-2 font-semibold">Depot Qty</th>
+                      <th className="text-center py-2 px-2 font-semibold">Batches</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -104,14 +104,14 @@ const DepotReceiveRequest = () => {
                       return (
                         <React.Fragment key={req.requestId}>
                           <tr className="border-b hover:bg-gray-50">
-                            <td className="text-center py-3 px-4">{idx + 1}</td>
-                            <td className="py-3 px-4">{req.productName}</td>
-                            <td className="text-center py-3 px-4">{req.packSize}</td>
-                            <td className="text-center py-3 px-4">{req.requestedQuantity}</td>
-                            <td className="text-center py-3 px-4">Not available to Show</td>  {/* Value: dynamically read from selectedProduct state  -----------  Warehouse Qty*/}
-                            <td className="text-center py-3 px-4">{req.depotQuantity}</td>
+                            <td className="text-center py-2 px-2">{idx + 1}</td>
+                            <td className="py-2 px-2">{req.productName}</td>
+                            <td className="text-center py-2 px-2">{req.packSize}</td>
+                            <td className="text-center py-2 px-2">{req.requestedQuantity}</td>
+                            <td className="text-center py-2 px-2">Not available to Show</td>  {/* Value: dynamically read from selectedProduct state  -----------  Warehouse Qty*/}
+                            <td className="text-center py-2 px-2">{req.depotQuantity}</td>
                             <td
-                              className="text-center py-3 px-4 cursor-pointer"
+                              className="text-center py-2 px-2 cursor-pointer"
                               onClick={() => toggleRow(req.requestId)}
                             >
                               {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -131,7 +131,7 @@ const DepotReceiveRequest = () => {
                                       <h4 className="font-bold mb-2 text-center">
                                         Warehouse Batches
                                       </h4>
-                                      <table className="w-full border border-gray-200 text-sm">
+                                      <table className="w-full border border-gray-200 text-xs">
                                         <thead>
                                           <tr className="bg-gray-100">
                                             <th className="px-2 py-1 border text-center">Batch</th>
@@ -162,7 +162,7 @@ const DepotReceiveRequest = () => {
                                     </div>
                                     <div className="flex-1 min-w-[250px]">
                                       <h4 className="font-bold mb-2 text-center">Depot Batches</h4>
-                                      <table className="w-full border border-gray-200 text-sm">
+                                      <table className="w-full border border-gray-200 text-xs">
                                         <thead>
                                           <tr className="bg-gray-100">
                                             <th className="px-2 py-1 border text-center">Batch</th>

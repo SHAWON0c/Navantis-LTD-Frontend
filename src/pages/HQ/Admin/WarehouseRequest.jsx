@@ -42,16 +42,16 @@
 //             <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Request Summary</p>
 
 //             <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
-//               <p className="text-sm">
+//               <p className="text-xs">
 //                 Total Products: <span className="font-medium text-blue-700">{totalProducts}</span>
 //               </p>
-//               <p className="text-sm">
+//               <p className="text-xs">
 //                 Total Order Quantity: <span className="font-medium text-blue-700">{totalOrderQuantity}</span>
 //               </p>
-//               <p className="text-sm">
+//               <p className="text-xs">
 //                 Total Stock Quantity: <span className="font-medium text-blue-700">{totalStockQuantity}</span>
 //               </p>
-//               <p className="text-sm">
+//               <p className="text-xs">
 //                 Total Missing Quantity: <span className="font-medium text-blue-700">{totalMissingQuantity}</span>
 //               </p>
 //             </div>
@@ -156,7 +156,7 @@ const WarehouseRequest = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>ADMIN</span>
@@ -165,7 +165,7 @@ const WarehouseRequest = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Total Requests: {filteredProducts.length}
           </div>
         </div>
@@ -180,19 +180,19 @@ const WarehouseRequest = () => {
       {/* Data Table */}
       <Card title="Warehouse Requests" subtitle={`Showing ${filteredProducts.length} request(s)`}>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Batch</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Order Qty</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Stock Qty</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Missing Qty</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Details</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Approve</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Deny</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Order Qty</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Stock Qty</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Missing Qty</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Details</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Approve</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Deny</th>
               </tr>
             </thead>
             <tbody>

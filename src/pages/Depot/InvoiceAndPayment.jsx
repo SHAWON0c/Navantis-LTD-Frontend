@@ -487,7 +487,7 @@ const OrderTable = ({ modalTitle }) => {
       columns={columns}
       dataSource={statusData?.data || []}
       rowKey="invoiceNo"
-      pagination={{ pageSize: 8 }}
+      pagination={{ pageSize: 20 }}
       bordered
       size="middle"
       className="shadow-sm rounded-lg bg-white"
@@ -567,16 +567,16 @@ const InvoiceAndPayment = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
                 <ChevronRight size={14} className="text-gray-400" />
-                <span className="text-gray-900 font-bold">INVOICE & PAYMENT   ||  <span className="bg-blue-100 text-sm text-red-400 p-1"> {modalTitle.toUpperCase()} ORDERS</span></span>
+                <span className="text-gray-900 font-bold">INVOICE & PAYMENT   ||  <span className="bg-blue-100 text-xs text-red-400 p-1"> {modalTitle.toUpperCase()} ORDERS</span></span>
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Totals:
           </div>
         </div>

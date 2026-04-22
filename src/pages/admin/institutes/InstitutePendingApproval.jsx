@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 const InstitutePendingApproval = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [approvalPerPage, setApprovalPerPage] = useState(10);
+  const [approvalPerPage, setApprovalPerPage] = useState(20);
   const [approveInstitute] = useApproveInstituteMutation();
 
   // Fetch pending institutes for MD approval

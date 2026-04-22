@@ -66,7 +66,7 @@ const ReturnRequestList = () => {
 							Back
 						</Button>
 						<div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-							<h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+							<h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
 								<span>EMS</span>
 								<ChevronRight size={14} className="text-gray-400" />
 								<span>DEPOT</span>
@@ -75,7 +75,7 @@ const ReturnRequestList = () => {
 							</h2>
 						</div>
 					</div>
-					<div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+					<div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
 						Total Requests: {returnRequests.length}
 					</div>
 				</div>
@@ -97,19 +97,19 @@ const ReturnRequestList = () => {
 								</div>
 								<div>
 									<p className="text-xs text-gray-500 font-semibold">CUSTOMER</p>
-									<p className="text-sm font-medium text-gray-800">{request.customer?.customerName}</p>
+									<p className="text-xs font-medium text-gray-800">{request.customer?.customerName}</p>
 									<p className="text-xs text-gray-600">{request.customer?.mobile}</p>
 								</div>
 								<div>
 									<p className="text-xs text-gray-500 font-semibold">RETURN DATE</p>
-									<p className="text-sm text-gray-800">{request.returnedDate}</p>
+									<p className="text-xs text-gray-800">{request.returnedDate}</p>
 								</div>
 							</div>
 
 							{/* Reason Section */}
 							<div className="mb-4 pb-4 border-b">
 								<p className="text-xs text-gray-500 font-semibold">RETURN REASON</p>
-								<p className="text-sm text-gray-800">{request.returnReason}</p>
+								<p className="text-xs text-gray-800">{request.returnReason}</p>
 							</div>
 
 							{/* Batches Table */}
@@ -146,11 +146,11 @@ const ReturnRequestList = () => {
 							{/* Summary and Action */}
 							<div className="flex items-center justify-between pt-4 border-t">
 								<div className="space-y-1">
-									<p className="text-sm text-gray-600">
+									<p className="text-xs text-gray-600">
 										<span className="font-semibold">Total Qty:</span>{" "}
 										<span className="text-lg font-bold text-blue-600">{request.totalQuantity}</span>
 									</p>
-									<p className="text-sm text-gray-600">
+									<p className="text-xs text-gray-600">
 										<span className="font-semibold">Refund Amount:</span>{" "}
 										<span className="text-lg font-bold text-green-600">
 											৳ {formatAmount(request.refundAmount)}

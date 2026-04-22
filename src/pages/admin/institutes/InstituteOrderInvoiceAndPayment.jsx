@@ -380,7 +380,7 @@ const OrderTable = ({ statusFilter }) => {
       columns={columns}
       dataSource={orders}
       rowKey="_id"
-      pagination={{ pageSize: 10 }}
+      pagination={{ pageSize: 20 }}
       bordered
       size="middle"
       className="shadow-sm rounded-lg bg-white"

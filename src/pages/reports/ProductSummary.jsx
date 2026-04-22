@@ -43,6 +43,10 @@ export default function ProductSummary() {
     return `৳${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  const renderAmount = (value) => (
+    <span className="text-blue-600 dark:text-blue-400 font-semibold">{formatCurrency(value)}</span>
+  );
+
   const formatText = (value, fallback = EMPTY_TEXT) => {
     if (value === undefined || value === null) return fallback;
     const text = String(value).trim();
@@ -120,6 +124,8 @@ export default function ProductSummary() {
     return summaryByType[currentEntityType] || totalSummary;
   }, [currentEntityType, totalSummary, summaryByType]);
 
+  const compactTableClass = "[&_th]:px-2 [&_th]:py-1.5 [&_td]:px-2 [&_td]:py-1.5";
+
   const tableColumns = useMemo(
     () => [
       {
@@ -163,14 +169,14 @@ export default function ProductSummary() {
         label: "Unit Price",
         align: "right",
         className: "min-w-[120px]",
-        render: (value) => formatCurrency(value),
+        render: (value) => renderAmount(value),
       },
       {
         key: "totalPrice",
         label: "Total Price",
         align: "right",
         className: "min-w-[120px]",
-        render: (value) => formatCurrency(value),
+        render: (value) => renderAmount(value),
       },
     ],
     []
@@ -437,12 +443,12 @@ export default function ProductSummary() {
       </style>
 
       <div className="hidden print-title text-center mb-4">
-        <h1 className="text-2xl font-bold">Product Summary Report</h1>
-        <p className="text-sm">Printed on: {new Date().toLocaleString()}</p>
+        <h1 className="text-xl font-bold">Product Summary Report</h1>
+        <p className="text-xs">Printed on: {new Date().toLocaleString()}</p>
       </div>
 
       <div className="flex items-center justify-between no-print">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+        <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
           Product Summary Report
         </h1>
         <div className="flex gap-2">
@@ -486,7 +492,7 @@ export default function ProductSummary() {
       </div>
 
       <Card className="p-6 no-print">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+        <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
           Filters
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -529,20 +535,20 @@ export default function ProductSummary() {
 
       {reportState.error && (
         <Card className="p-4 border-red-200" borderColor="red">
-          <p className="text-red-600 text-sm">{getErrorMessage(reportState.error)}</p>
+          <p className="text-red-600 text-xs">{getErrorMessage(reportState.error)}</p>
         </Card>
       )}
 
       <Card className="print:break-inside-avoid rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <button
           onClick={() => setIsDetailExpanded(!isDetailExpanded)}
-          className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
               Summary
             </h2>
-            <span className="text-sm text-gray-500">
+            <span className="text-xs text-gray-500">
               {isDetailExpanded ? "Hide" : "Show"} report summary
             </span>
           </div>
@@ -552,37 +558,37 @@ export default function ProductSummary() {
         </button>
 
         {isDetailExpanded && (
-          <div className="border-t border-slate-200 p-6 space-y-4">
+          <div className="border-t border-slate-200 p-4 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="rounded-xl border border-blue-100 bg-blue-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Total Products
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-neutral-900 dark:text-neutral-100 tabular-nums leading-tight">
                   {currentSummary.totalProducts || 0}
                 </p>
               </div>
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Total Quantity
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-neutral-900 dark:text-neutral-100 tabular-nums leading-tight">
                   {currentSummary.totalQuantity || 0}
                 </p>
               </div>
-              <div className="rounded-xl border border-orange-100 bg-orange-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Total Returned
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-neutral-900 dark:text-neutral-100 tabular-nums leading-tight">
                   {currentSummary.totalReturned || 0}
                 </p>
               </div>
-              <div className="rounded-xl border border-violet-100 bg-violet-50/70 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-violet-600 mb-1">
+              <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900/30 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-600 dark:text-neutral-400 mb-1">
                   Grand Total
                 </p>
-                <p className="text-2xl font-extrabold text-slate-900 tabular-nums leading-tight">
+                <p className="text-base font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-tight">
                   {formatCurrency(currentSummary.grandTotal)}
                 </p>
               </div>
@@ -597,6 +603,8 @@ export default function ProductSummary() {
           data={tableData}
           striped
           hover
+          size="sm"
+          className={compactTableClass}
           loading={reportState.isFetching}
           emptyMessage="No records found"
         />

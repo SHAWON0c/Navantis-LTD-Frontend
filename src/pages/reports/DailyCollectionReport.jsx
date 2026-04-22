@@ -450,12 +450,12 @@ export default function DailyCollectionReport() {
                       <td style={{ padding: "12px", color: "#111827", fontWeight: "500" }}>{item.customerName || "Unknown"}</td>
                       <td style={{ padding: "12px", textAlign: "center", color: "#111827" }}>{item.transactionCount}</td>
                       <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "600" }}>৳{Number(item.cash || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px", textAlign: "right", color: "#16a34a", fontWeight: "600" }}>৳{Number(item.bank || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px", textAlign: "right", color: "#ea580c", fontWeight: "600" }}>৳{Number(item.cheque || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px", textAlign: "right", color: "#7c3aed", fontWeight: "600" }}>৳{Number(item.beftn || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px", textAlign: "right", color: "#dc2626", fontWeight: "600" }}>৳{Number(item.tdsCheque || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px", textAlign: "right", color: "#d97706", fontWeight: "600" }}>৳{Number(item.tdsBeftn || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px", textAlign: "right", color: "#111827", fontWeight: "700" }}>৳{itemTotal.toLocaleString()}</td>
+                      <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "600" }}>৳{Number(item.bank || 0).toLocaleString()}</td>
+                      <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "600" }}>৳{Number(item.cheque || 0).toLocaleString()}</td>
+                      <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "600" }}>৳{Number(item.beftn || 0).toLocaleString()}</td>
+                      <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "600" }}>৳{Number(item.tdsCheque || 0).toLocaleString()}</td>
+                      <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "600" }}>৳{Number(item.tdsBeftn || 0).toLocaleString()}</td>
+                      <td style={{ padding: "12px", textAlign: "right", color: "#2563eb", fontWeight: "700" }}>৳{itemTotal.toLocaleString()}</td>
                     </tr>
                   );
                 })}
@@ -467,12 +467,12 @@ export default function DailyCollectionReport() {
                     {reportData.data.details.reduce((sum, item) => sum + (item.transactionCount || 0), 0)}
                   </td>
                   <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.totalCash.toLocaleString()}</td>
-                  <td style={{ padding: "12px", textAlign: "right", color: "#16a34a" }}>৳{reportData.data.summary.totalBank.toLocaleString()}</td>
-                  <td style={{ padding: "12px", textAlign: "right", color: "#ea580c" }}>৳{reportData.data.summary.totalCheque.toLocaleString()}</td>
-                  <td style={{ padding: "12px", textAlign: "right", color: "#7c3aed" }}>৳{reportData.data.summary.totalBeftn.toLocaleString()}</td>
-                  <td style={{ padding: "12px", textAlign: "right", color: "#dc2626" }}>৳{reportData.data.summary.totalTdsCheque.toLocaleString()}</td>
-                  <td style={{ padding: "12px", textAlign: "right", color: "#d97706" }}>৳{reportData.data.summary.totalTdsBeftn.toLocaleString()}</td>
-                  <td style={{ padding: "12px", textAlign: "right", color: "#111827" }}>৳{reportData.data.summary.grandTotal.toLocaleString()}</td>
+                  <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.totalBank.toLocaleString()}</td>
+                  <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.totalCheque.toLocaleString()}</td>
+                  <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.totalBeftn.toLocaleString()}</td>
+                  <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.totalTdsCheque.toLocaleString()}</td>
+                  <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.totalTdsBeftn.toLocaleString()}</td>
+                  <td style={{ padding: "12px", textAlign: "right", color: "#2563eb" }}>৳{reportData.data.summary.grandTotal.toLocaleString()}</td>
                 </tr>
               </tfoot>
             </table>

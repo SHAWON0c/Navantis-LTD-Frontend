@@ -6,7 +6,7 @@ import { useGetTerritoryTargetSummaryQuery } from "../redux/features/teritory/te
 
 const TerritoryTarget = () => {
   const navigate = useNavigate();
-  const [territoriesPerPage, setTerritoriesPerPage] = useState(5);
+  const [territoriesPerPage, setTerritoriesPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
 

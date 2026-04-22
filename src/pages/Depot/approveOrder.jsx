@@ -179,7 +179,7 @@ const PendingOrdersCard = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
@@ -188,7 +188,7 @@ const PendingOrdersCard = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Total {orderType === "customer" ? "Customer" : "Institute"} Orders: {orders.length}
           </div>
         </div>
@@ -225,7 +225,7 @@ const PendingOrdersCard = () => {
           <p className="text-gray-500 mb-4">No pending {orderType} orders</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md transition-colors"
           >
             Refresh
           </button>
@@ -269,20 +269,20 @@ const PendingOrdersCard = () => {
                       transition={{ duration: 0.2 }}
                       className="hover:bg-gray-50"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.customerName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.customerId}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.territory.territoryName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{index + 1}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{order.customer.customerName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{order.customer.customerId}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{order.territory.territoryName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
                         {new Date(order.orderDate).toLocaleDateString("en-GB")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.payMode}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.customer.mobile}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{order.payMode}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{order.customer.mobile}</td>
                       <td className="px-6 py-4 flex flex-wrap gap-2">
                         {order.orderStatus === "pending" && (
                           <button
                             onClick={() => handleOpenOrderModal(order._id)}
-                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs md:text-xs transition-colors"
                           >
                             <FaCheck /> Approve
                           </button>
@@ -291,7 +291,7 @@ const PendingOrdersCard = () => {
                         {order.orderStatus === "confirmed" && !order.assignedRiderId && (
                           <select
                             onChange={(e) => assignRider(order._id, e.target.value)}
-                            className="px-3 py-1 text-sm rounded-md border border-gray-300"
+                            className="px-3 py-1 text-xs rounded-md border border-gray-300"
                           >
                             <option value="">Assign Rider</option>
                             {riders.map((r) => (
@@ -304,7 +304,7 @@ const PendingOrdersCard = () => {
                           (order.orderStatus === "confirmed" && order.assignedRiderId)) && (
                           <button
                             onClick={() => handleDeliver(order)}
-                            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs md:text-xs transition-colors"
                           >
                             Deliver & Invoice
                           </button>
@@ -312,7 +312,7 @@ const PendingOrdersCard = () => {
 
                         <button
                           onClick={() => handleOpenOrderModal(order._id)}
-                          className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                          className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-xs md:text-xs transition-colors"
                         >
                           <FaClipboardList /> Details
                         </button>
@@ -330,22 +330,22 @@ const PendingOrdersCard = () => {
                       transition={{ duration: 0.2 }}
                       className="hover:bg-gray-50"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{order.institute?.instituteName || "N/A"}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{index + 1}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{order.institute?.instituteName || "N/A"}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
                         {new Date(order.createdAt || order.orderDate).toLocaleDateString("en-GB")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
                         {order.products?.length || 0}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs">
                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                           order.paymentStatus === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
                         }`}>
                           {order.paymentStatus || "Pending"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs">
                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                           order.orderStatus === "pending" ? "bg-red-100 text-red-700" :
                           order.orderStatus === "confirmed" ? "bg-blue-100 text-blue-700" :
@@ -359,7 +359,7 @@ const PendingOrdersCard = () => {
                         {order.orderStatus === "pending" && (
                           <button
                             onClick={() => handleOpenOrderModal(order._id)}
-                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs md:text-xs transition-colors"
                           >
                             <FaCheck /> Approve
                           </button>
@@ -368,7 +368,7 @@ const PendingOrdersCard = () => {
                         {order.orderStatus === "confirmed" && !order.assignedRiderId && (
                           <select
                             onChange={(e) => assignRider(order._id, e.target.value)}
-                            className="px-3 py-1 text-sm rounded-md border border-gray-300"
+                            className="px-3 py-1 text-xs rounded-md border border-gray-300"
                           >
                             <option value="">Assign Rider</option>
                             {riders.map((r) => (
@@ -381,7 +381,7 @@ const PendingOrdersCard = () => {
                           (order.orderStatus === "confirmed" && order.assignedRiderId)) && (
                           <button
                             onClick={() => handleDeliver(order)}
-                            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs md:text-xs transition-colors"
                           >
                             Deliver & Invoice
                           </button>
@@ -389,7 +389,7 @@ const PendingOrdersCard = () => {
 
                         <button
                           onClick={() => handleOpenOrderModal(order._id)}
-                          className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-xs md:text-sm transition-colors"
+                          className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-xs md:text-xs transition-colors"
                         >
                           <FaClipboardList /> Details
                         </button>

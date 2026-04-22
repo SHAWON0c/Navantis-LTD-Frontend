@@ -14,7 +14,7 @@ const DamagedProducts = () => {
 
   // --- Pagination State ---
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage, setProductsPerPage] = useState(5);
+  const [productsPerPage, setProductsPerPage] = useState(20);
 
   // --- Filters ---
   const [filters, setFilters] = useState({
@@ -127,11 +127,11 @@ const DamagedProducts = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-neutral-900">Damaged Products</h1>
-              <p className="text-neutral-600 text-sm">//damaged product reports and inventory</p>
+              <p className="text-neutral-600 text-xs">//damaged product reports and inventory</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-sm text-neutral-500">
+            <div className="text-xs text-neutral-500">
               Total Records: {damagedList.length}
             </div>
             <Button
@@ -158,12 +158,12 @@ const DamagedProducts = () => {
       {/* Items per page selector */}
       <Card className="mb-6">
         <div className="flex items-center gap-2">
-          <label htmlFor="productsPerPage" className="text-sm font-medium text-neutral-700">Show</label>
+          <label htmlFor="productsPerPage" className="text-xs font-medium text-neutral-700">Show</label>
           <select
             id="productsPerPage"
             value={productsPerPage}
             onChange={handleProductsPerPageChange}
-            className="border border-neutral-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="border border-neutral-300 rounded px-3 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
@@ -171,7 +171,7 @@ const DamagedProducts = () => {
             <option value={20}>20</option>
             <option value={50}>50</option>
           </select>
-          <span className="text-sm text-neutral-600">products per page</span>
+          <span className="text-xs text-neutral-600">products per page</span>
         </div>
       </Card>
 
@@ -190,7 +190,7 @@ const DamagedProducts = () => {
       {totalPages > 1 && (
         <Card className="mt-6">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
+            <div className="text-xs text-neutral-600">
               Page {currentPage} of {totalPages}
             </div>
             <div className="flex items-center gap-2">

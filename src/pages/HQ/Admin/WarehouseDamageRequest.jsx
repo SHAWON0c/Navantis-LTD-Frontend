@@ -39,7 +39,7 @@ const WarehouseDamageRequest = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>ADMIN</span>
@@ -48,7 +48,7 @@ const WarehouseDamageRequest = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
             Total Requests: {filteredProducts.length}
           </div>
         </div>
@@ -62,19 +62,19 @@ const WarehouseDamageRequest = () => {
       {/* Data Table */}
       <Card title="Damage Requests" subtitle={`Showing ${filteredProducts.length} request(s)`}>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Batch</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Expire</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Received Qty</th>
-                <th className="text-center py-3 px-4 font-semibold text-red-700">Damage Qty</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Remaining Stock</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Details</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Approve</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700">Deny</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Received Qty</th>
+                <th className="text-center py-2 px-2 font-semibold text-red-700">Damage Qty</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Remaining Stock</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Details</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Approve</th>
+                <th className="text-center py-2 px-2 font-semibold text-gray-700">Deny</th>
               </tr>
             </thead>
             <tbody>

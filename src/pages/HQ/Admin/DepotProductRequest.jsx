@@ -31,16 +31,16 @@
 // // //             <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Request Summary</p>
 
 // // //             <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
-// // //               <p className="text-sm">
+// // //               <p className="text-xs">
 // // //                 Total Products: <span className="font-medium text-blue-700">{filteredProducts.length}</span>
 // // //               </p>
-// // //               <p className="text-sm">
+// // //               <p className="text-xs">
 // // //                 Total Order Quantity: <span className="font-medium text-blue-700">{totalOrderQuantity}</span>
 // // //               </p>
-// // //               {/* <p className="text-sm">
+// // //               {/* <p className="text-xs">
 // // //                 Total Stock Quantity: <span className="font-medium text-blue-700">{totalStockQuantity}</span>
 // // //               </p>
-// // //               <p className="text-sm">
+// // //               <p className="text-xs">
 // // //                 Total Missing Quantity: <span className="font-medium text-blue-700">{totalMissingQuantity}</span>
 // // //               </p> */}
 // // //             </div>
@@ -141,10 +141,10 @@
 // //             <p className="text-md text-gray-700 text-center mb-4 font-medium">Warehouse Request Summary</p>
 
 // //             <div className="bg-white p-3 rounded-md rounded-b-none shadow-sm flex flex-col md:flex-row justify-around items-center text-gray-600">
-// //               <p className="text-sm">
+// //               <p className="text-xs">
 // //                 Total Products: <span className="font-medium text-blue-700">{filteredProducts.length}</span>
 // //               </p>
-// //               <p className="text-sm">
+// //               <p className="text-xs">
 // //                 Total Order Quantity: <span className="font-medium text-blue-700">{totalOrderQuantity}</span>
 // //               </p>
 // //             </div>
@@ -292,15 +292,15 @@ const DepotProductRequest = () => {
             <table className="w-full">
               <thead className="bg-gradient-to-r from-slate-900 to-slate-800 text-white">
                 <tr>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Sl. No.</th>
-                  <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wide">Product Name</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Warehouse Qty</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Depot Qty</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Requested Qty</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Date</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Requested From</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Details</th>
-                  <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wide">Action</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Sl. No.</th>
+                  <th className="text-left px-2 py-2 font-semibold text-xs uppercase tracking-wide">Product Name</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Warehouse Qty</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Depot Qty</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Requested Qty</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Date</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Requested From</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Details</th>
+                  <th className="text-center px-2 py-2 font-semibold text-xs uppercase tracking-wide">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -317,7 +317,7 @@ const DepotProductRequest = () => {
                 ) : (
                   <tr>
                     <td colSpan={9} className="text-center py-8 text-gray-500">
-                      <p className="text-sm">No depot product requests found</p>
+                      <p className="text-xs">No depot product requests found</p>
                     </td>
                   </tr>
                 )}

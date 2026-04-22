@@ -16,7 +16,7 @@ const InstituteList = () => {
   const [statusFilter, setStatusFilter] = useState("active");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [institutesPerPage, setInstitutesPerPage] = useState(10);
+  const [institutesPerPage, setInstitutesPerPage] = useState(20);
 
   // Mutations
   const [activateInstitute] = useActivateInstituteMutation();

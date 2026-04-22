@@ -14,7 +14,7 @@ const PendingDoctor = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [doctorsPerPage, setDoctorsPerPage] = useState(5);
+  const [doctorsPerPage, setDoctorsPerPage] = useState(20);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -188,7 +188,7 @@ const PendingDoctor = () => {
 
             {/* Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs">
                 <thead className="bg-gray-100 border-b">
                   <tr>
                     <th className="text-left px-4 py-3 font-semibold text-gray-700">Doctor Name</th>

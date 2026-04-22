@@ -2,7 +2,7 @@
     {
     "key": "superadmin",
     "label": "Superadmin",
-    "icon": "FileText",
+    "icon": "Lock",
     "children": [
       {
         "key": "zone-management",
@@ -91,7 +91,7 @@
   {
     "key": "admin",
     "label": "Managing Director",
-    "icon": "FileText",
+    "icon": "Landmark",
     "children": [
       {
         "key": "admin-purchase",
@@ -780,7 +780,8 @@
             "path": "/reports/customer-details",
             "icon": "FileText",
             "allowedRoles": [
-              "md"
+              "md",
+              "superadmin"
             ]
           }
         ]

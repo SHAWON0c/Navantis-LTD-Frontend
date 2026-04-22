@@ -686,7 +686,7 @@ const PlaceOrder = () => {
                       onChange={(e) => changeQty(p.id, e.target.value)}
                       className="w-16 text-center border rounded p-1"
                     />
-                    <span>৳{(p.price * p.quantity).toFixed(2)}</span>
+                    <span className="text-blue-600 font-semibold">৳{(p.price * p.quantity).toFixed(2)}</span>
                     <button
                       type="button"
                       onPointerDown={() => startRemoveHold(p.id)}
@@ -710,15 +710,15 @@ const PlaceOrder = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Total</span>
-                <span>৳{totalAmount.toFixed(2)}</span>
+                <span className="text-blue-600 font-semibold">৳{totalAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-red-500">
                 <span>Discount ({discountPercent}%)</span>
-                <span>- ৳{discount.toFixed(2)}</span>
+                <span className="text-blue-600 font-semibold">- ৳{discount.toFixed(2)}</span>
               </div>
               <div className="border-t pt-3 flex justify-between text-lg font-bold">
                 <span>Grand Total</span>
-                <span>৳{grandTotal.toFixed(2)}</span>
+                <span className="text-blue-600">৳{grandTotal.toFixed(2)}</span>
               </div>
             </div>
 

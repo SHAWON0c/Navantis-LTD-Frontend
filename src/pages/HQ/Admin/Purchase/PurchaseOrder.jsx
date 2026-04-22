@@ -166,7 +166,7 @@ const handleSubmit = async (e) => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>ADMIN</span>
@@ -175,7 +175,7 @@ const handleSubmit = async (e) => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
 
           </div>
         </div>
@@ -187,7 +187,7 @@ const handleSubmit = async (e) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Brand */}
           <div ref={brandRef} className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Brand</label>
             <div className="relative">
               <input
                 type="text"
@@ -239,7 +239,7 @@ const handleSubmit = async (e) => {
 
           {/* Product */}
           <div ref={productRef} className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Product</label>
             <div className="relative">
               <input
                 type="text"
@@ -321,7 +321,7 @@ const handleSubmit = async (e) => {
 // Input component
 const Input = ({ label, ...props }) => (
   <div className="mb-2">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
     <input {...props} className="w-full border border-gray-300 rounded p-2 bg-white" />
   </div>
 );

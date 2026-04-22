@@ -3,7 +3,7 @@ import React from 'react';
 const Button = ({
   children,
   variant = 'primary',
-  size = 'medium',
+  size = 'small',
   disabled = false,
   loading = false,
   icon,
@@ -13,7 +13,7 @@ const Button = ({
   iconPosition = 'left',
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-md whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
@@ -24,9 +24,9 @@ const Button = ({
   };
 
   const sizeClasses = {
-    small: 'px-3 py-1.5 text-sm',
-    medium: 'px-4 py-2 text-base',
-    large: 'px-6 py-3 text-lg',
+    small: 'px-2.5 py-1.5 text-xs',
+    medium: 'px-3 py-1.5 text-sm',
+    large: 'px-4 py-2 text-sm',
   };
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
@@ -43,12 +43,12 @@ const Button = ({
       {...props}
     >
       {IconComponent && (
-        <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>
+        <span className={`${iconPosition === 'left' ? 'mr-1.5' : 'ml-1.5'} text-[14px] leading-none`}>
           <IconComponent />
         </span>
       )}
       {icon && typeof icon !== 'function' && (
-        <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>
+        <span className={`${iconPosition === 'left' ? 'mr-1.5' : 'ml-1.5'} text-[14px] leading-none`}>
           {icon}
         </span>
       )}

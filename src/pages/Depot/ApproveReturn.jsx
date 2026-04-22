@@ -99,7 +99,7 @@ const ApproveReturn = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
@@ -109,7 +109,7 @@ const ApproveReturn = () => {
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <div className="text-xs sm:text-sm text-neutral-500">
+            <div className="text-xs text-neutral-500">
               Pending: {returnedOrders.length}
             </div>
           </div>
@@ -127,32 +127,32 @@ const ApproveReturn = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-white border-b-2 border-gray-200">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Customer Name</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Returned Qty</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Reason</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700">Invoice</th>
+                  <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700">Customer Name</th>
+                  <th className="px-2 py-2 text-center text-xs font-semibold text-gray-700">Returned Qty</th>
+                  <th className="px-2 py-2 text-left text-xs font-semibold text-gray-700">Reason</th>
+                  <th className="px-2 py-2 text-center text-xs font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {returnedOrders.map((returnOrder) => (
                   <tr key={returnOrder.returnId} className="border-b hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">
+                    <td className="px-2 py-2 text-xs font-semibold text-gray-900">
                       {returnOrder.invoice}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-800">
+                    <td className="px-2 py-2 text-xs text-gray-800">
                       <div>
                         <p className="font-medium">{returnOrder.customer?.customerName}</p>
                         <p className="text-xs text-gray-500">{returnOrder.customer?.mobile}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center text-sm font-semibold text-red-600">
+                    <td className="px-2 py-2 text-center text-xs font-semibold text-red-600">
                       {returnOrder.totalQuantity}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate">
+                    <td className="px-2 py-2 text-xs text-gray-700 max-w-xs truncate">
                       {returnOrder.returnReason}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-2 py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleShowDetails(returnOrder)}
@@ -212,13 +212,13 @@ const ApproveReturn = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-semibold">APPROVED DATE</p>
-                  <p className="text-sm text-gray-800">
+                  <p className="text-xs text-gray-800">
                     {new Date(approvedReturn.approvedAt).toLocaleDateString("en-GB")}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-semibold">CUSTOMER</p>
-                  <p className="text-sm text-gray-800">
+                  <p className="text-xs text-gray-800">
                     {approvedReturn.customer?.customerName}
                   </p>
                 </div>
@@ -236,28 +236,28 @@ const ApproveReturn = () => {
                   APPROVED BATCHES
                 </p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-gray-100 border-b">
-                        <th className="px-3 py-2 text-left text-gray-700">
+                        <th className="px-2.5 py-1.5 text-left text-gray-700">
                           Product
                         </th>
-                        <th className="px-3 py-2 text-left text-gray-700">
+                        <th className="px-2.5 py-1.5 text-left text-gray-700">
                           Batch No
                         </th>
-                        <th className="px-3 py-2 text-center text-gray-700">Returned</th>
+                        <th className="px-2.5 py-1.5 text-center text-gray-700">Returned</th>
                       </tr>
                     </thead>
                     <tbody>
                       {approvedReturn.returnedBatches?.map((batch, idx) => (
                         <tr key={idx} className="border-b hover:bg-gray-50">
-                          <td className="px-3 py-2 text-gray-800">
+                          <td className="px-2.5 py-1.5 text-gray-800">
                             {batch.product}
                           </td>
-                          <td className="px-3 py-2 text-gray-800">
+                          <td className="px-2.5 py-1.5 text-gray-800">
                             {batch.batchNo}
                           </td>
-                          <td className="px-3 py-2 text-center font-semibold text-gray-900">
+                          <td className="px-2.5 py-1.5 text-center font-semibold text-gray-900">
                             {batch.returnedQuantity}
                           </td>
                         </tr>
@@ -323,13 +323,13 @@ const ApproveReturn = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-semibold">RETURNED DATE</p>
-                  <p className="text-sm text-gray-800">
+                  <p className="text-xs text-gray-800">
                     {selectedReturnForDetails.returnedDate}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-semibold">CUSTOMER</p>
-                  <p className="text-sm text-gray-800">
+                  <p className="text-xs text-gray-800">
                     {selectedReturnForDetails.customer?.customerName}
                   </p>
                   <p className="text-xs text-gray-600">
@@ -338,7 +338,7 @@ const ApproveReturn = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-semibold">ENTITY TYPE</p>
-                  <p className="text-sm font-semibold text-blue-600 uppercase">
+                  <p className="text-xs font-semibold text-blue-600 uppercase">
                     {selectedReturnForDetails.entityType}
                   </p>
                 </div>
@@ -347,7 +347,7 @@ const ApproveReturn = () => {
               {/* Return Reason */}
               <div className="border-t pt-4">
                 <p className="text-xs text-gray-500 font-semibold mb-2">RETURN REASON</p>
-                <p className="text-sm text-gray-800 p-3 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-800 p-3 bg-gray-50 rounded-lg">
                   {selectedReturnForDetails.returnReason}
                 </p>
               </div>
@@ -358,28 +358,28 @@ const ApproveReturn = () => {
                   RETURNED BATCHES
                 </p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-gray-100 border-b">
-                        <th className="px-3 py-2 text-left text-gray-700">Product</th>
-                        <th className="px-3 py-2 text-left text-gray-700">Batch No</th>
-                        <th className="px-3 py-2 text-left text-gray-700">Expire Date</th>
-                        <th className="px-3 py-2 text-center text-gray-700">Returned</th>
+                        <th className="px-2.5 py-1.5 text-left text-gray-700">Product</th>
+                        <th className="px-2.5 py-1.5 text-left text-gray-700">Batch No</th>
+                        <th className="px-2.5 py-1.5 text-left text-gray-700">Expire Date</th>
+                        <th className="px-2.5 py-1.5 text-center text-gray-700">Returned</th>
                       </tr>
                     </thead>
                     <tbody>
                       {selectedReturnForDetails.returnedBatches?.map((batch, idx) => (
                         <tr key={idx} className="border-b hover:bg-gray-50">
-                          <td className="px-3 py-2 text-gray-800">
+                          <td className="px-2.5 py-1.5 text-gray-800">
                             {batch.product}
                           </td>
-                          <td className="px-3 py-2 text-gray-800">
+                          <td className="px-2.5 py-1.5 text-gray-800">
                             {batch.batchNo}
                           </td>
-                          <td className="px-3 py-2 text-gray-800">
+                          <td className="px-2.5 py-1.5 text-gray-800">
                             {batch.expireDate}
                           </td>
-                          <td className="px-3 py-2 text-center font-semibold text-red-600">
+                          <td className="px-2.5 py-1.5 text-center font-semibold text-red-600">
                             {batch.returnedQuantity}
                           </td>
                         </tr>

@@ -147,7 +147,7 @@ const WarehouseAddProduct = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>WAREHOUSE</span>
@@ -156,7 +156,7 @@ const WarehouseAddProduct = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
            WAREHOUSE RECEIVE
           </div>
         </div>
@@ -203,7 +203,7 @@ const WarehouseAddProduct = () => {
             <Input label="Quantity (with box)" type="number" name="quantityWithBox" value={formData.quantityWithBox} onChange={handleChange} onWheel={preventScrollAndArrow} onKeyDown={preventScrollAndArrow} />
             <Input label="Quantity (without box)" type="number" name="quantityWithoutBox" value={formData.quantityWithoutBox} onChange={handleChange} onWheel={preventScrollAndArrow} onKeyDown={preventScrollAndArrow} />
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
               <textarea name="remarks" value={formData.remarks} onChange={handleChange} className="w-full border border-gray-300 rounded p-2" />
             </div>
             <Input label="Added By Name" name="addedByName" value={formData.addedByName} readOnly className="bg-gray-100 cursor-not-allowed" />
@@ -222,7 +222,7 @@ const WarehouseAddProduct = () => {
 // -------------------- Input Component --------------------
 const Input = ({ label, ...props }) => (
   <div className="mb-2">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
     <input {...props} className={`w-full border border-gray-300 rounded p-2 ${props.className || ""}`} style={{ MozAppearance: props.type === "number" ? "textfield" : undefined }} />
   </div>
 );
@@ -230,7 +230,7 @@ const Input = ({ label, ...props }) => (
 // -------------------- Dropdown Component --------------------
 const Dropdown = ({ label, options, counts, selected, onSelect, open, setOpen, disabled = false, displayKey, extraInfo }) => (
   <div className="relative">
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
     <div onClick={() => !disabled && setOpen((p) => !p)} className={`w-full border border-gray-300 rounded p-2 flex justify-between items-center cursor-pointer ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}`}>
       <span>{selected || `-- Select ${label.toLowerCase()} --`}</span>
       <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />

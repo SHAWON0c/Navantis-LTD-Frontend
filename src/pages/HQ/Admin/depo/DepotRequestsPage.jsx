@@ -116,7 +116,7 @@ const DepotRequestsPage = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>ADMIN</span>
@@ -125,7 +125,7 @@ const DepotRequestsPage = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
            Total Pending: {totalRequests}
           </div>
         </div>
@@ -147,28 +147,28 @@ const DepotRequestsPage = () => {
           <div key={date} className="mb-6">
             <Card title={`Requests for ${new Date(date).toLocaleDateString()}`} subtitle={`${requests.length} product(s) requested`}>
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-sm">
+                <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr className="bg-gray-100 border-b border-gray-200">
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Sl. No.</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Product Name</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Pack Size</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Requested Qty</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Warehouse Qty</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Depot Qty</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Action</th>
+                      <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
+                      <th className="text-left py-2 px-2 font-semibold text-gray-700">Product Name</th>
+                      <th className="text-center py-2 px-2 font-semibold text-gray-700">Pack Size</th>
+                      <th className="text-center py-2 px-2 font-semibold text-gray-700">Requested Qty</th>
+                      <th className="text-center py-2 px-2 font-semibold text-gray-700">Warehouse Qty</th>
+                      <th className="text-center py-2 px-2 font-semibold text-gray-700">Depot Qty</th>
+                      <th className="text-center py-2 px-2 font-semibold text-gray-700">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {requests.map((req, idx) => (
                       <tr key={req.requestId} className="border-b border-gray-200 hover:bg-gray-50">
-                        <td className="text-center py-3 px-4">{idx + 1}</td>
-                        <td className="text-left py-3 px-4">{req.productName}</td>
-                        <td className="text-center py-3 px-4">{req.packSize}</td>
-                        <td className="text-center py-3 px-4">{req.requestedQuantity}</td>
-                        <td className="text-center py-3 px-4">{req.warehouseQuantity}</td>
-                        <td className="text-center py-3 px-4">{req.depotQuantity}</td>
-                        <td className="text-center py-3 px-4">
+                        <td className="text-center py-2 px-2">{idx + 1}</td>
+                        <td className="text-left py-2 px-2">{req.productName}</td>
+                        <td className="text-center py-2 px-2">{req.packSize}</td>
+                        <td className="text-center py-2 px-2">{req.requestedQuantity}</td>
+                        <td className="text-center py-2 px-2">{req.warehouseQuantity}</td>
+                        <td className="text-center py-2 px-2">{req.depotQuantity}</td>
+                        <td className="text-center py-2 px-2">
                           <Button
                             variant="primary"
                             size="small"
@@ -192,10 +192,10 @@ const DepotRequestsPage = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
           <Card className="w-full max-w-2xl">
             <h2 className="text-xl font-semibold mb-4">{selectedProduct.productName} - Select Batches</h2>
-            <p className="text-sm text-gray-600 mb-4">Requested Quantity: {selectedProduct.requestedQuantity}</p>
+            <p className="text-xs text-gray-600 mb-4">Requested Quantity: {selectedProduct.requestedQuantity}</p>
 
             <div className="overflow-x-auto max-h-60 mb-4">
-              <table className="w-full border-collapse text-sm">
+              <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr className="bg-gray-100 border-b border-gray-200">
                     <th className="text-left py-2 px-4">Batch</th>

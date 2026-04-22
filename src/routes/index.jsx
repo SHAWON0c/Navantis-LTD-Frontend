@@ -256,7 +256,7 @@ export default function AppRoutes() {
           <Route path="/reports/daily-collection" element={<DailyCollectionReport />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={["md"]} />}>
+        <Route element={<ProtectedRoute allowedRoles={["md","superadmin"]} />}>
           <Route path="/reports/customer-details" element={<CustomerDetailsReport />} />
         </Route>
 

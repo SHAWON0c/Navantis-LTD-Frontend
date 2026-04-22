@@ -15,7 +15,7 @@ const DepotReceive = () => {
 
   // --- Pagination state ---
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
+  const [productsPerPage] = useState(20);
 
   // --- Filters state ---
   const [filters, setFilters] = useState({
@@ -99,7 +99,7 @@ const DepotReceive = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>DEPOT</span>
@@ -108,7 +108,7 @@ const DepotReceive = () => {
               </h2>
             </div>
           </div>
-          <div className="text-sm text-neutral-500 mr-2">
+          <div className="text-xs text-neutral-500 mr-2">
             Total Records: {stockList.length}
           </div>
         </div>
@@ -149,7 +149,7 @@ const DepotReceive = () => {
       {totalPages > 1 && (
         <Card className="mt-6">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
+            <div className="text-xs text-neutral-600">
               Page {currentPage} of {totalPages}
             </div>
             <div className="flex items-center gap-2">

@@ -270,10 +270,10 @@ export default function CustomerDetailsReport() {
       {/* Header with Title and Action Buttons */}
       <div className="flex items-center justify-between no-print">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
             Customer Details Report
           </h1>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
             View and manage customer information by territory
           </p>
         </div>
@@ -353,19 +353,19 @@ export default function CustomerDetailsReport() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           <Card className="p-4">
             <p className="text-xs text-neutral-600 dark:text-neutral-400">Total Customers</p>
-            <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+            <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
               {reportData.summary.totalCustomers}
             </p>
           </Card>
           <Card className="p-4">
             <p className="text-xs text-neutral-600 dark:text-neutral-400">Total Territories</p>
-            <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+            <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
               {reportData.summary.totalTerritories}
             </p>
           </Card>
           <Card className="p-4">
             <p className="text-xs text-neutral-600 dark:text-neutral-400">Total Credit Limit</p>
-            <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+            <p className="text-base font-bold text-blue-600 dark:text-blue-400">
               ৳{reportData.summary.totalCreditLimit.toLocaleString()}
             </p>
           </Card>
@@ -394,7 +394,7 @@ export default function CustomerDetailsReport() {
                     {territory.territoryName}
                   </h3>
                   <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                    {territory.customerCount} customers • Credit Limit: ৳{territory.totalCreditLimit.toLocaleString()}
+                    {territory.customerCount} customers • Credit Limit: <span className="text-blue-600 dark:text-blue-400 font-semibold">৳{territory.totalCreditLimit.toLocaleString()}</span>
                   </p>
                 </div>
                 <div className="text-neutral-600 dark:text-neutral-400">
@@ -450,7 +450,7 @@ export default function CustomerDetailsReport() {
                           <td className="py-2 px-2 text-right font-semibold text-blue-600 dark:text-blue-400">
                             ৳{customer.creditLimit.toLocaleString()}
                           </td>
-                          <td className="py-2 px-2 text-right font-semibold text-green-600 dark:text-green-400">
+                          <td className="py-2 px-2 text-right font-semibold text-blue-600 dark:text-blue-400">
                             ৳{customer.dayLimit.toLocaleString()}
                           </td>
                           <td className="py-2 px-2 text-center">

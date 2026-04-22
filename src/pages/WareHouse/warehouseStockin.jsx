@@ -17,7 +17,7 @@ const WarehouseStockIn = () => {
 
   // --- Pagination state ---
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
+  const [productsPerPage] = useState(20);
 
   // --- Filters state ---
   const [filters, setFilters] = useState({
@@ -101,10 +101,10 @@ const WarehouseStockIn = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-neutral-900">Warehouse Stock In</h1>
-              <p className="text-neutral-600 text-sm">//warehouse incoming stock inventory</p>
+              <p className="text-neutral-600 text-xs">//warehouse incoming stock inventory</p>
             </div>
           </div>
-          <div className="text-sm text-neutral-500">
+          <div className="text-xs text-neutral-500">
             Total Records: {stockList.length}
           </div>
         </div>
@@ -145,7 +145,7 @@ const WarehouseStockIn = () => {
       {totalPages > 1 && (
         <Card className="mt-6">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-neutral-600">
+            <div className="text-xs text-neutral-600">
               Page {currentPage} of {totalPages}
             </div>
             <div className="flex items-center gap-2">

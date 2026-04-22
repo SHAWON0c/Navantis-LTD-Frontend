@@ -259,7 +259,7 @@ export default function MyOrders() {
       ) : status === "pending" ? (
         <Card title={status === "pending" ? "Pending Orders" : "Delivered Orders"} subtitle={`Showing ${orders.length} order(s)`}>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
+            <table className="w-full border-collapse text-xs">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200">
                   <th className="text-center py-3 px-4 font-semibold text-gray-700">SL No</th>
@@ -318,7 +318,7 @@ export default function MyOrders() {
       ) : (
         <Card title="Delivered Orders" subtitle={`Showing ${deliveredOrders.length} order(s)`}>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-sm">
+            <table className="w-full border-collapse text-xs">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200">
                   <th className="text-center py-3 px-4 font-semibold text-gray-700">SL No</th>
@@ -401,7 +401,7 @@ export default function MyOrders() {
               )}
 
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-sm">
+                <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr className="bg-gray-100 border-b border-gray-200">
                       <th className="text-left py-2 px-4 font-semibold">Product</th>

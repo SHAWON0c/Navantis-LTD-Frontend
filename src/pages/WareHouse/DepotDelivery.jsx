@@ -72,7 +72,7 @@
 //               <h2 className="text-base font-bold">NPL / Admin / Purchase Order</h2>
 //             </div>
 //           </div>
-//           <div className="text-sm text-neutral-500">
+//           <div className="text-xs text-neutral-500">
 //             Total Dates: {dates.length}
 //           </div>
 //         </div>
@@ -83,7 +83,7 @@
 //         <div className="grid md:grid-cols-2 gap-6">
 //           {/* Date Selector */}
 //           <div ref={dateRef} className="relative">
-//             <label className="block text-sm font-semibold mb-2 text-gray-700">Select Date</label>
+//             <label className="block text-xs font-semibold mb-2 text-gray-700">Select Date</label>
 //             <button
 //               onClick={() => setDateOpen(!dateOpen)}
 //               className="w-full border border-gray-300 rounded-lg p-3 flex justify-between items-center bg-white hover:bg-gray-50 transition-colors"
@@ -113,7 +113,7 @@
 
 //           {/* Product Selector */}
 //           <div ref={productRef} className="relative">
-//             <label className="block text-sm font-semibold mb-2 text-gray-700">Select Product</label>
+//             <label className="block text-xs font-semibold mb-2 text-gray-700">Select Product</label>
 //             <button
 //               onClick={() => productsForDate.length > 0 && setProductOpen(!productOpen)}
 //               disabled={productsForDate.length === 0}
@@ -149,27 +149,27 @@
 //         <Card title="Product Details" subtitle={selectedProduct.productName}>
 //           <div className="grid md:grid-cols-2 gap-6 mb-6">
 //             <div>
-//               <p className="text-sm text-gray-600 mb-1">Pack Size</p>
+//               <p className="text-xs text-gray-600 mb-1">Pack Size</p>
 //               <p className="text-lg font-semibold text-gray-900">{selectedProduct.packSize || "-"}</p>
 //             </div>
 //             <div>
-//               <p className="text-sm text-gray-600 mb-1">Batch</p>
+//               <p className="text-xs text-gray-600 mb-1">Batch</p>
 //               <p className="text-lg font-semibold text-gray-900">{selectedProduct.batch || "-"}</p>
 //             </div>
 //             <div>
-//               <p className="text-sm text-gray-600 mb-1">Requested Quantity</p>
+//               <p className="text-xs text-gray-600 mb-1">Requested Quantity</p>
 //               <p className="text-lg font-semibold text-blue-600">{selectedProduct.requestedQuantity || 0}</p>
 //             </div>
 //             <div>
-//               <p className="text-sm text-gray-600 mb-1">Warehouse Quantity</p>
+//               <p className="text-xs text-gray-600 mb-1">Warehouse Quantity</p>
 //               <p className="text-lg font-semibold text-green-600">{selectedProduct.warehouseQuantity || 0}</p>
 //             </div>
 //             <div>
-//               <p className="text-sm text-gray-600 mb-1">Depot Quantity</p>
+//               <p className="text-xs text-gray-600 mb-1">Depot Quantity</p>
 //               <p className="text-lg font-semibold text-orange-600">{selectedProduct.depotQuantity || 0}</p>
 //             </div>
 //             <div>
-//               <p className="text-sm text-gray-600 mb-1">Expire Date</p>
+//               <p className="text-xs text-gray-600 mb-1">Expire Date</p>
 //               <p className="text-lg font-semibold text-gray-900">
 //                 {selectedProduct.expireDate ? new Date(selectedProduct.expireDate).toLocaleDateString() : "-"}
 //               </p>
@@ -295,7 +295,7 @@ const DepotDelivery = () => {
               Back
             </Button>
             <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs sm:text-sm md:text-base font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>WAREHOUSE</span>
@@ -304,7 +304,7 @@ const DepotDelivery = () => {
               </h2>
             </div>
           </div>
-          <div className="text-xs sm:text-sm text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
            WAREHOUSE DELIVERY
           </div>
         </div>
@@ -315,7 +315,7 @@ const DepotDelivery = () => {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Date Selector */}
           <div ref={dateRef} className="relative">
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
+            <label className="block text-xs font-semibold mb-2 text-gray-700">
               Select Date
             </label>
             <button
@@ -352,7 +352,7 @@ const DepotDelivery = () => {
 
           {/* Product Selector */}
           <div ref={productRef} className="relative">
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
+            <label className="block text-xs font-semibold mb-2 text-gray-700">
               Select Product
             </label>
             <button
@@ -397,19 +397,19 @@ const DepotDelivery = () => {
           {/* Main Info */}
           <div className="grid md:grid-cols-4 gap-6 mb-6">
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-500 mb-1">Pack Size</p>
+              <p className="text-xs text-gray-500 mb-1">Pack Size</p>
               <p className="text-lg font-semibold text-gray-900">{selectedProduct.packSize || "-"}</p>
             </div>
             <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-blue-700 mb-1">Requested Quantity</p>
+              <p className="text-xs text-blue-700 mb-1">Requested Quantity</p>
               <p className="text-lg font-semibold text-blue-600">{selectedProduct.requestedQuantity || 0}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-sm text-green-700 mb-1">Warehouse Quantity</p>
+              <p className="text-xs text-green-700 mb-1">Warehouse Quantity</p>
               <p className="text-lg font-semibold text-green-600">{selectedProduct.warehouseQuantity || 0}</p>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
-              <p className="text-sm text-orange-700 mb-1">Depot Quantity</p>
+              <p className="text-xs text-orange-700 mb-1">Depot Quantity</p>
               <p className="text-lg font-semibold text-orange-600">{selectedProduct.depotQuantity || 0}</p>
             </div>
           </div>
@@ -418,25 +418,25 @@ const DepotDelivery = () => {
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {/* Warehouse Batches */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Warehouse Batches</h3>
+              <h3 className="text-xs font-semibold text-gray-700 mb-2">Warehouse Batches</h3>
               {selectedProduct.warehouseBatches && selectedProduct.warehouseBatches.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg">
+                  <table className="w-full text-xs border border-gray-200 rounded-lg">
                     <thead className="bg-gray-100">
                       <tr>
-                        <th className="px-3 py-2 text-left">Batch</th>
-                        <th className="px-3 py-2 text-left">Expire</th>
-                        <th className="px-3 py-2 text-right">Total Qty</th>
-                        <th className="px-3 py-2 text-right">Requested</th>
+                        <th className="px-2.5 py-1.5 text-left">Batch</th>
+                        <th className="px-2.5 py-1.5 text-left">Expire</th>
+                        <th className="px-2.5 py-1.5 text-right">Total Qty</th>
+                        <th className="px-2.5 py-1.5 text-right">Requested</th>
                       </tr>
                     </thead>
                     <tbody>
                       {selectedProduct.warehouseBatches.map((batch) => (
                         <tr key={batch.warehouseProductId} className="border-t border-gray-200 hover:bg-blue-50">
-                          <td className="px-3 py-2">{batch.batch}</td>
-                          <td className="px-3 py-2">{new Date(batch.expireDate).toLocaleDateString()}</td>
-                          <td className="px-3 py-2 text-right">{batch.totalQuantity}</td>
-                          <td className="px-3 py-2 text-right">{batch.requestedQuantity}</td>
+                          <td className="px-2.5 py-1.5">{batch.batch}</td>
+                          <td className="px-2.5 py-1.5">{new Date(batch.expireDate).toLocaleDateString()}</td>
+                          <td className="px-2.5 py-1.5 text-right">{batch.totalQuantity}</td>
+                          <td className="px-2.5 py-1.5 text-right">{batch.requestedQuantity}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -449,23 +449,23 @@ const DepotDelivery = () => {
 
             {/* Depot Batches */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Depot Batches</h3>
+              <h3 className="text-xs font-semibold text-gray-700 mb-2">Depot Batches</h3>
               {selectedProduct.depotBatches && selectedProduct.depotBatches.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-gray-200 rounded-lg">
+                  <table className="w-full text-xs border border-gray-200 rounded-lg">
                     <thead className="bg-gray-100">
                       <tr>
-                        <th className="px-3 py-2 text-left">Batch</th>
-                        <th className="px-3 py-2 text-left">Expire</th>
-                        <th className="px-3 py-2 text-right">Total Qty</th>
+                        <th className="px-2.5 py-1.5 text-left">Batch</th>
+                        <th className="px-2.5 py-1.5 text-left">Expire</th>
+                        <th className="px-2.5 py-1.5 text-right">Total Qty</th>
                       </tr>
                     </thead>
                     <tbody>
                       {selectedProduct.depotBatches.map((batch) => (
                         <tr key={batch.depotProductId} className="border-t border-gray-200 hover:bg-orange-50">
-                          <td className="px-3 py-2">{batch.batch}</td>
-                          <td className="px-3 py-2">{new Date(batch.expireDate).toLocaleDateString()}</td>
-                          <td className="px-3 py-2 text-right">{batch.totalQuantity}</td>
+                          <td className="px-2.5 py-1.5">{batch.batch}</td>
+                          <td className="px-2.5 py-1.5">{new Date(batch.expireDate).toLocaleDateString()}</td>
+                          <td className="px-2.5 py-1.5 text-right">{batch.totalQuantity}</td>
                         </tr>
                       ))}
                     </tbody>

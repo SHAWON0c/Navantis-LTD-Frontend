@@ -214,18 +214,18 @@ const FiltersAndSummaryPanel = ({
   return (
     <div
       id={id}
-      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6"
+      className="bg-white rounded-md shadow-sm border border-gray-200 p-1 mb-0.5"
     >
       {/* MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
 
         {/* LEFT SIDE - FILTERS */}
         <div className="w-full flex flex-col justify-center h-full">
 
-          <div className="flex flex-wrap justify-center items-center gap-3 w-full">
+          <div className="flex flex-wrap justify-center items-center gap-1.5 w-full">
 
             {/* Search */}
-            <div className="relative flex-1 min-w-[180px]">
+            <div className="relative flex-1 min-w-32">
               <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
 
               <input
@@ -235,7 +235,7 @@ const FiltersAndSummaryPanel = ({
                 onChange={(e) =>
                   setFilters({ ...filters, searchTerm: e.target.value })
                 }
-                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-8 pr-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -243,7 +243,7 @@ const FiltersAndSummaryPanel = ({
             <select
               value={year}
               onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-              className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+              className="px-2 py-1.5 border border-gray-200 rounded-md text-xs"
             >
               <option value="">Year</option>
               {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((y) => (
@@ -257,7 +257,7 @@ const FiltersAndSummaryPanel = ({
             <select
               value={month}
               onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-              className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+              className="px-2 py-1.5 border border-gray-200 rounded-md text-xs"
             >
               <option value="">Month</option>
               {Array.from({ length: 12 }, (_, i) => (
@@ -270,7 +270,7 @@ const FiltersAndSummaryPanel = ({
             {/* Filters toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm"
+              className="flex items-center gap-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-xs"
             >
               <MdFilterList />
               Filters
@@ -282,21 +282,21 @@ const FiltersAndSummaryPanel = ({
             {/* Today */}
             <button
               onClick={handleToday}
-              className="px-3 py-2 bg-blue-600 text-white rounded-md text-sm"
+              className="px-2 py-1.5 bg-blue-600 text-white rounded-md text-xs"
             >
               Today
             </button>
 
             {/* Clear */}
-            <button onClick={onClear} className="p-2 bg-red-400 rounded-md">
+            <button onClick={onClear} className="p-1.5 bg-red-400 rounded-md text-white">
               <MdClear />
             </button>
           </div>
 
           {/* ADVANCED FILTERS */}
           {showFilters && (
-            <div className="mt-3 p-3 bg-gray-50 rounded-md border">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="mt-1.5 p-2 bg-gray-50 rounded-md border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs text-gray-600">From Date</label>
                   <input
@@ -305,7 +305,7 @@ const FiltersAndSummaryPanel = ({
                     onChange={(e) =>
                       setFilters({ ...filters, fromDate: e.target.value, today: false })
                     }
-                    className="w-full border px-3 py-2 rounded-md text-sm"
+                    className="w-full border px-2 py-1.5 rounded-md text-xs"
                   />
                 </div>
 
@@ -317,7 +317,7 @@ const FiltersAndSummaryPanel = ({
                     onChange={(e) =>
                       setFilters({ ...filters, toDate: e.target.value, today: false })
                     }
-                    className="w-full border px-3 py-2 rounded-md text-sm"
+                    className="w-full border px-2 py-1.5 rounded-md text-xs"
                   />
                 </div>
               </div>
@@ -326,42 +326,42 @@ const FiltersAndSummaryPanel = ({
         </div>
 
         {/* RIGHT SIDE - SUMMARY */}
-        <div className="w-full flex flex-col justify-center gap-3">
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+        <div className="w-full flex flex-col justify-center gap-2">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
 
             {/* Products */}
-            <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg px-4 py-3 w-full">
+            <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-200 rounded-md px-2.5 py-1.5 w-full">
               <MdInventory className="text-green-600 text-xl" />
               <div>
-                <p className="text-xs text-green-700">Products</p>
-                <p className="text-lg font-bold text-green-800">{totals.totalUniqueProducts || 0}</p>
+                <p className="text-xs text-neutral-600">Products</p>
+                <p className="text-base font-bold text-neutral-900">{totals.totalUniqueProducts || 0}</p>
               </div>
             </div>
 
             {/* Units */}
-            <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 w-full">
+            <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-200 rounded-md px-2.5 py-1.5 w-full">
               <MdBarChart className="text-blue-600 text-xl" />
               <div>
-                <p className="text-xs text-blue-700">Units</p>
-                <p className="text-lg font-bold text-blue-800">{totals.totalUnit ? totals.totalUnit.toLocaleString() : 0}</p>
+                <p className="text-xs text-neutral-600">Units</p>
+                <p className="text-base font-bold text-neutral-900">{totals.totalUnit ? totals.totalUnit.toLocaleString() : 0}</p>
               </div>
             </div>
 
             {/* Trade Price */}
-            <div className="flex items-center gap-3 bg-orange-50 border border-orange-200 rounded-lg px-4 py-3 w-full">
+            <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-200 rounded-md px-2.5 py-1.5 w-full">
               <MdAttachMoney className="text-orange-600 text-xl" />
               <div>
-                <p className="text-xs text-orange-700">Trade Price</p>
-                <p className="text-lg font-bold text-orange-800">৳{totals.totalTP ? totals.totalTP.toLocaleString() : 0}</p>
+                <p className="text-xs text-neutral-600">Trade Price</p>
+                <p className="text-base font-bold text-blue-600">৳{totals.totalTP ? totals.totalTP.toLocaleString() : 0}</p>
               </div>
             </div>
 
             {/* Print Buttons */}
-            <div className="flex items-center justify-center gap-2 bg-gray-50 border rounded-lg px-3 py-3 w-full">
-              <button onClick={() => onPrint(false)} className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm">
+            <div className="flex items-center justify-center gap-1 bg-neutral-50 border border-neutral-200 rounded-md px-2 py-1.5 w-full">
+              <button onClick={() => onPrint(false)} className="flex items-center gap-1 px-2 py-1.5 bg-blue-600 text-white rounded-md text-xs">
                 <MdPrint />
               </button>
-              <button onClick={() => onPrint(true)} className="flex items-center gap-2 px-3 py-2 bg-slate-600 text-white rounded-lg text-sm">
+              <button onClick={() => onPrint(true)} className="flex items-center gap-1 px-2 py-1.5 bg-slate-600 text-white rounded-md text-xs">
                 <MdRefresh />
               </button>
             </div>
