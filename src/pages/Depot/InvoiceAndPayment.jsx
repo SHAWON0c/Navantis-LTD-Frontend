@@ -3,6 +3,7 @@ import { Button, Modal, Table, Input, message, Spin, Select } from "antd";
 import {
   useGetOrderStatusInfoQuery,
   useLazySearchOrderQuery,
+  useSubmitPaymentMutation,
 } from "../../redux/features/orders/orderApi";
 import Card from "../../component/common/Card";
 import { MdArrowBack } from "react-icons/md";
@@ -315,7 +316,16 @@ const PaymentInputs = ({ data, setData, errors = {} }) => {
 };
 
 /* ---------------------- QuickPayModal ---------------------- */
-const QuickPayModal = ({ open, onClose, searchData, setSearchData, triggerSearch, isLoading, onSubmit }) => {
+const QuickPayModal = ({
+  open,
+  onClose,
+  searchData,
+  setSearchData,
+  triggerSearch,
+  isLoading,
+  onSubmit,
+  isSubmitting,
+}) => {
   const [invoiceInput, setInvoiceInput] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
 
@@ -455,6 +465,7 @@ const QuickPayModal = ({ open, onClose, searchData, setSearchData, triggerSearch
             type="primary"
             className="mt-6 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
             size="large"
+            loading={isSubmitting}
             onClick={handleSubmitClick}
           >
             Submit Payment
@@ -525,6 +536,7 @@ const InvoiceAndPayment = () => {
   const [searchData, setSearchData] = useState(null);
 
   const [triggerSearch, { isLoading: isSearchLoading }] = useLazySearchOrderQuery();
+  const [submitPayment, { isLoading: isSubmittingPayment }] = useSubmitPaymentMutation();
 
   const handlePaymentSubmit = async () => {
     if (!searchData) return;
@@ -539,12 +551,7 @@ const InvoiceAndPayment = () => {
     else if (paymentType === "beftn") payload.beftnInfo = beftnInfo;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/payments/${_id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+      const data = await submitPayment({ paymentId: _id, payload }).unwrap();
       if (data.success) {
         message.success("Payment recorded successfully!");
         setQuickPayModal(false);
@@ -609,6 +616,7 @@ const InvoiceAndPayment = () => {
         triggerSearch={triggerSearch}
         isLoading={isSearchLoading}
         onSubmit={handlePaymentSubmit}
+        isSubmitting={isSubmittingPayment}
       />
     </div>
   );

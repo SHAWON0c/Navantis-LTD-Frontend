@@ -205,6 +205,16 @@ export const orderAPI = baseAPI.injectEndpoints({
       providesTags: ["Orders"],
     }),
 
+    // ✅ Submit payment against an order/payment record
+    submitPayment: builder.mutation({
+      query: ({ paymentId, payload }) => ({
+        url: `/payments/${paymentId}`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
 
 
     getMpoPendingOrders: builder.query({
@@ -248,6 +258,7 @@ export const {
   useUpdateOrderQuantityMutation,
   useDeleteOrderMutation,
   useGetOrderStatusInfoQuery,
+  useSubmitPaymentMutation,
   useLazySearchOrderQuery, // ✅ lazy search hook for Quick Pay
   useOrderReturnMutation,
   useGetPendingReturnsQuery,
