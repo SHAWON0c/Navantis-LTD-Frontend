@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useVerifyEmailMutation, useResendOtpMutation } from "../../redux/features/auth/authAPI";
-import logo from "../../assets/react.svg";
+import logo from "/images/NPL-Updated-Logo.png";
 
 export default function VerifyEmail() {
   const location = useLocation();
@@ -46,7 +46,7 @@ export default function VerifyEmail() {
     }
   };
 
-  // Handle Resend OTP
+  // Handle Resend Code
   const handleResendOtp = async () => {
     try {
       await resendOtp({ email }).unwrap();
@@ -54,7 +54,7 @@ export default function VerifyEmail() {
       setResendDisabled(true);
       console.log("OTP resent to:", email);
     } catch (err) {
-      console.error("Resend OTP failed:", err);
+      console.error("Resend Code failed:", err);
     }
   };
 
@@ -158,7 +158,7 @@ export default function VerifyEmail() {
               <input
                 type="text"
                 inputMode="numeric"
-                placeholder="Enter OTP"
+                placeholder="Enter verification code"
                 value={otp}
                 onChange={(e) => {
                   setOtp(e.target.value);
@@ -176,12 +176,12 @@ export default function VerifyEmail() {
               )}
             </div>
 
-            {/* Resend OTP */}
+            {/* Resend Code */}
             <div className="flex items-center justify-between text-xs sm:text-sm bg-orange-50 border border-orange-200 rounded-lg p-3 gap-2">
               <span className="text-gray-600">
                 {resendDisabled ? (
                   <span className="text-orange-600 font-medium">
-                    Resend OTP in {countdown}s
+                    Resend code in {countdown}s
                   </span>
                 ) : (
                   <button
@@ -189,7 +189,7 @@ export default function VerifyEmail() {
                     onClick={handleResendOtp}
                     className="text-blue-700 font-medium hover:underline active:text-blue-900"
                   >
-                    Resend OTP
+                    Resend Code
                   </button>
                 )}
               </span>
@@ -200,7 +200,7 @@ export default function VerifyEmail() {
               disabled={isLoading}
               className="w-full py-2.5 sm:py-3 bg-blue-800 text-white text-sm sm:text-base rounded-lg hover:bg-blue-900 active:bg-blue-950 transition font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Verifying..." : "Verify OTP"}
+              {isLoading ? "Verifying..." : "Verify Code"}
             </button>
           </form>
 

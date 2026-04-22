@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Settings, LogOut } from "lucide-react";
 import sidebarConfig from "../config/sidebar.config.json";
 import { iconMap } from "../config/iconMap";
 import { useAuth } from "../provider/AuthProvider";
 import SidebarLogo from "./SidebarLogo";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar({ isOpen, setSidebarOpen }) {
-  const { user, loading } = useAuth();
+  const { user, loading, logoutUser } = useAuth();
+  const navigate = useNavigate();
   const [openSectionKey, setOpenSectionKey] = useState(null);
   const expandIfCollapsed = () => {
     if (!isOpen) setSidebarOpen(true);
@@ -77,6 +79,11 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
     setOpenSectionKey((prev) => (prev === key ? null : key));
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <aside className="h-full bg-slate-800 text-slate-400 flex flex-col transition-all duration-300 border-r border-slate-700/70">
       <SidebarLogo isOpen={isOpen} setSidebarOpen={setSidebarOpen} />
@@ -88,7 +95,7 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
               <button
                 type="button"
                 onClick={() => toggleSection(section.key)}
-                className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] uppercase tracking-[0.08em] text-slate-500 hover:text-slate-300 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500 hover:text-slate-300 transition-colors"
                 aria-expanded={openSectionKey === section.key}
               >
                 <span className="flex items-center gap-2">
@@ -146,6 +153,31 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
           </div>
         ))}
       </nav>
+
+      <div className="border-t border-slate-700/70 p-2 space-y-1">
+        {isOpen ? (
+          <>
+            <button
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-slate-300 hover:bg-slate-700/80 hover:text-slate-100 transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+              <span className="text-sm">Settings</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-slate-300 hover:bg-red-700/60 hover:text-white transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm">Logout</span>
+            </button>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-1">
+            <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-md text-slate-300 hover:bg-slate-700/80"><Settings className="w-4 h-4" /></button>
+          </div>
+        )}
+      </div>
     </aside>
   );
 }

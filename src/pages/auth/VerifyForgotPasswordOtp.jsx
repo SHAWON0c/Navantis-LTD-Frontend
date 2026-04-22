@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useVerifyPasswordOtpMutation } from "../../redux/features/auth/authAPI";
-import logo from "../../assets/react.svg";
+import logo from "/images/NPL-Updated-Logo.png";
 
 export default function VerifyForgotPasswordOtp() {
   const location = useLocation();
@@ -75,7 +75,7 @@ export default function VerifyForgotPasswordOtp() {
             <div className="flex justify-center">
               <img src={logo} alt="Company Logo" className="h-12 sm:h-14 md:h-16 w-auto" />
             </div>
-            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">Verify OTP</h2>
+            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">Verify One-Time Password</h2>
             <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
               We sent a verification code to <span className="font-medium break-all">{email}</span>. Enter it below to reset your password.
             </p>
@@ -162,7 +162,7 @@ export default function VerifyForgotPasswordOtp() {
 
             {/* OTP Timer */}
             <div className="flex items-center justify-between text-xs sm:text-sm bg-orange-50 border border-orange-200 rounded-lg p-3 gap-2">
-              <span className="text-orange-800 font-medium">OTP expires in:</span>
+              <span className="text-orange-800 font-medium">Code expires in:</span>
               <span className="text-orange-600 font-bold text-base sm:text-lg">{formatTime(countdown)}</span>
             </div>
 
@@ -171,7 +171,7 @@ export default function VerifyForgotPasswordOtp() {
               disabled={isLoading}
               className="w-full py-2.5 sm:py-3 bg-blue-800 text-white text-sm sm:text-base rounded-lg hover:bg-blue-900 active:bg-blue-950 transition font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Verifying..." : "Verify OTP"}
+              {isLoading ? "Verifying..." : "Verify One-Time Password"}
             </button>
           </form>
 
@@ -179,7 +179,7 @@ export default function VerifyForgotPasswordOtp() {
           <div className="mt-6 text-center text-xs sm:text-sm space-y-3 sm:space-y-2">
             <div className="leading-relaxed">
               <Link to="/forgot-password" className="text-blue-700 font-medium hover:underline active:text-blue-900">
-                ← Back to Forgot Password
+                Back to Forgot Password
               </Link>
             </div>
             <div className="leading-relaxed">

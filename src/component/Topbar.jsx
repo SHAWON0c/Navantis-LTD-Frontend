@@ -1,30 +1,10 @@
-
 import { useState, useEffect, useRef } from "react";
-import {
-  Bell,
-  Menu,
-  Search,
-  Settings,
-  Grid,
-  Moon,
-  Sun,
-  User,
-  LogOut,
-  Globe,
-  AppWindow
-} from "lucide-react";
-import { useDispatch } from "react-redux";
-import { resetAuthState } from "../redux/features/auth/authSlice"; // adjust path
-import { baseAPI } from "../redux/services/baseApi";
+import { Bell, Menu, Search, Grid, User, AppWindow } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useUserProfile } from "../hooks/useUserProfile"; // ✅ import your hook
-import { useAuth } from "../provider/AuthProvider";
+import { useUserProfile } from "../hooks/useUserProfile";
 
 export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimating = false }) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { logoutUser } = useAuth();
-
   const { data } = useUserProfile();
 
   const payload = data?.data;
@@ -38,38 +18,20 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
   const user = profile || {};
   const org = profile?.organizationProfile || {};
 
-  const [darkMode, setDarkMode] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(3); // example
-
-
-
+  const [notificationCount] = useState(3);
   const [appsOpen, setAppsOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+
   const appsRef = useRef(null);
-
-
-  const settingsRef = useRef(null);
   const megaRef = useRef(null);
   const notifRef = useRef(null);
   const profileRef = useRef(null);
 
-  // ⏰ Digital clock state
   const [time, setTime] = useState(new Date());
 
-  // Load dark mode from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("darkMode");
-    if (saved === "true") {
-      document.documentElement.classList.add("dark");
-      setDarkMode(true);
-    }
-  }, []);
-
-  // Update clock every second
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
@@ -78,24 +40,11 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
   const formattedTime = time.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit"
+    second: "2-digit",
   });
 
-  const toggleDarkMode = () => {
-    if (darkMode) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-    }
-    setDarkMode(!darkMode);
-  };
-
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (settingsRef.current && !settingsRef.current.contains(event.target)) setSettingsOpen(false);
       if (megaRef.current && !megaRef.current.contains(event.target)) setMegaMenuOpen(false);
       if (notifRef.current && !notifRef.current.contains(event.target)) setNotificationsOpen(false);
       if (profileRef.current && !profileRef.current.contains(event.target)) setProfileOpen(false);
@@ -105,30 +54,6 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
-  // Logout handler
-  const handleLogout = () => {
-    if (isLoggingOut) return;
-
-    setIsLoggingOut(true);
-    setSettingsOpen(false);
-    setMegaMenuOpen(false);
-    setNotificationsOpen(false);
-    setProfileOpen(false);
-    setAppsOpen(false);
-
-    // Clear auth + jump to login first to avoid visible dashboard re-render shake
-    logoutUser();
-    navigate("/login", { replace: true });
-
-    // Defer heavier Redux cleanup until next tick for smoother transition
-    setTimeout(() => {
-      dispatch(baseAPI.util.resetApiState());
-      dispatch(resetAuthState());
-      setIsLoggingOut(false);
-    }, 0);
-  };
-
   const navigateToApp = (path) => {
     setAppsOpen(false);
     navigate(path);
@@ -136,24 +61,21 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
 
   const dropdownClass =
     "absolute right-5 mt-5 w-56 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg rounded-md overflow-hidden z-50";
-  const dropdownClass2 =
-    "absolute right-40 mt-40 w-56 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg rounded-md overflow-hidden z-50 border border-gray-100";
 
   return (
     <header className="h-16 w-full flex items-center justify-between px-4 shadow-sm bg-white dark:bg-gray-800 dark:text-gray-200">
-      {/* LEFT */}
       <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={onMenuClick}
           disabled={sidebarAnimating}
           aria-label="Toggle sidebar"
-          className={`rounded-md p-1.5 transition-all duration-980 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+          className={`rounded-md p-1.5 transition-all duration-300 ${
             sidebarAnimating ? "cursor-not-allowed opacity-60" : "hover:bg-gray-100 dark:hover:bg-gray-700"
           }`}
         >
           <Menu
-            className={`h-5 w-5 text-gray-600 dark:text-gray-200 transition-transform duration-980 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            className={`h-5 w-5 text-gray-600 dark:text-gray-200 transition-transform duration-300 ${
               sidebarOpen ? "rotate-0" : "rotate-180"
             }`}
           />
@@ -161,7 +83,6 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
         <span className="md:text-xl text-sm font-semibold tracking-wide">EMS-NAVANTIS</span>
       </div>
 
-      {/* CENTER */}
       <div className="hidden md:flex items-center w-1/3">
         <div className="relative w-full">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-300" />
@@ -173,9 +94,7 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
         </div>
       </div>
 
-      {/* RIGHT */}
       <div className="flex items-center gap-4 relative">
-        {/* Mega Menu with Clock */}
         <div className="relative hidden items-center gap-3 md:flex" ref={megaRef}>
           <button
             onClick={() => setMegaMenuOpen(!megaMenuOpen)}
@@ -184,7 +103,6 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
             Mega Menu
           </button>
 
-          {/* ⏰ Digital Clock next to Mega Menu */}
           <div className="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 font-mono text-sm font-semibold text-blue-600 dark:text-blue-400">
             {formattedTime}
           </div>
@@ -192,90 +110,17 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
           {megaMenuOpen && (
             <div className="absolute top-full left-0 mt-2 w-56 rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 z-50">
               <ul className="py-2">
-                <li>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                    <AppWindow className="w-4 h-4" />
-                    Dashboard
-                  </button>
-                </li>
-
-                <li>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                    <AppWindow className="w-4 h-4" />
-                    Projects
-                  </button>
-                </li>
-
-                <li>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                    <AppWindow className="w-4 h-4" />
-                    Tasks
-                  </button>
-                </li>
-
-
-                 <li>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                    <AppWindow className="w-4 h-4" />
-                    areas
-                  </button>
-                </li>
-
-
+                <li><button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"><AppWindow className="w-4 h-4" />Dashboard</button></li>
+                <li><button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"><AppWindow className="w-4 h-4" />Projects</button></li>
+                <li><button className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"><AppWindow className="w-4 h-4" />Tasks</button></li>
               </ul>
             </div>
           )}
-
         </div>
 
-        {/* Settings Dropdown */}
-        <div className="relative" ref={settingsRef}>
-          <Settings
-            className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200"
-            onClick={() => setSettingsOpen(!settingsOpen)}
-          />
-          {settingsOpen && (
-            <div className={dropdownClass}>
-              <button
-                onClick={toggleDarkMode}
-                className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
-                  Dark Mode
-                </span>
-                <span>{darkMode ? "On" : "Off"}</span>
-              </button>
-              <button className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span className="flex items-center gap-2">
-                  <Globe className="w-4 h-4" /> Language
-                </span>
-                <span>🇩🇪</span>
-              </button>
-              <div className="border-t border-gray-200 dark:border-gray-700"></div>
-              <button className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <Settings className="w-4 h-4" /> Settings & Security
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <LogOut className="w-4 h-4" /> Logout
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Notifications Dropdown */}
-        {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>
           <div className="relative">
-            <Bell
-              className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200"
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-            />
-
-            {/* 🔴 Notification Badge */}
+            <Bell className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200" onClick={() => setNotificationsOpen(!notificationsOpen)} />
             {notificationCount > 0 && (
               <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
                 {notificationCount > 99 ? "99+" : notificationCount}
@@ -287,32 +132,27 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
             <div className={dropdownClass}>
               <div className="px-4 py-2 font-semibold">Notifications</div>
               <div className="border-t border-gray-200 dark:border-gray-700"></div>
-
-              <button className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">
-                You have 3 new messages
-              </button>
-              <button className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">
-                Server restarted successfully
-              </button>
-              <button className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">
-                New user registered
-              </button>
+              <button className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">You have 3 new messages</button>
+              <button className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">Server restarted successfully</button>
+              <button className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">New user registered</button>
             </div>
           )}
         </div>
 
-
-        {/* User Profile Dropdown */}
         <div className="relative" ref={profileRef}>
-          <div
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={() => setProfileOpen(!profileOpen)}
-          >
-            <img
-              src={org?.profilePic || "https://i.pravatar.cc/40"}
-              alt="user"
-              className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600"
-            />
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setProfileOpen(!profileOpen)}>
+            {org?.profilePic && !avatarError ? (
+              <img
+                src={org.profilePic}
+                alt="user"
+                onError={() => setAvatarError(true)}
+                className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                <User className="w-4 h-4 text-slate-600 dark:text-slate-200" />
+              </div>
+            )}
             <div className="hidden lg:block text-sm">
               <div className="font-semibold">{org?.name || user?.email || "User"}</div>
               <div className="text-xs text-gray-500 dark:text-gray-400">{user?.role || "Role"}</div>
@@ -329,77 +169,23 @@ export default function Topbar({ onMenuClick, sidebarOpen = true, sidebarAnimati
               >
                 <User className="w-4 h-4" /> Profile
               </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <LogOut className="w-4 h-4" /> Logout
-              </button>
             </div>
           )}
         </div>
 
-        {/* Grid / Apps */}
-        {/* Grid / Apps Dropdown */}
         <div className="relative" ref={appsRef}>
-          <Grid
-            className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200"
-            onClick={() => setAppsOpen(!appsOpen)}
-          />
-
+          <Grid className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-200" onClick={() => setAppsOpen(!appsOpen)} />
           {appsOpen && (
             <div className="absolute right-0 mt-10 w-64 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-lg rounded-md overflow-hidden z-50 p-4 grid grid-cols-2 gap-4">
-              {/* Each app button */}
-              <button
-                onClick={() => navigateToApp("/apps/company-calendar")}
-                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                <AppWindow className="w-6 h-6" />
-                <span className="text-xs">Company Calendar</span>
-              </button>
-
-              <button
-                onClick={() => navigateToApp("/apps/calculator")}
-                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                <AppWindow className="w-6 h-6" />
-                <span className="text-xs">Calculator</span>
-              </button>
-
-              <button
-                onClick={() => navigateToApp("/apps/todo-notes")}
-                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                <AppWindow className="w-6 h-6" />
-                <span className="text-xs">To-Do Notes</span>
-              </button>
-
-              <button
-                onClick={() => navigateToApp("/apps/outlook")}
-                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                <AppWindow className="w-6 h-6" />
-                <span className="text-xs">Outlook</span>
-              </button>
-
-              <button
-                onClick={() => navigateToApp("/apps/employee-numbers")}
-                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                <AppWindow className="w-6 h-6" />
-                <span className="text-xs">Employee Numbers</span>
-              </button>
-              <button
-                onClick={() => navigateToApp("/apps/drive")}
-                className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"
-              >
-                <AppWindow className="w-6 h-6" />
-                <span className="text-xs">Drive</span>
-              </button>
+              <button onClick={() => navigateToApp("/apps/company-calendar")} className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"><AppWindow className="w-6 h-6" /><span className="text-xs">Company Calendar</span></button>
+              <button onClick={() => navigateToApp("/apps/calculator")} className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"><AppWindow className="w-6 h-6" /><span className="text-xs">Calculator</span></button>
+              <button onClick={() => navigateToApp("/apps/todo-notes")} className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"><AppWindow className="w-6 h-6" /><span className="text-xs">To-Do Notes</span></button>
+              <button onClick={() => navigateToApp("/apps/outlook")} className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"><AppWindow className="w-6 h-6" /><span className="text-xs">Outlook</span></button>
+              <button onClick={() => navigateToApp("/apps/employee-numbers")} className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"><AppWindow className="w-6 h-6" /><span className="text-xs">Employee Numbers</span></button>
+              <button onClick={() => navigateToApp("/apps/drive")} className="flex flex-col items-center justify-center gap-1 p-2 hover:bg-blue-300 dark:hover:bg-gray-700 rounded-md transition-colors"><AppWindow className="w-6 h-6" /><span className="text-xs">Drive</span></button>
             </div>
           )}
         </div>
-
       </div>
     </header>
   );

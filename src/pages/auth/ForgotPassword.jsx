@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForgotPasswordMutation } from "../../redux/features/auth/authAPI";
-import logo from "../../assets/react.svg";
+import logo from "/images/NPL-Updated-Logo.png";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
             <div className="flex justify-center">
               <img src={logo} alt="Company Logo" className="h-12 sm:h-14 md:h-16 w-auto" />
             </div>
-            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">Forgot Password?</h2>
+            <h2 className="text-xl sm:text-2xl md:text-2xl font-semibold text-gray-800">Forgot Your Password?</h2>
             <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
               Enter your email address and we'll send you a code to reset your password.
             </p>
@@ -99,7 +99,7 @@ export default function ForgotPassword() {
               disabled={isLoading}
               className="w-full py-2.5 sm:py-3 bg-blue-800 text-white text-sm sm:text-base rounded-lg hover:bg-blue-900 active:bg-blue-950 transition font-medium disabled:opacity-60 disabled:cursor-not-allowed touch-highlight-transparent"
             >
-              {isLoading ? "Sending OTP..." : "Send OTP"}
+              {isLoading ? "Sending OTP..." : "Send Verification Code"}
             </button>
           </form>
 

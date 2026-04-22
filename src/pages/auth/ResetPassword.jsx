@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useResetPasswordMutation } from "../../redux/features/auth/authAPI";
-import logo from "../../assets/react.svg";
+import logo from "/images/NPL-Updated-Logo.png";
 
 export default function ResetPassword() {
   const location = useLocation();

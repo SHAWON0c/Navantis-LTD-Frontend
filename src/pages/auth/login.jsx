@@ -478,7 +478,7 @@ export default function Login() {
                 to="/forgot-password"
                 className="text-sm text-blue-700 font-medium hover:underline"
               >
-                Forgot password?
+                Forgot your password?
               </Link>
             </div>
 
@@ -495,7 +495,7 @@ export default function Login() {
 
           {/* Footer */}
           <div className="mt-6 text-center text-sm">
-            Don’t have an account?{" "}
+            Do not have an account?{" "}
             <Link
               to="/register"
               className="text-blue-700 font-medium hover:underline"
