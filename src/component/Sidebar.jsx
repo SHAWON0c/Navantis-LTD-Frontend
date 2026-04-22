@@ -102,10 +102,17 @@ export default function Sidebar({ isOpen, setSidebarOpen }) {
                 />
               </button>
             ) : (
-              <div className="h-1" />
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="w-full flex items-center justify-center px-2 py-2 rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-700/80 transition-colors"
+                title={section.label}
+              >
+                <section.Icon className="w-4 h-4" />
+              </button>
             )}
 
-            {(!isOpen || openSections[section.key]) && (
+            {isOpen && openSections[section.key] && (
               <div className="space-y-1">
                 {section.items.map((item) => (
                   <NavLink
