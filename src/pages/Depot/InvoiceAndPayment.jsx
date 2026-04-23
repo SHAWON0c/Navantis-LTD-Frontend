@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Modal, Table, Input, message, Spin, Select } from "antd";
+import { PrinterOutlined } from "@ant-design/icons";
 import {
   useGetOrderStatusInfoQuery,
   useLazySearchOrderQuery,
@@ -8,6 +9,7 @@ import {
 import Card from "../../component/common/Card";
 import { MdArrowBack } from "react-icons/md";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -478,30 +480,125 @@ const QuickPayModal = ({
 
 /* ---------------------- OrderTable ---------------------- */
 const OrderTable = ({ modalTitle }) => {
-  const { data: statusData, isLoading } = useGetOrderStatusInfoQuery(modalTitle.toLowerCase(), {
-    skip: !modalTitle || modalTitle === "Quick Pay",
+  const navigate = useNavigate();
+  const normalizedStatus = String(modalTitle || "").toLowerCase().trim();
+
+  const { data: statusData, isLoading } = useGetOrderStatusInfoQuery(normalizedStatus, {
+    skip: !normalizedStatus || normalizedStatus === "quick pay",
   });
 
+  const orders = Array.isArray(statusData?.data)
+    ? statusData.data
+    : Array.isArray(statusData?.orders)
+      ? statusData.orders
+      : Array.isArray(statusData)
+        ? statusData
+        : [];
+
+  const handlePrintInvoice = (record) => {
+    const orderId = record?._id;
+    const invoiceNo = record?.invoiceNo || record?.invoice;
+
+    if (!orderId) {
+      message.error("Order ID not found for print");
+      return;
+    }
+
+    const entityType = String(record?.entityType || "customer").toLowerCase();
+    const isInstituteOrder = entityType === "institute";
+
+    navigate(isInstituteOrder ? "/institutes/invoice-print" : "/invoice-print", {
+      state: {
+        orderId,
+        invoiceNo,
+        orderType: isInstituteOrder ? "institute" : "customer",
+        prefilledOrder: record,
+        sourcePage: "invoice-payment",
+      },
+    });
+  };
+
   const columns = [
-    { title: "SL No", key: "serial", render: (_, __, index) => index + 1, width: 80 },
-    { title: "Invoice", dataIndex: "invoiceNo" },
-    { title: "Order Date", dataIndex: "orderDate", render: (text) => text ? new Date(text).toLocaleDateString() : 'N/A' },
-    { title: "Total Payable", dataIndex: "totalPayable" },
+    { title: "SL No", key: "serial", render: (_, __, index) => index + 1, width: 60 },
+    {
+      title: "Invoice No",
+      key: "invoiceNo",
+      render: (_, record) => record?.invoiceNo || record?.invoice || "N/A",
+    },
+    {
+      title: "Order Date",
+      dataIndex: "orderDate",
+      render: (text) => (text ? new Date(text).toLocaleDateString() : "N/A"),
+    },
+    {
+      title: "Ordered By (MPO)",
+      key: "orderedBy",
+      render: (_, record) => record?.orderedBy || record?.mpo?.mpoName || record?.mpo?.name || "N/A",
+    },
+    {
+      title: "Customer Name",
+      key: "customerName",
+      render: (_, record) => record?.customerName || record?.customer?.customerName || "N/A",
+    },
+    {
+      title: "Order Value (Tk)",
+      key: "orderValue",
+      align: "right",
+      render: (_, record) => Number(record?.netAmount ?? 0).toLocaleString(),
+    },
+    {
+      title: "Payable Amount (Tk)",
+      key: "payableAmount",
+      align: "right",
+      render: (_, record) => Number(record?.totalPayable ?? 0).toLocaleString(),
+    },
+    ...(normalizedStatus === "returned"
+      ? [
+          {
+            title: "Returned Quantity",
+            key: "returnedQuantity",
+            align: "right",
+            render: (_, record) => {
+              if (typeof record?.returnedQuantity === "number") return record.returnedQuantity;
+              if (!Array.isArray(record?.products)) return 0;
+              return record.products.reduce(
+                (sum, product) => sum + Number(product?.returnedQuantity || 0),
+                0
+              );
+            },
+          },
+        ]
+      : []),
+    {
+      title: "Print",
+      key: "print",
+      width: 64,
+      align: "center",
+      render: (_, record) => (
+        <Button
+          type="text"
+          icon={<PrinterOutlined style={{ fontSize: 14 }} />}
+          onClick={() => handlePrintInvoice(record)}
+          aria-label="Print invoice"
+        />
+      ),
+    },
   ];
 
   return isLoading ? (
-    <div className="flex justify-center py-10">
+    <div className="flex justify-center py-8">
       <Spin size="large" />
     </div>
   ) : (
     <Table
       columns={columns}
-      dataSource={statusData?.data || []}
-      rowKey="invoiceNo"
-      pagination={{ pageSize: 20 }}
+      dataSource={orders}
+      rowKey={(record) => record?._id || record?.invoiceNo || record?.invoice}
+      pagination={{ pageSize: 10, size: "small" }}
+      scroll={{ x: 900 }}
       bordered
-      size="middle"
-      className="shadow-sm rounded-lg bg-white"
+      size="small"
+      className="shadow-sm rounded-md bg-white text-[11px] [&_.ant-table-thead>tr>th]:py-1 [&_.ant-table-thead>tr>th]:px-2 [&_.ant-table-thead>tr>th]:text-[11px] [&_.ant-table-tbody>tr>td]:py-1 [&_.ant-table-tbody>tr>td]:px-2 [&_.ant-table-tbody>tr>td]:text-[11px] [&_.ant-pagination]:text-[11px]"
     />
   );
 };
@@ -510,19 +607,19 @@ const OrderTable = ({ modalTitle }) => {
 const SidebarActions = ({ modalTitle, setModalTitle, setQuickPayModal }) => {
   const buttons = ["Delivered", "pending", "Outstanding", "Paid", "Returned"];
   return (
-    <div className="w-60 bg-white rounded-xl shadow-lg p-8 flex flex-col gap-2 ">
+    <div className="w-40 bg-white rounded-md shadow-sm p-2 flex flex-col gap-1">
       {buttons.map((btn) => (
         <Button
           key={btn}
           type={modalTitle === btn ? "primary" : "default"}
-          size="large"
-          className="font-semibold"
+          size="small"
+          className="font-semibold text-[11px] h-7"
           onClick={() => setModalTitle(btn)}
         >
           {btn.toUpperCase()}
         </Button>
       ))}
-      <Button type="primary" size="large" className="bg-blue-600 hover:bg-blue-700 mt-2" onClick={() => setQuickPayModal(true)}>
+      <Button type="primary" size="small" className="bg-blue-600 hover:bg-blue-700 mt-1 text-[11px] h-7" onClick={() => setQuickPayModal(true)}>
         Quick Pay
       </Button>
     </div>
@@ -564,33 +661,33 @@ const InvoiceAndPayment = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col text-xs">
       {/* ---------------- HEADER (Top) ---------------- */}
-      <Card className="mb-6">
+      <Card className="mb-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
             <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
-              className="ml-2">
+              className="ml-1 text-[11px] h-7 px-2">
               Back
             </Button>
-            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
+            <div className="bg-white text-gray-500 flex items-center px-2 py-1 sm:h-9">
+              <h2 className="flex flex-wrap items-center text-[10px] md:text-[11px] font-semibold text-gray-800 gap-1 leading-tight">
                 <span>EMS</span>
-                <ChevronRight size={14} className="text-gray-400" />
+                <ChevronRight size={11} className="text-gray-400" />
                 <span>DEPOT</span>
-                <ChevronRight size={14} className="text-gray-400" />
-                <span className="text-gray-900 font-bold">INVOICE & PAYMENT   ||  <span className="bg-blue-100 text-xs text-red-400 p-1"> {modalTitle.toUpperCase()} ORDERS</span></span>
+                <ChevronRight size={11} className="text-gray-400" />
+                <span className="text-gray-900 font-bold">INVOICE & PAYMENT || <span className="bg-blue-100 text-[10px] text-red-400 px-1 py-0.5"> {modalTitle.toUpperCase()} ORDERS</span></span>
               </h2>
             </div>
           </div>
-          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-[10px] text-neutral-500 mr-1">
             Totals:
           </div>
         </div>
       </Card>
 
       {/* ---------------- MAIN CONTENT ---------------- */}
-      <div className="flex flex-1 gap-6">
+      <div className="flex flex-1 gap-2">
         {/* Table on Left */}
         <div className="flex-1">
 
@@ -598,7 +695,7 @@ const InvoiceAndPayment = () => {
         </div>
 
         {/* Status / Sidebar on Right */}
-        <div className="w-60">
+        <div className="w-40 shrink-0">
           <SidebarActions
             modalTitle={modalTitle}
             setModalTitle={setModalTitle}

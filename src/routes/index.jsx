@@ -66,6 +66,7 @@ import MarketPoints from "../pages/Superadmin/marketPoints/MarketPoints";
 import Zones from "../pages/Superadmin/zones/Zones";
 import Areas from "../pages/Superadmin/Areas/Areas";
 import Teritories from "../pages/Superadmin/teritories/Teritories";
+import TerritoryMonthlyTargets from "../pages/Superadmin/teritories/TerritoryMonthlyTargets";
 import DailyAttendancePage from "../pages/HR/DailyAttendancePage";
 import LeaveBalancePage from "../pages/HR/LeaveBalancePage";
 import LeaveApplicationPage from "../pages/HR/LeaveApplicationPage";
@@ -178,6 +179,7 @@ export default function AppRoutes() {
           <Route path="/superadmin/zones" element={<Zones />} />
           <Route path="/superadmin/areas" element={<Areas />} />
           <Route path="/superadmin/territories" element={<Teritories />} />
+          <Route path="/superadmin/territory-monthly-targets" element={<TerritoryMonthlyTargets />} />
           <Route path="/superadmin/marketpoints" element={<MarketPoints />} />
         </Route>
 

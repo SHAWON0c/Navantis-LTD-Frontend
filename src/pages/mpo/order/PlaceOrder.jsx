@@ -276,6 +276,7 @@ import Table from "../../../component/common/Table";
 import {
   useGetBrandsQuery,
   useGetProductsByBrandQuery,
+  useGetDepotAvailableProductsByBrandQuery
 } from "../../../redux/features/products/productsApi";
 
 import { useGetCustomersByStatusQuery } from "../../../redux/features/customer/customerApi";
@@ -329,8 +330,8 @@ const PlaceOrder = () => {
 
   // ================= API =================
   const { data: brandsData = [], isLoading: brandsLoading } = useGetBrandsQuery();
-  const { data: productsData = {}, isLoading: productsLoading } =
-    useGetProductsByBrandQuery(formData.brand || skipToken);
+ const { data: productsData = {}, isLoading: productsLoading } =
+  useGetDepotAvailableProductsByBrandQuery(formData.brand || skipToken);
   const { data: customersData = {}, isLoading: customersLoading } =
     useGetCustomersByStatusQuery("active");
 

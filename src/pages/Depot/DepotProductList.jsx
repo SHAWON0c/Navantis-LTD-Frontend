@@ -73,34 +73,34 @@ const DepotProductsList = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-xs">
       {/* Header */}
-      <Card className="mb-6">
+      <Card className="mb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
             <Button variant="ghost" size="small" icon={MdArrowBack} onClick={() => window.history.back()}
-              className="ml-2">
+              className="ml-1 text-[11px] h-7 px-2">
               Back
             </Button>
-            <div className="bg-white text-gray-500 flex items-center px-3 sm:px-4 md:px-6 py-2 sm:h-12">
-              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
+            <div className="bg-white text-gray-500 flex items-center px-2 py-1 sm:h-9">
+              <h2 className="flex flex-wrap items-center text-[10px] md:text-[11px] font-semibold text-gray-800 gap-1 leading-tight">
                 <span>EMS</span>
-                <ChevronRight size={14} className="text-gray-400" />
+                <ChevronRight size={11} className="text-gray-400" />
                 <span>DEPOT</span>
-                <ChevronRight size={14} className="text-gray-400" />
+                <ChevronRight size={11} className="text-gray-400" />
                 <span className="text-gray-900 font-bold">PRODUCT LIST</span>
               </h2>
             </div>
           </div>
-          <div className="text-xs text-neutral-500 mr-2 sm:mr-4 md:mr-6">
+          <div className="text-[10px] text-neutral-500 mr-1 sm:mr-2">
             Total Products: {filteredProducts.length}
           </div>
         </div>
       </Card>
 
       {/* Summary Panel */}
-      <div className="mb-6">
-        <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md">
+      <div className="mb-3">
+        <div className="p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-md shadow-sm">
           <DepotProductSummaryPanel
             totals={{
               totalUniqueProducts: filteredProducts.length,
@@ -115,79 +115,80 @@ const DepotProductsList = () => {
 
       {/* Data Table */}
       <Card title="Depot Product List" subtitle={`Showing ${currentProducts.length} of ${filteredProducts.length} products`}>
-        <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2 p-2">
-            <label className="text-xs font-medium">Show</label>
+        <div className="mb-2 flex flex-col md:flex-row justify-between items-center gap-2">
+          <div className="flex items-center gap-1.5 p-1">
+            <label className="text-[11px] font-medium">Show</label>
             <select
               value={productsPerPage}
               onChange={handleProductsPerPageChange}
-              className="border border-gray-300 rounded px-2 py-1 text-xs"
+              className="border border-gray-300 rounded px-1.5 py-0.5 text-[11px]"
             >
               {[5, 10, 15, 20, 50].map(v => (
                 <option key={v} value={v}>{v}</option>
               ))}
             </select>
-            <span className="text-xs font-medium">products per page</span>
+            <span className="text-[11px] font-medium">products per page</span>
           </div>
 
-          <div className="flex border border-gray-300 rounded-lg overflow-hidden">
-            <div className="border-r border-gray-300 p-2 bg-gray-50 flex items-center">
-              <ImSearch className="text-gray-500" />
+          <div className="flex border border-gray-300 rounded-md overflow-hidden">
+            <div className="border-r border-gray-300 p-1.5 bg-gray-50 flex items-center">
+              <ImSearch className="text-gray-500 text-[11px]" />
             </div>
             <input
               type="text"
               placeholder="Search products"
               value={searchTerm}
               onChange={handleSearch}
-              className="px-2.5 py-1.5 flex-1 focus:outline-none text-xs"
+              className="px-2 py-1 flex-1 focus:outline-none text-[11px]"
             />
           </div>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-xs">
+          <table className="w-full border-collapse text-[11px]">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="text-center py-2 px-2 font-semibold text-gray-700">Sl. No.</th>
-                <th className="text-left py-2 px-2 font-semibold text-gray-700">Product Name</th>
-                <th className="text-center py-2 px-2 font-semibold text-gray-700">Pack Size</th>
-                <th className="text-center py-2 px-2 font-semibold text-gray-700">Batch</th>
-                <th className="text-center py-2 px-2 font-semibold text-gray-700">Expire</th>
-                <th className="text-center py-2 px-2 font-semibold text-gray-700">Quantity</th>
-                <th className="text-right py-2 px-2 font-semibold text-gray-700">Price/Unit</th>
-                <th className="text-right py-2 px-2 font-semibold text-gray-700">Total Price</th>
-                <th className="text-center py-2 px-2 font-semibold text-gray-700">Action</th>
+                <th className="text-center py-1.5 px-1.5 font-semibold text-gray-700">Sl. No.</th>
+                <th className="text-left py-1.5 px-1.5 font-semibold text-gray-700">Product Name</th>
+                <th className="text-center py-1.5 px-1.5 font-semibold text-gray-700">Pack Size</th>
+                <th className="text-center py-1.5 px-1.5 font-semibold text-gray-700">Batch</th>
+                <th className="text-center py-1.5 px-1.5 font-semibold text-gray-700">Expire</th>
+                <th className="text-center py-1.5 px-1.5 font-semibold text-gray-700">Quantity</th>
+                <th className="text-right py-1.5 px-1.5 font-semibold text-gray-700">Price/Unit</th>
+                <th className="text-right py-1.5 px-1.5 font-semibold text-gray-700">Total Price</th>
+                <th className="text-center py-1.5 px-1.5 font-semibold text-gray-700">Action</th>
               </tr>
             </thead>
             <tbody>
               {currentProducts.length === 0 ? (
                 <tr>
-                  <td colSpan="9" className="text-center py-8 text-gray-500">
+                  <td colSpan="9" className="text-center py-6 text-gray-500">
                     No products found
                   </td>
                 </tr>
               ) : (
                 currentProducts.map((product, idx) => (
                   <tr key={product._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="text-center py-2 px-2">{startIndex + idx + 1}</td>
-                    <td className="text-left py-2 px-2">{product.productName}</td>
-                    <td className="text-center py-2 px-2">{product.packSize || "-"}</td>
-                    <td className="text-center py-2 px-2">{product.batch || "-"}</td>
-                    <td className="text-center py-2 px-2">
+                    <td className="text-center py-1.5 px-1.5">{startIndex + idx + 1}</td>
+                    <td className="text-left py-1.5 px-1.5">{product.productName}</td>
+                    <td className="text-center py-1.5 px-1.5">{product.packSize || "-"}</td>
+                    <td className="text-center py-1.5 px-1.5">{product.batch || "-"}</td>
+                    <td className="text-center py-1.5 px-1.5">
                       {product.expireDate ? new Date(product.expireDate).toLocaleDateString() : "-"}
                     </td>
-                    <td className="text-center py-2 px-2">{product.totalQuantity || 0}</td>
-                    <td className="text-right py-2 px-2">
+                    <td className="text-center py-1.5 px-1.5">{product.totalQuantity || 0}</td>
+                    <td className="text-right py-1.5 px-1.5">
                       {(product.tradePrice || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="text-right py-2 px-2">
+                    <td className="text-right py-1.5 px-1.5">
                       {((product.tradePrice || 0) * (product.totalQuantity || 0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td className="text-center py-2 px-2">
+                    <td className="text-center py-1.5 px-1.5">
                       <Button
                         variant="primary"
                         size="small"
+                        className="text-[10px] px-2 py-1"
                         onClick={() => setRequestModalOpen(true)}
                       >
                         Request
@@ -203,15 +204,16 @@ const DepotProductsList = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <Card className="mt-6">
+        <Card className="mt-3">
           <div className="flex items-center justify-between">
-            <div className="text-xs text-neutral-600">
+            <div className="text-[11px] text-neutral-600">
               Page {currentPage} of {totalPages}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button
                 variant="outline"
                 size="small"
+                className="text-[11px] h-7 px-2"
                 disabled={currentPage === 1}
                 onClick={() => changePage(currentPage - 1)}
                 icon={BsArrowLeftSquareFill}
@@ -227,6 +229,7 @@ const DepotProductsList = () => {
                       key={pageNum}
                       variant={currentPage === pageNum ? "primary" : "outline"}
                       size="small"
+                      className="text-[11px] h-7 min-w-7 px-2"
                       onClick={() => changePage(pageNum)}
                     >
                       {pageNum}
@@ -238,6 +241,7 @@ const DepotProductsList = () => {
               <Button
                 variant="outline"
                 size="small"
+                className="text-[11px] h-7 px-2"
                 disabled={currentPage === totalPages}
                 onClick={() => changePage(currentPage + 1)}
                 icon={BsArrowRightSquareFill}

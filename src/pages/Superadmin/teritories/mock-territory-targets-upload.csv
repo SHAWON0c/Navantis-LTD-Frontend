@@ -1,0 +1,21 @@
+productId,productName,packSize,targetCount
+P-001-001,Paracetamol 500,10x10,500
+P-001-002,Omeprazole 20,10x10,300
+P-001-003,Azithromycin 500,1x6,1000
+P-001-004,Vitamin C 500,10x10,450
+P-001-005,Calcium D3,5x10,620
+P-001-006,Cetirizine 10,10x10,280
+P-001-007,Metformin 500,10x10,750
+P-001-008,Amlodipine 5,3x10,900
+P-001-009,Losartan 50,3x10,410
+P-001-010,Atorvastatin 10,3x10,560
+P-001-011,Diclofenac 50,10x10,330
+P-001-012,Domperidone 10,10x10,700
+P-001-013,ORS Powder,1x20,820
+P-001-014,Salbutamol 4,10x10,260
+P-001-015,Montelukast 10,3x10,390
+P-001-016,Insulin Regular,1x5,1040
+P-001-017,Clopidogrel 75,3x10,470
+P-001-018,Pantoprazole 40,10x10,680
+P-001-019,Levocetirizine 5,3x10,520
+P-001-020,Amoxicillin 500,1x10,610

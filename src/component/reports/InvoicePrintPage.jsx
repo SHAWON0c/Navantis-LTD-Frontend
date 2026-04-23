@@ -192,8 +192,8 @@ const InvoiceViewPage = () => {
   // CALCULATIONS
   // ---------------------------
   const grossTradePrice = Number(order.totalAmount || 0);
-  const netPayable = Number(order.totalPayable || order.netAmount || 0);
-  const tradeDiscount = grossTradePrice - netPayable;
+  const netPayable = Number(order.totalPayable ?? 0);
+  const tradeDiscount = Number(order.customerDiscount ?? 0);
 
   // Number to Words Function
   const numberToWords = (num) => {

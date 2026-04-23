@@ -15,6 +15,11 @@ export const productsApi = baseAPI.injectEndpoints({
       providesTags: ["Products"],
     }),
 
+    getDepotAvailableProductsByBrand: builder.query({
+      query: (brand) => `/products/brand/${brand}/depot-available`,
+      providesTags: ["Products"],
+    }),
+
     // ✅ Get single product by ID
     getProductById: builder.query({
       query: (id) => `/products/${id}`,
@@ -28,5 +33,6 @@ export const productsApi = baseAPI.injectEndpoints({
 export const {
   useGetBrandsQuery,
   useGetProductsByBrandQuery,
+  useGetDepotAvailableProductsByBrandQuery,
   useGetProductByIdQuery, // ✅ export hook
 } = productsApi;
