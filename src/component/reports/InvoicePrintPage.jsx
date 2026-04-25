@@ -12,6 +12,7 @@ const InvoiceViewPage = () => {
   const invoiceRef = useRef();
   const location = useLocation();
   const orderId = location.state?.orderId;
+  const sourcePage = location.state?.sourcePage;
   const { userInfo } = useAuth();
   const navigate = useNavigate();
 
@@ -188,12 +189,28 @@ const InvoiceViewPage = () => {
     }
   };
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    if (sourcePage === "invoice-payment") {
+      navigate("/depot/invoice-payment");
+      return;
+    }
+
+    navigate("/depot/order-delivery");
+  };
+
   // ---------------------------
   // CALCULATIONS
   // ---------------------------
   const grossTradePrice = Number(order.totalAmount || 0);
   const netPayable = Number(order.totalPayable ?? 0);
   const tradeDiscount = Number(order.customerDiscount ?? 0);
+  const isAlreadyDelivered = String(order.orderStatus || "").toLowerCase() === "delivered";
+  const showBackButton = sourcePage === "invoice-payment" || isAlreadyDelivered;
 
   // Number to Words Function
   const numberToWords = (num) => {
@@ -360,20 +377,36 @@ const InvoiceViewPage = () => {
           Print Invoice
         </button>
 
-        <button
-          onClick={handleDeliverOrder}
-          disabled={!printed || isLoading}
-          style={{
-            background: printed ? "#28a745" : "#ccc",
-            color: "#fff",
-            padding: "10px 16px",
-            border: "none",
-            borderRadius: 5,
-            cursor: printed ? "pointer" : "not-allowed"
-          }}
-        >
-          ✅ Deliver Order
-        </button>
+        {showBackButton ? (
+          <button
+            onClick={handleBack}
+            style={{
+              background: "#6c757d",
+              color: "#fff",
+              padding: "10px 16px",
+              border: "none",
+              borderRadius: 5,
+              cursor: "pointer"
+            }}
+          >
+            ← Back
+          </button>
+        ) : (
+          <button
+            onClick={handleDeliverOrder}
+            disabled={!printed || isLoading}
+            style={{
+              background: printed ? "#28a745" : "#ccc",
+              color: "#fff",
+              padding: "10px 16px",
+              border: "none",
+              borderRadius: 5,
+              cursor: printed ? "pointer" : "not-allowed"
+            }}
+          >
+            ✅ Deliver Order
+          </button>
+        )}
       </div>
 
       {/* Invoice Content */}

@@ -17,6 +17,7 @@ const PrintInstituteInvoice = () => {
   const location = useLocation();
   const orderId = location.state?.orderId;
   const orderType = location.state?.orderType || "institute"; // "customer" or "institute"
+  const sourcePage = location.state?.sourcePage;
   const { userInfo } = useAuth();
   const navigate = useNavigate();
 
@@ -72,7 +73,7 @@ const PrintInstituteInvoice = () => {
                 ? p.productId
                 : productDetails?._id || "-",
             productName: p?.productName || productDetails?.productName || "-",
-            productShortCode: p?.productShortCode || "-",
+            productShortCode: p?.productShortCode || productDetails?.productShortCode || "-",
             packSize: p?.packSize || productDetails?.packSize || "-",
             tradePrice: safePrice,
             quantity: safeQty,
@@ -222,12 +223,28 @@ const PrintInstituteInvoice = () => {
     }
   };
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    if (sourcePage === "invoice-payment") {
+      navigate("/depot/invoice-payment");
+      return;
+    }
+
+    navigate("/depot/order-delivery");
+  };
+
   // ---------------------------
   // CALCULATIONS
   // ---------------------------
   const grossTradePrice = Number(order.totalAmount || 0);
-  const netPayable = Number(order.totalPayable || order.netAmount || 0);
-  const tradeDiscount = grossTradePrice - netPayable;
+  const netPayable = Number(order.totalPayable ?? order.netAmount ?? 0);
+  const tradeDiscount = Number(order.customerDiscount ?? 0);
+  const isAlreadyDelivered = String(order.orderStatus || "").toLowerCase() === "delivered";
+  const showBackButton = sourcePage === "invoice-payment" || isAlreadyDelivered;
 
   // Number to Words Function
   const numberToWords = (num) => {
@@ -268,6 +285,12 @@ const PrintInstituteInvoice = () => {
 
   const amountInWords = numberToWords(netPayable);
 
+  const previousOutstanding = Array.isArray(order.previousPendingOrders)
+    ? order.previousPendingOrders.reduce((sum, item) => sum + (Number(item.amount) || 0), 0)
+    : Number(order.totalPreviousPendingAmount || 0);
+
+  const totalOutstanding = previousOutstanding + netPayable;
+
   const institute = order.institute || {};
   const logoUrl = "/images/NPL-Updated-Logo.png";
 
@@ -294,6 +317,7 @@ const PrintInstituteInvoice = () => {
 
     return {
       productId: p.productId || "-",
+      productShortCode: p.productShortCode || "-",
       productName: p.productName || "-",
       packSize: p.packSize || "-",
       batches,
@@ -352,20 +376,36 @@ const PrintInstituteInvoice = () => {
           🖨 Print Invoice
         </button>
 
-        <button
-          onClick={handleDeliverOrder}
-          disabled={!printed || isLoading}
-          style={{
-            background: printed ? "#28a745" : "#ccc",
-            color: "#fff",
-            padding: "10px 16px",
-            border: "none",
-            borderRadius: 5,
-            cursor: printed ? "pointer" : "not-allowed",
-          }}
-        >
-          ✅ Deliver Order
-        </button>
+        {showBackButton ? (
+          <button
+            onClick={handleBack}
+            style={{
+              background: "#6c757d",
+              color: "#fff",
+              padding: "10px 16px",
+              border: "none",
+              borderRadius: 5,
+              cursor: "pointer",
+            }}
+          >
+            ← Back
+          </button>
+        ) : (
+          <button
+            onClick={handleDeliverOrder}
+            disabled={!printed || isLoading}
+            style={{
+              background: printed ? "#28a745" : "#ccc",
+              color: "#fff",
+              padding: "10px 16px",
+              border: "none",
+              borderRadius: 5,
+              cursor: printed ? "pointer" : "not-allowed",
+            }}
+          >
+            ✅ Deliver Order
+          </button>
+        )}
       </div>
 
       {/* Invoice Content */}
@@ -393,7 +433,7 @@ const PrintInstituteInvoice = () => {
           <div>
             {orderType === "institute" ? (
               <>
-                <b>Institute ID:</b> {order.instituteId || institute._id || "-"} <br />
+                <b>Institute ID:</b> {institute.instituteId || order.instituteId || institute._id || "-"} <br />
                 <b>Institute Name:</b> {institute.instituteName || "-"} <br />
                 <b>Contact Person:</b> {institute.contactPerson || "-"} <br />
                 <b>Address:</b> {institute.address || "-"} <br />
@@ -403,7 +443,7 @@ const PrintInstituteInvoice = () => {
             ) : (
               <>
                 <b>Customer Name:</b> {institute.customerName || "-"} <br />
-                <b>Customer ID:</b> {institute._id || "-"} <br />
+                <b>Customer ID:</b> {institute.customer.instituteId || "-"} <br />
                 <b>Address:</b> {institute.address || "-"} <br />
                 <b>Phone:</b> {institute.mobile || "-"} <br />
                 <b>Email:</b> {institute.email || "-"} <br />
@@ -468,16 +508,24 @@ const PrintInstituteInvoice = () => {
                 </tr>
               ))
             )}
-            {/* Summary Rows with Amount in Words and Discounts */}
+            {/* Summary Rows with Amount in Words on Left, Calculations on Right */}
             <tr style={{ borderTop: "0.5px solid #000", fontWeight: "600" }}>
-              <td colSpan="5" rowSpan="2" style={{ textAlign: "left", padding: "8px 8px", verticalAlign: "middle", fontSize: "12px" }}>
-                <b>Amount in Words:</b> {amountInWords}
+              <td colSpan="5" rowSpan="4" style={{ textAlign: "left", padding: "8px 8px", verticalAlign: "middle", fontSize: "12px", borderRight: "0.5px solid #000" }}>
+                <b>Amount in Words:</b> <br /> {amountInWords}
               </td>
-              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>Less Discount:</td>
-              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>{tradeDiscount.toLocaleString()}</td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px", borderRight: "0.5px solid #000" }}>Total Trade Price:</td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>{grossTradePrice.toLocaleString()}</td>
             </tr>
-            <tr style={{ background: "#f1f1f1", fontWeight: "600" }}>
-              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>Net Payable Amount:</td>
+            <tr style={{ fontWeight: "600" }}>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px", borderRight: "0.5px solid #000" }}>Less Discount:</td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>{tradeDiscount > 0 ? tradeDiscount.toLocaleString() : "0"}</td>
+            </tr>
+            <tr style={{ fontWeight: "600" }}>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px", borderRight: "0.5px solid #000" }}>VAT:</td>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>0</td>
+            </tr>
+            <tr style={{ background: "#f1f1f1", fontWeight: "600", borderBottom: "0.5px solid #000" }}>
+              <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px", borderRight: "0.5px solid #000" }}>Net Payable Amount:</td>
               <td colSpan="2" style={{ textAlign: "right", padding: "4px 8px" }}>{netPayable.toLocaleString()}</td>
             </tr>
           </tbody>
