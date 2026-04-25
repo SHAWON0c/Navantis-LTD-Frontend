@@ -94,6 +94,7 @@ import NetSales from "../pages/reports/NetSales";
 import ProductSummary from "../pages/reports/ProductSummary";
 import DailyCollectionReport from "../pages/reports/DailyCollectionReport";
 import CustomerDetailsReport from "../pages/reports/CustomerDetailsReport";
+import DeliveryReport from "../pages/reports/DeliveryReport";
 
 // ✅ FIXED PATHS
 
@@ -256,6 +257,7 @@ export default function AppRoutes() {
           <Route path="/reports/net-sales" element={<NetSales />} />
           <Route path="/reports/product-summary" element={<ProductSummary />} />
           <Route path="/reports/daily-collection" element={<DailyCollectionReport />} />
+            <Route path="/reports/delivery-report" element={<DeliveryReport />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["md","superadmin"]} />}>

@@ -706,6 +706,17 @@
             ]
           },
           {
+            "key": "report-delivery-report",
+            "label": "Delivery Report",
+            "path": "/reports/delivery-report",
+            "icon": "FileText",
+            "allowedRoles": [
+              "md",
+              "dm",
+              "superadmin"
+            ]
+          },
+          {
             "key": "report-sales-returns",
             "label": "Sales Returns",
             "path": "/reports/sales-returns",
