@@ -9,6 +9,8 @@ const Table = ({
   sortColumn,
   sortDirection,
   className = '',
+  wrapperClassName = '',
+  stickyHeader = false,
   striped = true,
   hover = true,
   loading = false,
@@ -44,7 +46,7 @@ const Table = ({
 
   const tableClasses = `min-w-full w-full text-left border-collapse table-auto ${selectedSize.table} ${className}`;
 
-  const headerClasses = `${selectedSize.header} font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b-2 border-gray-200 whitespace-nowrap align-middle`;
+  const headerClasses = `${selectedSize.header} font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b-2 border-gray-200 whitespace-nowrap align-middle ${stickyHeader ? 'sticky top-0 z-20' : ''}`;
 
   const cellClasses = `${selectedSize.cell} text-gray-900 border-b border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis align-middle tabular-nums`;
 
@@ -52,7 +54,7 @@ const Table = ({
 
   if (loading) {
     return (
-      <div className="overflow-x-auto">
+      <div className={`overflow-x-auto ${wrapperClassName}`}>
         <table className={tableClasses} {...props}>
           <thead>
             <tr>
@@ -79,7 +81,7 @@ const Table = ({
 
   if (!data || data.length === 0) {
     return (
-      <div className="overflow-x-auto">
+      <div className={`overflow-x-auto ${wrapperClassName}`}>
         <table className={tableClasses} {...props}>
           <thead>
             <tr>
@@ -103,7 +105,7 @@ const Table = ({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200">
+    <div className={`overflow-x-auto rounded-lg border border-gray-200 ${wrapperClassName}`}>
       <table className={tableClasses} {...props}>
         <thead>
           <tr className="bg-gray-50">

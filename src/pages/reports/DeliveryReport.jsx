@@ -6,8 +6,8 @@ import Card from "../../component/common/Card";
 import Table from "../../component/common/Table";
 import Button from "../../component/common/Button";
 import FormSelect from "../../component/common/FormSelect";
+import FormInput from "../../component/common/FormInput";
 import { useLazyGetDeliveryReportQuery } from "../../redux/features/reports/deliveryReportApi";
-import html2pdf from "html2pdf.js";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 
@@ -26,6 +26,26 @@ const formatDate = (value) => {
   return parsedDate.toLocaleDateString("en-GB");
 };
 
+const toLocalDateKey = (value) => {
+  if (!value) return "";
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) return "";
+
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+const isWithinDateRange = (dateKey, fromDate, toDate) => {
+  if (!fromDate && !toDate) return true;
+  if (!dateKey) return false;
+  if (fromDate && dateKey < fromDate) return false;
+  if (toDate && dateKey > toDate) return false;
+  return true;
+};
+
 const makeNodeValue = (id, prefix, index) => {
   if (id === undefined || id === null || id === "") {
     return `__${prefix}_null_${index}`;
@@ -37,11 +57,15 @@ const makeNodeValue = (id, prefix, index) => {
 export default function DeliveryReport() {
   const location = useLocation();
   const [fetchReport, reportState] = useLazyGetDeliveryReportQuery();
+  const rowsPerPage = 40;
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     zone: "",
     area: "",
     territory: "",
     marketPoint: "",
+    fromDate: "",
+    toDate: "",
   });
   const searchTerm = useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -51,6 +75,10 @@ export default function DeliveryReport() {
   useEffect(() => {
     fetchReport({ entityType: "all", orderStatus: "delivered" });
   }, [fetchReport]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters.zone, filters.area, filters.territory, filters.marketPoint, filters.fromDate, filters.toDate, searchTerm]);
 
   const zones = useMemo(() => {
     const source = reportState?.data?.data?.zones;
@@ -125,7 +153,6 @@ export default function DeliveryReport() {
         selectedTerritories.forEach((territory) => {
           const territoryMarketPoints = Array.isArray(territory?.marketPoints) ? territory.marketPoints : [];
           const selectedMarketPoints = selectedMarketPoint ? [selectedMarketPoint] : territoryMarketPoints;
-
           selectedMarketPoints.forEach((marketPoint) => {
             const customers = Array.isArray(marketPoint?.customers) ? marketPoint.customers : [];
 
@@ -144,10 +171,19 @@ export default function DeliveryReport() {
                     }];
 
                 batches.forEach((batch) => {
+                  const latestDeliveredAt = batch?.latestDeliveredAt || product?.latestDeliveredAt || "";
+                  const deliveryDateKey = toLocalDateKey(latestDeliveredAt);
+
+                  if (!isWithinDateRange(deliveryDateKey, filters.fromDate, filters.toDate)) {
+                    return;
+                  }
+
                   rows.push({
                     productCode: product?.shortCode,
                     productName: product?.productName,
                     packSize: product?.packSize,
+                    latestDeliveredAt,
+                    deliveryDate: formatDate(latestDeliveredAt),
                     batch: `${formatText(batch?.batchNo)} / Exp: ${formatDate(batch?.expireDate)}`,
                     orderQuantity: Number(batch?.orderQuantity ?? 0),
                     soldQuantity: Number(batch?.soldQty ?? 0),
@@ -162,7 +198,18 @@ export default function DeliveryReport() {
     });
 
     return rows;
-  }, [zones, selectedZone, selectedArea, selectedTerritory, selectedMarketPoint]);
+  }, [zones, selectedZone, selectedArea, selectedTerritory, selectedMarketPoint, filters.fromDate, filters.toDate]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
+  const displayedRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    return filteredRows.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredRows, currentPage]);
 
   const summary = useMemo(() => {
     return filteredRows.reduce(
@@ -189,7 +236,7 @@ export default function DeliveryReport() {
       if (!part) return null;
       if (part.toLowerCase() === searchTerm.toLowerCase()) {
         return (
-          <mark key={`${part}-${index}`} className="rounded px-1 bg-yellow-200 text-yellow-950">
+          <mark key={`${part}-${index}`} className="rounded px-1 bg-yellow-200 text-yellow-800">
             {part}
           </mark>
         );
@@ -226,22 +273,36 @@ export default function DeliveryReport() {
         render: (value) => highlightText(value),
       },
       {
+        key: "deliveryDate",
+        label: "Last Delivery Date",
+        className: "min-w-[130px]",
+      },
+      {
         key: "orderQuantity",
         label: "Order Qty",
         align: "right",
         className: "min-w-[90px]",
+        render: (value) => (
+          <span className="text-[10px] font-semibold text-slate-600">{Number(value || 0).toLocaleString()}</span>
+        ),
       },
       {
         key: "soldQuantity",
         label: "Sold Qty",
         align: "right",
         className: "min-w-[90px]",
+        render: (value) => (
+          <span className="text-[10px] font-semibold text-slate-600">{Number(value || 0).toLocaleString()}</span>
+        ),
       },
       {
         key: "returnedQuantity",
         label: "Returned Qty",
         align: "right",
         className: "min-w-[100px]",
+        render: (value) => (
+          <span className="text-[10px] font-semibold text-slate-600">{Number(value || 0).toLocaleString()}</span>
+        ),
       },
     ],
     []
@@ -268,7 +329,7 @@ export default function DeliveryReport() {
   );
 
   const handleZoneChange = (value) => {
-    setFilters({ zone: value, area: "", territory: "", marketPoint: "" });
+    setFilters((prev) => ({ ...prev, zone: value, area: "", territory: "", marketPoint: "" }));
   };
 
   const handleAreaChange = (value) => {
@@ -283,6 +344,29 @@ export default function DeliveryReport() {
     setFilters((prev) => ({ ...prev, marketPoint: value }));
   };
 
+  const handleDateChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleClearDateFilters = () => {
+    setFilters({
+      zone: "",
+      area: "",
+      territory: "",
+      marketPoint: "",
+      fromDate: "",
+      toDate: "",
+    });
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  };
+
   const getErrorMessage = () => {
     const error = reportState.error;
     if (!error) return "";
@@ -295,6 +379,7 @@ export default function DeliveryReport() {
       `Area: ${formatText(selectedArea?.areaName, "All")}`,
       `Territory: ${formatText(selectedTerritory?.territoryName, "All")}`,
       `Market Point: ${formatText(selectedMarketPoint?.marketPointName, "All")}`,
+      `Date Range: ${filters.fromDate || "All"} to ${filters.toDate || "All"}`,
     ];
 
     return parts.join(" | ");
@@ -312,7 +397,7 @@ export default function DeliveryReport() {
       if (!part) return null;
       if (part.toLowerCase() === searchTerm.toLowerCase()) {
         return (
-          <mark key={`${part}-${index}`} className="rounded px-1 bg-yellow-200 text-yellow-950">
+          <mark key={`${part}-${index}`} className="rounded px-1 bg-yellow-200 text-yellow-800">
             {part}
           </mark>
         );
@@ -341,7 +426,7 @@ export default function DeliveryReport() {
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
 
-    const rowsHtml = filteredRows
+    const rowsHtml = displayedRows
       .map(
         (row, index) => `
           <tr>
@@ -350,6 +435,7 @@ export default function DeliveryReport() {
             <td>${safeText(row.productName)}</td>
             <td>${safeText(row.packSize)}</td>
             <td>${safeText(row.batch)}</td>
+            <td>${safeText(row.deliveryDate)}</td>
             <td style="text-align:right">${Number(row.orderQuantity || 0).toLocaleString()}</td>
             <td style="text-align:right">${Number(row.soldQuantity || 0).toLocaleString()}</td>
             <td style="text-align:right">${Number(row.returnedQuantity || 0).toLocaleString()}</td>
@@ -394,7 +480,7 @@ export default function DeliveryReport() {
           <div class="report-title">Delivery Report</div>
           <div class="meta"><strong>Filters:</strong> ${safeText(buildFilterSummaryText())}</div>
           <div class="meta">Printed on: ${todayText}</div>
-          <div class="meta">Records: ${filteredRows.length} | Order Qty: ${summary.totalOrderQuantity.toLocaleString()} | Sold Qty: ${summary.totalSoldQuantity.toLocaleString()} | Returned Qty: ${summary.totalReturnedQuantity.toLocaleString()}</div>
+          <div class="meta">Records: ${displayedRows.length} | Order Qty: ${summary.totalOrderQuantity.toLocaleString()} | Sold Qty: ${summary.totalSoldQuantity.toLocaleString()} | Returned Qty: ${summary.totalReturnedQuantity.toLocaleString()}</div>
 
           <table>
             <thead>
@@ -404,6 +490,7 @@ export default function DeliveryReport() {
                 <th>Product Name</th>
                 <th>Pack Size</th>
                 <th>Batches</th>
+                <th>Last Delivery Date</th>
                 <th>Order Qty</th>
                 <th>Sold Qty</th>
                 <th>Returned Qty</th>
@@ -414,7 +501,7 @@ export default function DeliveryReport() {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="5">Total</td>
+                <td colspan="6">Total</td>
                 <td style="text-align:right">${summary.totalOrderQuantity.toLocaleString()}</td>
                 <td style="text-align:right">${summary.totalSoldQuantity.toLocaleString()}</td>
                 <td style="text-align:right">${summary.totalReturnedQuantity.toLocaleString()}</td>
@@ -427,17 +514,18 @@ export default function DeliveryReport() {
   };
 
   const handleExcelExport = () => {
-    if (!filteredRows.length) {
+    if (!displayedRows.length) {
       toast.warning("No data to export");
       return;
     }
 
-    const excelRows = filteredRows.map((row, index) => ({
+    const excelRows = displayedRows.map((row, index) => ({
       "SL": index + 1,
       "Product Code": formatText(row.productCode),
       "Product Name": formatText(row.productName),
       "Pack Size": formatText(row.packSize),
       "Batches": formatText(row.batch),
+      "Last Delivery Date": formatText(row.deliveryDate),
       "Order Qty": Number(row.orderQuantity || 0),
       "Sold Qty": Number(row.soldQuantity || 0),
       "Returned Qty": Number(row.returnedQuantity || 0),
@@ -449,6 +537,7 @@ export default function DeliveryReport() {
       "Product Name": "",
       "Pack Size": "",
       "Batches": "Total",
+      "Last Delivery Date": "",
       "Order Qty": summary.totalOrderQuantity,
       "Sold Qty": summary.totalSoldQuantity,
       "Returned Qty": summary.totalReturnedQuantity,
@@ -461,57 +550,8 @@ export default function DeliveryReport() {
     toast.success("Report exported to Excel");
   };
 
-  const handlePdfExport = () => {
-    if (!filteredRows.length) {
-      toast.warning("No data to export");
-      return;
-    }
-
-    const printHtml = buildPrintHtml();
-    const tempFrame = document.createElement("iframe");
-    tempFrame.style.position = "fixed";
-    tempFrame.style.left = "-10000px";
-    tempFrame.style.top = "0";
-    tempFrame.style.width = "1200px";
-    tempFrame.style.height = "900px";
-    tempFrame.style.border = "0";
-    document.body.appendChild(tempFrame);
-
-    try {
-      const frameDoc = tempFrame.contentDocument || tempFrame.contentWindow?.document;
-      if (!frameDoc) return;
-
-      frameDoc.open();
-      frameDoc.write(printHtml);
-      frameDoc.close();
-
-      setTimeout(() => {
-        html2pdf()
-          .set({
-            margin: 8,
-            filename: `delivery-report-${new Date().toISOString().split("T")[0]}.pdf`,
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { orientation: "landscape", unit: "mm", format: "a4" },
-          })
-          .from(frameDoc.body)
-          .save()
-          .finally(() => {
-            if (document.body.contains(tempFrame)) {
-              document.body.removeChild(tempFrame);
-            }
-          });
-      }, 500);
-    } catch (error) {
-      console.error(error);
-      if (document.body.contains(tempFrame)) {
-        document.body.removeChild(tempFrame);
-      }
-    }
-  };
-
   const handlePrint = () => {
-    if (!filteredRows.length) {
+    if (!displayedRows.length) {
       toast.warning("No data to print");
       return;
     }
@@ -541,10 +581,10 @@ export default function DeliveryReport() {
     setTimeout(trigger, 500);
   };
 
-  const compactTableClass = "[&_th]:px-2 [&_th]:py-1.5 [&_td]:px-2 [&_td]:py-1.5";
+  const compactTableClass = "[&_th]:px-2 [&_th]:py-1.5 [&_td]:px-2 [&_td]:py-1.5 [&_th]:!text-[10px] [&_td]:text-[10px] [&_th]:!text-black [&_td]:text-slate-600 [&_th]:border-r [&_td]:border-r [&_th]:border-gray-200 [&_td]:border-gray-200 [&_th:last-child]:border-r-0 [&_td:last-child]:border-r-0";
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-0 space-y-3 print:bg-white print:p-2">
+    <div className="bg-neutral-50 dark:bg-neutral-900 min-h-screen p-0 space-y-3 print:bg-white print:p-2 text-slate-700">
       <style>
         {`
           @media print {
@@ -556,7 +596,7 @@ export default function DeliveryReport() {
       </style>
 
       <div className="hidden print-title text-center mb-4">
-        <h1 className="text-2xl font-bold">Delivery Report</h1>
+        <h1 className="text-2xl font-bold text-slate-700">Delivery Report</h1>
         <p className="text-sm">Printed on: {new Date().toLocaleString()}</p>
       </div>
 
@@ -569,73 +609,139 @@ export default function DeliveryReport() {
             </Button>
 
             <div className="bg-white text-gray-500 flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:h-10">
-              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-800 gap-1 sm:gap-2">
+              <h2 className="flex flex-wrap items-center text-xs md:text-sm font-semibold text-gray-700 gap-1 sm:gap-2">
                 <span>EMS</span>
                 <ChevronRight size={14} className="text-gray-400" />
                 <span>REPORTS</span>
                 <ChevronRight size={14} className="text-gray-400" />
-                <span className="text-gray-900 font-bold">DELIVERY REPORT</span>
+                <span className="text-gray-700 font-bold">DELIVERY REPORT</span>
               </h2>
             </div>
           </div>
 
-          {filteredRows.length > 0 && (
-            <div className="flex gap-2">
-              <Button variant="outline" size="small" onClick={handlePdfExport}>
-                Download PDF
-              </Button>
-              <Button variant="outline" size="small" onClick={handleExcelExport}>
-                Download Excel
-              </Button>
-              <Button variant="outline" size="small" onClick={handlePrint}>
-                Print
+          <div className="flex flex-col xl:flex-row xl:items-end gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="text-xs text-gray-600 whitespace-nowrap">From</div>
+              <div className="w-32">
+                <FormInput
+                  type="date"
+                  value={filters.fromDate}
+                  onChange={(event) => handleDateChange("fromDate", event.target.value)}
+                  className="shadow-sm"
+                />
+              </div>
+              <div className="text-xs text-gray-600 whitespace-nowrap">To</div>
+              <div className="w-32">
+                <FormInput
+                  type="date"
+                  value={filters.toDate}
+                  onChange={(event) => handleDateChange("toDate", event.target.value)}
+                  className="shadow-sm"
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="small"
+                onClick={handleClearDateFilters}
+                disabled={
+                  !filters.zone &&
+                  !filters.area &&
+                  !filters.territory &&
+                  !filters.marketPoint &&
+                  !filters.fromDate &&
+                  !filters.toDate
+                }
+              >
+                Clear Filter
               </Button>
             </div>
-          )}
+
+            {displayedRows.length > 0 && (
+              <div className="flex gap-2">
+                <Button variant="outline" size="small" onClick={handleExcelExport}>
+                  Download Excel
+                </Button>
+                <Button variant="outline" size="small" onClick={handlePrint}>
+                  Print
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </Card>
 
-      <Card className="no-print">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <FormSelect
-            label="Zone"
-            value={filters.zone}
-            onChange={(event) => handleZoneChange(event.target.value)}
-            options={zoneOptions}
-            placeholder="All Zones"
-          />
+      <div className="no-print mb-2 flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="w-full sm:w-44">
+            <FormSelect
+              label="Zone"
+              value={filters.zone}
+              onChange={(event) => handleZoneChange(event.target.value)}
+              options={zoneOptions}
+              placeholder="All Zones"
+              className="truncate shadow-sm"
+            />
+          </div>
 
           {filters.zone && (
-            <FormSelect
-              label="Area"
-              value={filters.area}
-              onChange={(event) => handleAreaChange(event.target.value)}
-              options={areaOptions}
-              placeholder="All Areas"
-            />
+            <div className="w-full sm:w-44">
+              <FormSelect
+                label="Area"
+                value={filters.area}
+                onChange={(event) => handleAreaChange(event.target.value)}
+                options={areaOptions}
+                placeholder="All Areas"
+                className="truncate shadow-sm"
+              />
+            </div>
           )}
 
           {filters.area && (
-            <FormSelect
-              label="Territory"
-              value={filters.territory}
-              onChange={(event) => handleTerritoryChange(event.target.value)}
-              options={territoryOptions}
-              placeholder="All Territories"
-            />
+            <div className="w-full sm:w-44">
+              <FormSelect
+                label="Territory"
+                value={filters.territory}
+                onChange={(event) => handleTerritoryChange(event.target.value)}
+                options={territoryOptions}
+                placeholder="All Territories"
+                className="truncate shadow-sm"
+              />
+            </div>
           )}
 
           {filters.territory && (
-            <FormSelect
-              label="Market Point"
-              value={filters.marketPoint}
-              onChange={(event) => handleMarketPointChange(event.target.value)}
-              options={marketPointOptions}
-              placeholder="All Market Points"
-            />
+            <div className="w-full sm:w-44">
+              <FormSelect
+                label="Market Point"
+                value={filters.marketPoint}
+                onChange={(event) => handleMarketPointChange(event.target.value)}
+                options={marketPointOptions}
+                placeholder="All Market Points"
+                className="truncate shadow-sm"
+              />
+            </div>
           )}
         </div>
-      </Card>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4 gap-2">
+          <div className="p-2 rounded border border-gray-200 bg-gray-50">
+            <p className="text-xs text-gray-500">Rows</p>
+            <p className="text-sm font-semibold text-blue-600">{displayedRows.length.toLocaleString()}</p>
+          </div>
+          <div className="p-2 rounded border border-gray-200 bg-gray-50">
+            <p className="text-xs text-gray-500">Total Order Qty</p>
+            <p className="text-sm font-semibold text-blue-600">{summary.totalOrderQuantity.toLocaleString()}</p>
+          </div>
+          <div className="p-2 rounded border border-gray-200 bg-gray-50">
+            <p className="text-xs text-gray-500">Total Sold Qty</p>
+            <p className="text-sm font-semibold text-blue-600">{summary.totalSoldQuantity.toLocaleString()}</p>
+          </div>
+          <div className="p-2 rounded border border-gray-200 bg-gray-50">
+            <p className="text-xs text-gray-500">Total Returned Qty</p>
+            <p className="text-sm font-semibold text-red-600">{summary.totalReturnedQuantity.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
 
       <Card>
         {searchTerm && (
@@ -645,40 +751,56 @@ export default function DeliveryReport() {
         )}
 
         <div className="mb-3 text-sm text-gray-600">
-          {renderHighlightedSummary(`Zone: ${formatText(selectedZone?.zoneName, "All")} | Area: ${formatText(selectedArea?.areaName, "All")} | Territory: ${formatText(selectedTerritory?.territoryName, "All")} | Market Point: ${formatText(selectedMarketPoint?.marketPointName, "All")}`)}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
-          <div className="p-2 rounded border border-gray-200 bg-gray-50">
-            <p className="text-xs text-gray-500">Rows</p>
-            <p className="text-sm font-semibold text-gray-900">{filteredRows.length}</p>
-          </div>
-          <div className="p-2 rounded border border-gray-200 bg-gray-50">
-            <p className="text-xs text-gray-500">Total Order Qty</p>
-            <p className="text-sm font-semibold text-gray-900">{summary.totalOrderQuantity.toLocaleString()}</p>
-          </div>
-          <div className="p-2 rounded border border-gray-200 bg-gray-50">
-            <p className="text-xs text-gray-500">Total Sold Qty</p>
-            <p className="text-sm font-semibold text-gray-900">{summary.totalSoldQuantity.toLocaleString()}</p>
-          </div>
-          <div className="p-2 rounded border border-gray-200 bg-gray-50">
-            <p className="text-xs text-gray-500">Total Returned Qty</p>
-            <p className="text-sm font-semibold text-gray-900">{summary.totalReturnedQuantity.toLocaleString()}</p>
-          </div>
+          {renderHighlightedSummary(buildFilterSummaryText())}
         </div>
 
         {reportState.error ? (
           <div className="text-sm text-red-600 px-2 py-6">{getErrorMessage()}</div>
         ) : (
-          <Table
-            columns={tableColumns}
-            data={filteredRows}
-            loading={reportState.isLoading || reportState.isFetching}
-            emptyMessage="No delivery report rows found."
-            className={compactTableClass}
-            size="sm"
-            striped={false}
-          />
+          <div>
+            <Table
+              columns={tableColumns}
+              data={displayedRows}
+              loading={reportState.isLoading || reportState.isFetching}
+              emptyMessage="No delivery report rows found."
+              className={compactTableClass}
+              wrapperClassName="max-h-[600px] overflow-y-auto"
+              stickyHeader
+              size="sm"
+              striped={false}
+            />
+
+            {filteredRows.length > rowsPerPage && (
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-gray-200 pt-3 text-sm">
+                <div className="text-gray-600">
+                  Showing {Math.min((currentPage - 1) * rowsPerPage + 1, filteredRows.length)}-
+                  {Math.min(currentPage * rowsPerPage, filteredRows.length)} of {filteredRows.length}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="small"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="small"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </Card>
     </div>
